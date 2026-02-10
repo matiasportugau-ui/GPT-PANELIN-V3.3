@@ -692,6 +692,8 @@ See [PANELIN_TRAINING_GUIDE.md](PANELIN_TRAINING_GUIDE.md) for details.
 
 ## 📚 Documentation
 
+> 📂 **Looking for documentation?** Visit the **[Documentation Index](docs/README.md)** for a complete navigation guide to all project documentation.
+
 ### Core Documentation
 
 | Document | Description | Status |
