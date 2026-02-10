@@ -68,6 +68,23 @@ Panelin is a technical sales assistant that:
 - **Code Interpreter**: PDF generation, CSV processing, batch calculations
 - **Natural Language API**: Search products by description, not just SKU
 
+### Advanced Analysis Capabilities
+
+| Category | Capability | Description |
+|----------|-----------|-------------|
+| **Cognitive Power** | Meta Pattern Recognition | Detect cross-product and cross-project patterns to suggest optimal configurations |
+| **Cognitive Power** | Cross-Dimensional Thinking | Analyze technical, financial, and environmental dimensions simultaneously |
+| **Cognitive Power** | Predictive Architecture | Anticipate material needs and structural issues based on project parameters |
+| **Cognitive Power** | Creative Synthesis | Generate novel panel configurations for unique project requirements |
+| **Technical Mastery** | Full Stack Omniscience | Complete knowledge across all panel systems, accessories, fixings, and construction methods |
+| **Technical Mastery** | Performance Optimization | Minimize material waste through precise BOM calculations with decimal accuracy |
+| **Technical Mastery** | Cost Efficiency Analysis | Optimize quotations with the most cost-effective panel and accessory combinations |
+| **Technical Mastery** | Scalability Vision | Design recommendations that account for future expansion and modular growth |
+| **Creative Engineering** | Novel Solution Generation | Propose alternative systems when standard options do not meet requirements |
+| **Creative Engineering** | Architectural Artistry | Balance aesthetic, thermal, and structural considerations in recommendations |
+| **Creative Engineering** | Efficiency Obsession | Minimize fixation points, accessories, and waste while maintaining structural integrity |
+| **Creative Engineering** | Zero Waste Philosophy | Calculate exact quantities with optimal cutting patterns to reduce waste |
+
 ---
 
 ## 🔧 GPT Configuration
@@ -734,6 +751,7 @@ When reporting issues with the GPT or KB:
 - ✅ Parametric BOM rules for 6 construction systems
 - ✅ Unified load-bearing capacity table
 - ✅ Multi-supplier pricing (BROMYROS, MONTFRIO, BECAM)
+- ✅ Advanced analysis capabilities (pattern recognition, cost optimization, zero-waste calculations)
 
 **New Files:**
 - `accessories_catalog.json` - Complete accessories with pricing
