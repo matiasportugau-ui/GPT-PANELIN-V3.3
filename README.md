@@ -129,7 +129,7 @@ When a user first interacts with Panelin GPT:
 
 Cargando configuración y bases de conocimiento...
 
-✓ Verificando archivos de conocimiento (20 archivos)
+✓ Verificando archivos de conocimiento (17 archivos core KB)
 ✓ Pre-cargando catálogo de precios BROMYROS
 ✓ Cargando catálogo de accesorios (70+ items)
 ✓ Inicializando reglas BOM paramétricas
@@ -140,11 +140,13 @@ Cargando configuración y bases de conocimiento...
 
 Panelin v3.3 operativo con:
 - Knowledge Base v7.0 completa
-- 20 archivos validados y accesibles
+- 17 archivos core KB validados y accesibles
 - Caché de precios inicializado
 - Motor de cotizaciones listo
 - Generador de PDFs disponible
 ```
+
+**Note**: The preload system validates and caches the 17 core knowledge base files. The 3 preload system files (gpt_startup_context.json, panelin_preload.py, GPT_STARTUP_VISIBILITY.md) are the tools that perform this validation, bringing the total to 20 files uploaded to the GPT.
 
 For complete documentation, see [GPT_STARTUP_VISIBILITY.md](GPT_STARTUP_VISIBILITY.md).
 

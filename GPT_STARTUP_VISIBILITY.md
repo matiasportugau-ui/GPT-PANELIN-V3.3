@@ -37,6 +37,18 @@ User sends first message
 
 ---
 
+## 📝 Important Note: File Count Clarification
+
+**Total Files Uploaded to GPT**: 20 files
+- **17 Core Knowledge Base Files**: The actual data files that power Panelin
+- **3 Preload System Files**: The tools that validate and initialize the core KB files
+
+**What Gets Validated by Preload**: The 17 core KB files
+- The preload system (gpt_startup_context.json, panelin_preload.py, GPT_STARTUP_VISIBILITY.md) validates the 17 core files it depends on
+- This ensures all required data is available before the GPT starts responding to user requests
+
+---
+
 ## 📋 What Gets Preloaded
 
 ### Phase 1: Master Knowledge Base (CRITICAL)
