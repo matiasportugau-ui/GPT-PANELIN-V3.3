@@ -1,0 +1,75 @@
+name: Bootstrap validate, package GPT upload
+
+on:
+  push:
+    paths:
+      - 'panelin_reports/**'
+      - 'IMPLEMENTATION_SUMMARY_V3.3.md'
+      - 'README.md'
+      - '.evolucionador/**'
+  pull_request:
+  schedule:
+    - cron: '0 3 * * *'  # daily at 03:00 UTC
+
+jobs:
+  bootstrap-validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run bootstrap validation script
+        run: |
+          mkdir -p .evolucionador/reports/bootstrap
+          python .evolucionador/scripts/bootstrap_test.py \
+            --outdir .evolucionador/reports/bootstrap || EXIT_CODE=$?; echo "exit_code=$EXIT_CODE" > .evolucionador/reports/bootstrap/exit_code.txt; exit ${EXIT_CODE:-0}
+
+      - name: Upload artifacts (test results, GPT package)
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootstrap-validation-artifacts
+          path: |
+            .evolucionador/reports/bootstrap/**
+            panelin_reports/output/**
+            GPT_Upload_Package/**
+
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.existsSync('.evolucionador/reports/bootstrap/bootstrap_report.md')
+              ? fs.readFileSync('.evolucionador/reports/bootstrap/bootstrap_report.md', 'utf8')
+              : 'Bootstrap validation failed; check logs.';
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Bootstrap validation failed - ${new Date().toISOString().split('T')[0]}`,
+              body,
+              labels: ['bootstrap', 'automated', 'failure']
+            });
