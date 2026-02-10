@@ -93,7 +93,9 @@ log_error() {
 
 log_step() {
   log "==> $*"
-  [[ $VERBOSE -eq 1 ]] && echo "==> $*" >&2
+  if [[ $VERBOSE -eq 1 ]]; then
+    echo "==> $*" >&2
+  fi
 }
 
 # --- Log Rotation ---
@@ -127,12 +129,15 @@ validate_environment() {
   log_step "Validating environment"
   
   # Check writable directories
+  log_info "Checking write permissions..."
   if [[ ! -w "$PANELIN_ROOT" ]]; then
     log_error "PANELIN_ROOT is not writable: $PANELIN_ROOT"
     exit 4
   fi
+  log_info "Write permissions OK"
   
   # Check Python availability
+  log_info "Checking Python..."
   if ! command -v "$PYTHON_BIN" &> /dev/null; then
     log_error "Python not found: $PYTHON_BIN"
     log_error "Set PYTHON_BIN environment variable or install Python 3.8+"
@@ -140,10 +145,11 @@ validate_environment() {
   fi
   
   local python_version
-  python_version=$("$PYTHON_BIN" --version 2>&1 | grep -oP '\d+\.\d+' | head -1)
+  python_version=$("$PYTHON_BIN" --version 2>&1 | head -1 | grep -oP '\d+\.\d+' || echo "unknown")
   log_info "Python version: $python_version"
   
   # Check required files
+  log_info "Checking required files..."
   local required_files=(
     "requirements.txt"
     "validate_gpt_files.py"
@@ -156,6 +162,7 @@ validate_environment() {
       exit 1
     fi
   done
+  log_info "Required files OK"
   
   # Warn if embeddings requested but no API key
   if [[ $GENERATE_EMBEDDINGS -eq 1 && -z "${PANELIN_API_KEY:-}" ]]; then
