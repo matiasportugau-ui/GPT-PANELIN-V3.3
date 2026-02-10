@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  gpt-panel:
+    build: .
+    container_name: gpt-panelin-v3.2
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
