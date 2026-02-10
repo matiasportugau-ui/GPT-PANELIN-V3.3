@@ -12,7 +12,7 @@ Environment Variables:
     GENERATE_EMBEDDINGS   - Generate embeddings (0=no, 1=yes, default: 0)
     PANELIN_API_KEY       - API key for embeddings service (if GENERATE_EMBEDDINGS=1)
     KNOWLEDGE_DIRS        - Colon-separated list of dirs to index (default: auto-detect)
-    ALLOWED_EXTENSIONS    - Comma-separated file extensions (default: .json,.md,.txt,.csv)
+    ALLOWED_EXTENSIONS    - Comma-separated file extensions (default: .json,.md,.txt,.csv,.rtf)
 
 Exit Codes:
     0 - Success

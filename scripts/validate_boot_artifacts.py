@@ -35,7 +35,7 @@ SENSITIVE_PATTERNS = [
     r'password["\']?\s*[:=]\s*["\']?[^\s"\']{8,}',
     r'secret["\']?\s*[:=]\s*["\']?[a-zA-Z0-9_-]{20,}',
     r'token["\']?\s*[:=]\s*["\']?[a-zA-Z0-9_-]{20,}',
-    r'Bearer\s+[a-zA-Z0-9_-]{20,}',
+    r'Bearer\s+[a-zA-Z0-9_.-]{20,}',  # JWT Bearer tokens with dots
 ]
 
 

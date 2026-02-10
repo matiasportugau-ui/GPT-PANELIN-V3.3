@@ -145,7 +145,8 @@ validate_environment() {
   fi
   
   local python_version
-  python_version=$("$PYTHON_BIN" --version 2>&1 | head -1 | grep -oP '\d+\.\d+' || echo "unknown")
+  # Use awk/cut for cross-platform compatibility (macOS, Linux)
+  python_version=$("$PYTHON_BIN" --version 2>&1 | awk '{print $2}' | cut -d. -f1-2 || echo "unknown")
   log_info "Python version: $python_version"
   
   # Check required files
