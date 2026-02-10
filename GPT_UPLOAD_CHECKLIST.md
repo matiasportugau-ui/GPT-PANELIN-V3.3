@@ -4,7 +4,7 @@ This document provides a comprehensive checklist and guide for uploading all req
 
 ## 📋 Quick Start
 
-**Total Files to Upload**: 17 files  
+**Total Files to Upload**: 20 files (17 core + 3 preload system)  
 **Total Size**: Approximately 1.1 MB  
 **Upload Time**: 10-15 minutes (with pauses for reindexing)
 
@@ -64,6 +64,15 @@ Additional context and reference files.
 Logo and brand assets.
 
 - [ ] **17. bmc_logo.png** (BMC Uruguay logo for PDFs)
+
+⏱️ **PAUSE 2 minutes** after Phase 6
+
+### Phase 7: Preload System (NEW - v3.3)
+Automatic initialization and visibility system.
+
+- [ ] **18. gpt_startup_context.json** (Preload configuration and file registry)
+- [ ] **19. panelin_preload.py** (Automatic preload Python module)
+- [ ] **20. GPT_STARTUP_VISIBILITY.md** (Preload system documentation)
 
 ---
 

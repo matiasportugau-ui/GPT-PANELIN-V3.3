@@ -1,0 +1,216 @@
+{
+  "system_info": {
+    "name": "Panelin - BMC Assistant Pro",
+    "version": "3.3",
+    "kb_version": "7.0",
+    "last_updated": "2026-02-10",
+    "description": "Asistente técnico especializado en cotizaciones profesionales con BOM completo, generación de PDFs, evaluación de ventas y entrenamiento."
+  },
+  "preload_config": {
+    "auto_initialize": true,
+    "show_visibility_report": true,
+    "validate_files_on_startup": true,
+    "cache_on_startup": [
+      "pricing_data",
+      "bom_rules",
+      "autoportancia_tables",
+      "accessories_catalog"
+    ]
+  },
+  "required_files": {
+    "phase_1_master_kb": {
+      "description": "Master Knowledge Base (Level 1) - Highest Priority",
+      "files": [
+        {
+          "name": "BMC_Base_Conocimiento_GPT-2.json",
+          "purpose": "Primary source of truth for panel pricing, formulas, and specifications",
+          "priority": "CRITICAL",
+          "contains": [
+            "Complete panel products (ISODEC, ISOPANEL, ISOROOF, ISOWALL, ISOFRIG)",
+            "Validated Shopify pricing (price_per_m2)",
+            "Exact quotation formulas v6.0",
+            "Business rules (IVA 22%, shipping, technical specs)",
+            "Load-bearing capacity tables"
+          ]
+        },
+        {
+          "name": "accessories_catalog.json",
+          "purpose": "Complete catalog of 70+ accessories with real pricing",
+          "priority": "CRITICAL",
+          "contains": [
+            "Profiles (goteros, babetas, cumbreras, etc.)",
+            "Fixings (tornillos, tuercas, arandelas, tortugas PVC)",
+            "Sealants and finishes",
+            "Validated unit prices in USD"
+          ]
+        },
+        {
+          "name": "bom_rules.json",
+          "purpose": "Parametric BOM calculation rules for 6 construction systems",
+          "priority": "CRITICAL",
+          "contains": [
+            "Autoportancia tables (unified load-bearing capacity)",
+            "System-specific BOM rules (ISOROOF 3G, ISODEC EPS/PIR, ISOPANEL, ISOWALL, ISOFRIG)",
+            "Quantity formulas per m², per support, per fixing point",
+            "Technical validation criteria"
+          ]
+        }
+      ]
+    },
+    "phase_2_optimized_lookups": {
+      "description": "Optimized Lookups (Level 1.5-1.6) - Fast Search Indices",
+      "files": [
+        {
+          "name": "bromyros_pricing_gpt_optimized.json",
+          "purpose": "Fast product lookup by SKU, family, type, and thickness",
+          "priority": "HIGH",
+          "contains": [
+            "Indexed product data for quick searches",
+            "SKU-to-product mappings",
+            "Category and family indices"
+          ]
+        },
+        {
+          "name": "shopify_catalog_v1.json",
+          "purpose": "Product descriptions, variants, and images (NOT for pricing)",
+          "priority": "HIGH",
+          "contains": [
+            "Detailed product descriptions",
+            "Product variants and options",
+            "Image URLs and media assets",
+            "NOTE: Use Level 1 for pricing, not this file"
+          ]
+        }
+      ]
+    },
+    "phase_3_validation_dynamic": {
+      "description": "Validation & Dynamic Data (Level 2-3) - Cross-Reference",
+      "files": [
+        {
+          "name": "BMC_Base_Unificada_v4.json",
+          "purpose": "Historical validation and cross-reference data",
+          "priority": "MEDIUM"
+        },
+        {
+          "name": "panelin_truth_bmcuruguay_web_only_v2.json",
+          "purpose": "Web pricing snapshot (validate against Level 1)",
+          "priority": "MEDIUM"
+        }
+      ]
+    },
+    "phase_4_documentation": {
+      "description": "Documentation & Guides (Level 4) - Process Documentation",
+      "files": [
+        {
+          "name": "PANELIN_KNOWLEDGE_BASE_GUIDE.md",
+          "purpose": "Complete KB hierarchy and usage rules"
+        },
+        {
+          "name": "PANELIN_QUOTATION_PROCESS.md",
+          "purpose": "5-phase quotation workflow (Identification → Validation → Data Retrieval → Calculations → Presentation)"
+        },
+        {
+          "name": "PANELIN_TRAINING_GUIDE.md",
+          "purpose": "Sales evaluation and training methodology"
+        },
+        {
+          "name": "GPT_INSTRUCTIONS_PRICING.md",
+          "purpose": "Fast pricing lookup strategies"
+        },
+        {
+          "name": "GPT_PDF_INSTRUCTIONS.md",
+          "purpose": "PDF generation workflow using Code Interpreter"
+        },
+        {
+          "name": "GPT_OPTIMIZATION_ANALYSIS.md",
+          "purpose": "System optimization analysis"
+        },
+        {
+          "name": "README.md",
+          "purpose": "Complete project overview and documentation"
+        }
+      ]
+    },
+    "phase_5_supporting": {
+      "description": "Supporting Files - Configuration References",
+      "files": [
+        {
+          "name": "Instrucciones GPT.rtf",
+          "purpose": "Full GPT system instructions (RTF format)"
+        },
+        {
+          "name": "Panelin_GPT_config.json",
+          "purpose": "Complete GPT configuration reference"
+        }
+      ]
+    },
+    "phase_6_assets": {
+      "description": "Assets - Brand and Media",
+      "files": [
+        {
+          "name": "bmc_logo.png",
+          "purpose": "BMC Uruguay logo for PDF generation"
+        }
+      ]
+    }
+  },
+  "file_paths": {
+    "root": "/mnt/data/",
+    "knowledge_base": "/mnt/data/",
+    "documentation": "/mnt/data/",
+    "assets": "/mnt/data/",
+    "python_modules": [
+      "quotation_calculator_v3.py",
+      "panelin_reports/__init__.py",
+      "panelin_reports/pdf_generator.py",
+      "panelin_reports/pdf_styles.py"
+    ]
+  },
+  "capabilities": {
+    "web_browsing": {
+      "enabled": true,
+      "purpose": "Supplementary information only (non-authoritative)",
+      "note": "NEVER replaces Level 1 KB for pricing or specifications"
+    },
+    "code_interpreter": {
+      "enabled": true,
+      "purpose": "PDF generation, CSV processing, batch calculations",
+      "required_for": ["PDF quotations", "Advanced calculations", "Data validation"]
+    },
+    "canvas": {
+      "enabled": true,
+      "purpose": "Client-ready documents and training materials"
+    },
+    "image_generation": {
+      "enabled": true,
+      "purpose": "Technical diagrams and educational infographics",
+      "note": "Never claim images are real photos"
+    }
+  },
+  "business_rules": {
+    "currency": "USD",
+    "iva": "22% already included in unit prices",
+    "shipping_default": "280 USD (varies by zone)",
+    "minimum_roof_slope": "7%",
+    "service_scope": "Materials + Technical Advisory (NOT installation)",
+    "official_website": "https://bmcuruguay.com.uy"
+  },
+  "startup_messages": {
+    "es": {
+      "preload_start": "🔄 **Inicializando Panelin GPT...**\n\nCargando configuración y bases de conocimiento para brindarte el mejor servicio técnico-comercial.",
+      "preload_progress": [
+        "✓ Verificando archivos de conocimiento (17 archivos)",
+        "✓ Pre-cargando catálogo de precios BROMYROS",
+        "✓ Cargando catálogo de accesorios (70+ items)",
+        "✓ Inicializando reglas BOM paramétricas",
+        "✓ Cargando tablas de autoportancia",
+        "✓ Preparando generador de PDFs profesionales"
+      ],
+      "preload_complete": "✅ **Sistema listo**\n\n**Panelin v3.3** operativo con:\n- Knowledge Base v7.0 completa\n- 17 archivos validados y accesibles\n- Caché de precios inicializado\n- Motor de cotizaciones listo\n- Generador de PDFs disponible\n\n---",
+      "visibility_header": "## 📋 Configuración del Sistema\n\n**Lo que tengo disponible para ayudarte:**",
+      "kb_info": "### 🗄️ Bases de Conocimiento Cargadas\n\n**Nivel 1 - Master (Prioridad Máxima)**\n- BMC_Base_Conocimiento_GPT-2.json → Precios, fórmulas, especificaciones\n- accessories_catalog.json → 70+ accesorios con precios reales\n- bom_rules.json → Reglas BOM + tablas autoportancia\n\n**Nivel 1.5-1.6 - Búsquedas Optimizadas**\n- bromyros_pricing_gpt_optimized.json → Índices rápidos\n- shopify_catalog_v1.json → Descripciones e imágenes\n\n**Nivel 2-3 - Validación**\n- BMC_Base_Unificada_v4.json → Validación histórica\n- panelin_truth_bmcuruguay_web_only_v2.json → Snapshot web\n\n**Nivel 4 - Documentación**\n- 7 guías de procesos y workflows completas",
+      "capabilities_info": "### ⚡ Capacidades Activas\n\n✅ **Cotizaciones Profesionales** → BOM completo con accesorios\n✅ **Generación de PDFs** → Documentos con branding BMC\n✅ **Validación Técnica** → Autoportancia automática\n✅ **Evaluación de Ventas** → Análisis y entrenamiento\n✅ **Búsqueda Web** → Info complementaria (no autoritativa)\n✅ **Code Interpreter** → Cálculos avanzados y PDFs\n✅ **Canvas** → Documentos para clientes\n✅ **Generación de Imágenes** → Diagramas técnicos",
+      "paths_info": "### 📁 Rutas y Archivos\n\nTodos los archivos están montados en `/mnt/data/` y verificados:\n- 3 archivos críticos Nivel 1 (Master KB)\n- 2 archivos optimización (búsquedas rápidas)\n- 2 archivos validación\n- 7 archivos documentación\n- 2 archivos soporte\n- 1 asset (logo BMC)\n\n**Total: 17 archivos validados ✓**"
+    }
+  }
+}

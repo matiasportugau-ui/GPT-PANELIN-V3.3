@@ -41,6 +41,11 @@ REQUIRED_FILES = {
     "Phase 6: Assets": [
         "bmc_logo.png",
     ],
+    "Phase 7: Preload System (NEW)": [
+        "gpt_startup_context.json",
+        "panelin_preload.py",
+        "GPT_STARTUP_VISIBILITY.md",
+    ],
 }
 
 # File size expectations (min, max) in KB
@@ -53,6 +58,9 @@ FILE_SIZE_RANGES = {
     "BMC_Base_Unificada_v4.json": (5, 1000),
     "panelin_truth_bmcuruguay_web_only_v2.json": (3, 500),
     "bmc_logo.png": (10, 200),
+    "gpt_startup_context.json": (5, 50),
+    "panelin_preload.py": (10, 50),
+    "GPT_STARTUP_VISIBILITY.md": (5, 50),
 }
 
 

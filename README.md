@@ -53,6 +53,7 @@ Panelin is a technical sales assistant that:
 
 ### Core Features
 
+- **Automatic Preload System** (NEW v3.3): Transparent initialization on first interaction with full visibility
 - **5-Phase Quotation Process**: Structured workflow from identification to presentation
 - **70+ Accessories Catalog**: Complete pricing for profiles, fixings, and finishes
 - **Parametric BOM Rules**: Automated material calculations by construction system
@@ -84,6 +85,68 @@ Panelin is a technical sales assistant that:
 | **Creative Engineering** | Architectural Artistry | Balance aesthetic, thermal, and structural considerations in recommendations |
 | **Creative Engineering** | Efficiency Obsession | Minimize fixation points, accessories, and waste while maintaining structural integrity |
 | **Creative Engineering** | Zero Waste Philosophy | Calculate exact quantities with optimal cutting patterns to reduce waste |
+
+---
+
+## 🚀 Automatic Preload System (NEW in v3.3)
+
+Panelin GPT now includes an **automatic preload system** that initializes on first user interaction, providing complete transparency and visibility of all system components.
+
+### What Happens on First Interaction
+
+When a user first interacts with Panelin GPT:
+
+1. **Automatic Initialization**: System runs transparently without requiring user validation
+2. **File Verification**: Validates all 20 required knowledge base files
+3. **Data Pre-caching**: Loads critical data into memory for faster responses:
+   - Pricing data from BMC_Base_Conocimiento_GPT-2.json
+   - Accessories catalog (70+ items)
+   - BOM rules and autoportancia tables
+   - Optimized pricing indices
+4. **Visibility Report**: Shows user exactly what's loaded and available
+5. **System Status**: Confirms all capabilities are operational
+
+### Benefits
+
+- ✅ **Transparency**: Users see exactly what the system has access to
+- ✅ **Speed**: Pre-cached data enables faster response times
+- ✅ **Confidence**: Full visibility builds trust in the system
+- ✅ **No Friction**: Zero user validation required
+- ✅ **Educational**: Users learn system capabilities upfront
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `gpt_startup_context.json` | Configuration for preload system |
+| `panelin_preload.py` | Automatic initialization module |
+| `GPT_STARTUP_VISIBILITY.md` | Complete preload system documentation |
+
+### Example Output
+
+```
+🔄 Inicializando Panelin GPT...
+
+Cargando configuración y bases de conocimiento...
+
+✓ Verificando archivos de conocimiento (20 archivos)
+✓ Pre-cargando catálogo de precios BROMYROS
+✓ Cargando catálogo de accesorios (70+ items)
+✓ Inicializando reglas BOM paramétricas
+✓ Cargando tablas de autoportancia
+✓ Preparando generador de PDFs profesionales
+
+✅ Sistema listo
+
+Panelin v3.3 operativo con:
+- Knowledge Base v7.0 completa
+- 20 archivos validados y accesibles
+- Caché de precios inicializado
+- Motor de cotizaciones listo
+- Generador de PDFs disponible
+```
+
+For complete documentation, see [GPT_STARTUP_VISIBILITY.md](GPT_STARTUP_VISIBILITY.md).
 
 ---
 
