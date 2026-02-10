@@ -18,6 +18,8 @@ jobs:
   boot-smoke-test:
     name: BOOT Smoke Test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: 📥 Checkout Repository
@@ -54,6 +56,8 @@ jobs:
   boot-validation:
     name: BOOT Process Validation
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: 📥 Checkout Repository
@@ -144,6 +148,8 @@ with open('knowledge_index.json') as f:
   boot-idempotency:
     name: BOOT Idempotency Test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: 📥 Checkout Repository
