@@ -4,8 +4,8 @@ This document provides a comprehensive checklist and guide for uploading all req
 
 ## 📋 Quick Start
 
-**Total Files to Upload**: 18 files  
-**Total Size**: Approximately 15-20 MB  
+**Total Files to Upload**: 17 files  
+**Total Size**: Approximately 1.1 MB  
 **Upload Time**: 10-15 minutes (with pauses for reindexing)
 
 ---
@@ -274,7 +274,7 @@ python validate_gpt_files.py
 ```
 
 This will:
-- ✅ Verify all 18 required files exist
+- ✅ Verify all 17 required files exist
 - ✅ Check file sizes are reasonable
 - ✅ Validate JSON syntax
 - ✅ Report any missing or invalid files
