@@ -22,6 +22,7 @@ EXPECTED = {
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTDIR_DEFAULT = ROOT / ".evolucionador" / "reports" / "bootstrap"
+TEST_TIMEOUT_SECONDS = 300  # 5 minutes for test execution
 
 
 def sha1_of_file(p: Path):
@@ -61,7 +62,7 @@ def run_tests(out):
     res_file = out / "test_output.txt"
     start = time.time()
     try:
-        rc = subprocess.run([sys.executable, str(test_script)], check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=300)
+        rc = subprocess.run([sys.executable, str(test_script)], check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=TEST_TIMEOUT_SECONDS)
         with open(res_file, "w", encoding="utf-8", newline="\n") as fh:
             fh.write(rc.stdout)
         duration = time.time() - start
@@ -108,22 +109,25 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
 
     report_lines = []
-    report_lines.append("# Bootstrap validation report\n")
+    report_lines.append("# Bootstrap validation report")
     ok_checks = verify_checksums(out)
-    report_lines.append("## Checksums\n")
-    report_lines.append(open(out / "checksums.txt", encoding="utf-8").read())
+    report_lines.append("\n## Checksums")
+    with open(out / "checksums.txt", encoding="utf-8") as fh:
+        report_lines.append(fh.read())
 
-    report_lines.append("\n## Test run\n")
+    report_lines.append("\n## Test run")
     tests_ok, duration = run_tests(out)
-    report_lines.append(f"- Tests passed: {tests_ok}\n- Duration: {duration:.2f}s\n")
+    report_lines.append(f"- Tests passed: {tests_ok}")
+    report_lines.append(f"- Duration: {duration:.2f}s")
     if tests_ok:
-        report_lines.append("\nAll tests passed ✅\n")
+        report_lines.append("\nAll tests passed ✅")
     else:
-        report_lines.append("\nTests failed ❌\n")
+        report_lines.append("\nTests failed ❌")
 
     # package GPT upload
     zip_path = package_gpt_upload(out)
-    report_lines.append(f"\n## GPT upload package\n- Created: {zip_path}\n")
+    report_lines.append(f"\n## GPT upload package")
+    report_lines.append(f"- Created: {zip_path}")
 
     # Write report
     with open(out / "bootstrap_report.md", "w", encoding="utf-8", newline="\n") as fh:

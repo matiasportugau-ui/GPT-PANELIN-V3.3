@@ -45,8 +45,8 @@ jobs:
       - name: Run bootstrap validation script
         run: |
           mkdir -p .evolucionador/reports/bootstrap
-          python .evolucionador/scripts/bootstrap_test.py \
-            --outdir .evolucionador/reports/bootstrap || EXIT_CODE=$?; echo "exit_code=$EXIT_CODE" > .evolucionador/reports/bootstrap/exit_code.txt; exit ${EXIT_CODE:-0}
+          python .evolucionador/scripts/bootstrap_test.py --outdir .evolucionador/reports/bootstrap
+        continue-on-error: false
 
       - name: Upload artifacts (test results, GPT package)
         uses: actions/upload-artifact@v4
