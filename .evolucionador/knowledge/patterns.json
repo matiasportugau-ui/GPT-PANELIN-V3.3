@@ -1,0 +1,44 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-02-10T00:00:00Z",
+  "description": "Discovered patterns in the codebase over time",
+  "patterns": {
+    "code_patterns": {
+      "python_style": {
+        "observed": [],
+        "count": 0,
+        "examples": []
+      },
+      "json_structure": {
+        "observed": [],
+        "count": 0,
+        "examples": []
+      },
+      "naming_conventions": {
+        "observed": [],
+        "count": 0,
+        "examples": []
+      }
+    },
+    "performance_patterns": {
+      "slow_operations": [],
+      "optimization_opportunities": [],
+      "bottlenecks": []
+    },
+    "quality_patterns": {
+      "common_issues": [],
+      "best_practices": [],
+      "anti_patterns": []
+    }
+  },
+  "learned_insights": {
+    "successful_optimizations": [],
+    "failed_optimizations": [],
+    "knowledge_base_insights": []
+  },
+  "metadata": {
+    "total_analyses": 0,
+    "pattern_discoveries": 0,
+    "last_analysis": null
+  }
+}

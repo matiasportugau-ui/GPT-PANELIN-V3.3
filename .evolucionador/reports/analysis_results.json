@@ -1,0 +1,2238 @@
+{
+  "timestamp": "2026-02-10T08:27:58.783952Z",
+  "version": "1.0.0",
+  "repository": "/home/runner/work/GPT-PANELIN-V3.2/GPT-PANELIN-V3.2",
+  "scores": {
+    "functionality": 95,
+    "efficiency": 85,
+    "speed": 90,
+    "cost_effectiveness": 88,
+    "documentation": 100,
+    "knowledge_base": 100,
+    "overall": 92
+  },
+  "files": {
+    "total_files": 22,
+    "by_type": {
+      ".json": 9,
+      "": 1,
+      ".md": 7,
+      ".rtf": 2,
+      ".png": 1,
+      ".py": 1,
+      ".csv": 1
+    },
+    "by_directory": {
+      "root": 22
+    },
+    "large_files": [],
+    "json_files": [
+      "bromyros_pricing_gpt_optimized.json",
+      "BMC_Base_Unificada_v4.json",
+      "shopify_catalog_v1.json",
+      "panelin_truth_bmcuruguay_web_only_v2.json",
+      "perfileria_index.json",
+      "bom_rules.json",
+      "BMC_Base_Conocimiento_GPT-2.json",
+      "Panelin_GPT_config.json",
+      "accessories_catalog.json"
+    ],
+    "python_files": [
+      "quotation_calculator_v3.py"
+    ],
+    "markdown_files": [
+      "GPT_INSTRUCTIONS_PRICING.md",
+      "GPT_PDF_INSTRUCTIONS.md",
+      "GPT_OPTIMIZATION_ANALYSIS.md",
+      "README.md",
+      "PANELIN_KNOWLEDGE_BASE_GUIDE.md",
+      "PANELIN_QUOTATION_PROCESS.md",
+      "PANELIN_TRAINING_GUIDE.md"
+    ]
+  },
+  "issues": [],
+  "recommendations": [],
+  "benchmarks": {},
+  "readme_compliance": {
+    "files_checked": 17,
+    "files_exist": 17,
+    "files_missing": [],
+    "version_consistency": true,
+    "versions_found": [
+      "7.0",
+      "7.0",
+      "3.2",
+      "3.1",
+      "2.3",
+      "6.0",
+      "7.0",
+      "7.0",
+      "3.1",
+      "2.3",
+      "7.0",
+      "3.2",
+      "7.0",
+      "3.1",
+      "3.1",
+      "2.3",
+      "6.0",
+      "2.0",
+      "5.0",
+      "7.0",
+      "7.0",
+      "7.0",
+      "6.0",
+      "5.0"
+    ],
+    "links_checked": 33,
+    "broken_links": [],
+    "score": 100
+  },
+  "knowledge_base": {
+    "files_analyzed": 8,
+    "valid_json": 8,
+    "invalid_json": [],
+    "pricing_consistency": {
+      "BMC_Base_Conocimiento_GPT-2.json": {
+        "products_count": 0,
+        "price_fields_found": [
+          "products.ISODEC_EPS.espesores.100.precio",
+          "products.ISODEC_EPS.espesores.150.precio",
+          "products.ISODEC_EPS.espesores.200.precio",
+          "products.ISODEC_EPS.espesores.250.precio",
+          "products.ISODEC_PIR.espesores.50.precio",
+          "products.ISODEC_PIR.espesores.80.precio",
+          "products.ISODEC_PIR.espesores.120.precio",
+          "products.ISOROOF_3G.espesores.30.precio",
+          "products.ISOROOF_3G.espesores.50.precio",
+          "products.ISOROOF_3G.espesores.80.precio",
+          "products.ISOPANEL_EPS.espesores.50.precio",
+          "products.ISOPANEL_EPS.espesores.100.precio",
+          "products.ISOPANEL_EPS.espesores.150.precio",
+          "products.ISOPANEL_EPS.espesores.200.precio",
+          "products.ISOWALL_PIR.espesores.50.precio",
+          "products.ISOWALL_PIR.espesores.80.precio",
+          "products.ISOFRIG_PIR.espesores.150.precio",
+          "products.ISOFRIG_PIR.espesores.200.precio",
+          "datos_referencia_uruguay.precio_kwh_uruguay",
+          "precios_accesorios_referencia",
+          "reglas_negocio.politica_precios",
+          "reglas_negocio.politica_precios.precio_web_es_referencia"
+        ],
+        "sample_prices": [
+          {
+            "field": "products.ISODEC_EPS.espesores.100.precio",
+            "value": 46.07
+          },
+          {
+            "field": "products.ISODEC_EPS.espesores.150.precio",
+            "value": 51.5
+          },
+          {
+            "field": "products.ISODEC_EPS.espesores.200.precio",
+            "value": 57.0
+          },
+          {
+            "field": "products.ISODEC_EPS.espesores.250.precio",
+            "value": 62.5
+          },
+          {
+            "field": "products.ISODEC_PIR.espesores.50.precio",
+            "value": 51.02
+          },
+          {
+            "field": "products.ISODEC_PIR.espesores.80.precio",
+            "value": 55.0
+          },
+          {
+            "field": "products.ISODEC_PIR.espesores.120.precio",
+            "value": 62.0
+          },
+          {
+            "field": "products.ISOROOF_3G.espesores.30.precio",
+            "value": 48.74
+          },
+          {
+            "field": "products.ISOROOF_3G.espesores.50.precio",
+            "value": 53.0
+          },
+          {
+            "field": "products.ISOROOF_3G.espesores.80.precio",
+            "value": 62.0
+          },
+          {
+            "field": "products.ISOPANEL_EPS.espesores.50.precio",
+            "value": 41.88
+          },
+          {
+            "field": "products.ISOPANEL_EPS.espesores.100.precio",
+            "value": 46.0
+          },
+          {
+            "field": "products.ISOPANEL_EPS.espesores.150.precio",
+            "value": 51.5
+          },
+          {
+            "field": "products.ISOPANEL_EPS.espesores.200.precio",
+            "value": 57.0
+          },
+          {
+            "field": "products.ISOWALL_PIR.espesores.50.precio",
+            "value": 54.65
+          },
+          {
+            "field": "products.ISOWALL_PIR.espesores.80.precio",
+            "value": 64.0
+          },
+          {
+            "field": "reglas_negocio.politica_precios.precio_web_es_referencia",
+            "value": true
+          }
+        ]
+      },
+      "accessories_catalog.json": {
+        "products_count": 0,
+        "price_fields_found": [
+          "accesorios[0].precio_unit_iva_inc",
+          "accesorios[0].precio_por_ml_iva_inc",
+          "accesorios[0].web_price_iva_inc",
+          "accesorios[1].precio_unit_iva_inc",
+          "accesorios[1].precio_por_ml_iva_inc",
+          "accesorios[1].web_price_iva_inc",
+          "accesorios[2].precio_unit_iva_inc",
+          "accesorios[2].precio_por_ml_iva_inc",
+          "accesorios[2].web_price_iva_inc",
+          "accesorios[3].precio_unit_iva_inc",
+          "accesorios[3].precio_por_ml_iva_inc",
+          "accesorios[3].web_price_iva_inc",
+          "accesorios[4].precio_unit_iva_inc",
+          "accesorios[4].precio_por_ml_iva_inc",
+          "accesorios[4].web_price_iva_inc",
+          "accesorios[5].precio_unit_iva_inc",
+          "accesorios[5].precio_por_ml_iva_inc",
+          "accesorios[5].web_price_iva_inc",
+          "accesorios[6].precio_unit_iva_inc",
+          "accesorios[6].precio_por_ml_iva_inc",
+          "accesorios[6].web_price_iva_inc",
+          "accesorios[7].precio_unit_iva_inc",
+          "accesorios[7].precio_por_ml_iva_inc",
+          "accesorios[7].web_price_iva_inc",
+          "accesorios[8].precio_unit_iva_inc",
+          "accesorios[8].precio_por_ml_iva_inc",
+          "accesorios[8].web_price_iva_inc",
+          "accesorios[9].precio_unit_iva_inc",
+          "accesorios[9].precio_por_ml_iva_inc",
+          "accesorios[9].web_price_iva_inc",
+          "accesorios[10].precio_unit_iva_inc",
+          "accesorios[10].precio_por_ml_iva_inc",
+          "accesorios[10].web_price_iva_inc",
+          "accesorios[11].precio_unit_iva_inc",
+          "accesorios[11].precio_por_ml_iva_inc",
+          "accesorios[11].web_price_iva_inc",
+          "accesorios[12].precio_unit_iva_inc",
+          "accesorios[12].precio_por_ml_iva_inc",
+          "accesorios[12].web_price_iva_inc",
+          "accesorios[13].precio_unit_iva_inc",
+          "accesorios[13].precio_por_ml_iva_inc",
+          "accesorios[13].web_price_iva_inc",
+          "accesorios[14].precio_unit_iva_inc",
+          "accesorios[14].precio_por_ml_iva_inc",
+          "accesorios[14].web_price_iva_inc",
+          "accesorios[15].precio_unit_iva_inc",
+          "accesorios[15].precio_por_ml_iva_inc",
+          "accesorios[15].web_price_iva_inc",
+          "accesorios[16].precio_unit_iva_inc",
+          "accesorios[16].precio_por_ml_iva_inc",
+          "accesorios[16].web_price_iva_inc",
+          "accesorios[17].precio_unit_iva_inc",
+          "accesorios[17].precio_por_ml_iva_inc",
+          "accesorios[17].web_price_iva_inc",
+          "accesorios[18].precio_unit_iva_inc",
+          "accesorios[18].precio_por_ml_iva_inc",
+          "accesorios[18].web_price_iva_inc",
+          "accesorios[19].precio_unit_iva_inc",
+          "accesorios[19].precio_por_ml_iva_inc",
+          "accesorios[19].web_price_iva_inc",
+          "accesorios[20].precio_unit_iva_inc",
+          "accesorios[20].precio_por_ml_iva_inc",
+          "accesorios[20].web_price_iva_inc",
+          "accesorios[21].precio_unit_iva_inc",
+          "accesorios[21].precio_por_ml_iva_inc",
+          "accesorios[21].web_price_iva_inc",
+          "accesorios[22].precio_unit_iva_inc",
+          "accesorios[22].precio_por_ml_iva_inc",
+          "accesorios[22].web_price_iva_inc",
+          "accesorios[23].precio_unit_iva_inc",
+          "accesorios[23].precio_por_ml_iva_inc",
+          "accesorios[23].web_price_iva_inc",
+          "accesorios[24].precio_unit_iva_inc",
+          "accesorios[24].precio_por_ml_iva_inc",
+          "accesorios[24].web_price_iva_inc",
+          "accesorios[25].precio_unit_iva_inc",
+          "accesorios[25].precio_por_ml_iva_inc",
+          "accesorios[25].web_price_iva_inc",
+          "accesorios[26].precio_unit_iva_inc",
+          "accesorios[26].precio_por_ml_iva_inc",
+          "accesorios[26].web_price_iva_inc",
+          "accesorios[27].precio_unit_iva_inc",
+          "accesorios[27].precio_por_ml_iva_inc",
+          "accesorios[27].web_price_iva_inc",
+          "accesorios[28].precio_unit_iva_inc",
+          "accesorios[28].precio_por_ml_iva_inc",
+          "accesorios[28].web_price_iva_inc",
+          "accesorios[29].precio_unit_iva_inc",
+          "accesorios[29].precio_por_ml_iva_inc",
+          "accesorios[29].web_price_iva_inc",
+          "accesorios[30].precio_unit_iva_inc",
+          "accesorios[30].precio_por_ml_iva_inc",
+          "accesorios[30].web_price_iva_inc",
+          "accesorios[31].precio_unit_iva_inc",
+          "accesorios[31].precio_por_ml_iva_inc",
+          "accesorios[31].web_price_iva_inc",
+          "accesorios[32].precio_unit_iva_inc",
+          "accesorios[32].precio_por_ml_iva_inc",
+          "accesorios[32].web_price_iva_inc",
+          "accesorios[33].precio_unit_iva_inc",
+          "accesorios[33].precio_por_ml_iva_inc",
+          "accesorios[33].web_price_iva_inc",
+          "accesorios[34].precio_unit_iva_inc",
+          "accesorios[34].precio_por_ml_iva_inc",
+          "accesorios[34].web_price_iva_inc",
+          "accesorios[35].precio_unit_iva_inc",
+          "accesorios[35].precio_por_ml_iva_inc",
+          "accesorios[35].web_price_iva_inc",
+          "accesorios[36].precio_unit_iva_inc",
+          "accesorios[36].precio_por_ml_iva_inc",
+          "accesorios[36].web_price_iva_inc",
+          "accesorios[37].precio_unit_iva_inc",
+          "accesorios[37].precio_por_ml_iva_inc",
+          "accesorios[37].web_price_iva_inc",
+          "accesorios[38].precio_unit_iva_inc",
+          "accesorios[38].precio_por_ml_iva_inc",
+          "accesorios[38].web_price_iva_inc",
+          "accesorios[39].precio_unit_iva_inc",
+          "accesorios[39].precio_por_ml_iva_inc",
+          "accesorios[39].web_price_iva_inc",
+          "accesorios[40].precio_unit_iva_inc",
+          "accesorios[40].precio_por_ml_iva_inc",
+          "accesorios[40].web_price_iva_inc",
+          "accesorios[41].precio_unit_iva_inc",
+          "accesorios[41].precio_por_ml_iva_inc",
+          "accesorios[41].web_price_iva_inc",
+          "accesorios[42].precio_unit_iva_inc",
+          "accesorios[42].precio_por_ml_iva_inc",
+          "accesorios[42].web_price_iva_inc",
+          "accesorios[43].precio_unit_iva_inc",
+          "accesorios[43].precio_por_ml_iva_inc",
+          "accesorios[43].web_price_iva_inc",
+          "accesorios[44].precio_unit_iva_inc",
+          "accesorios[44].precio_por_ml_iva_inc",
+          "accesorios[44].web_price_iva_inc",
+          "accesorios[45].precio_unit_iva_inc",
+          "accesorios[45].precio_por_ml_iva_inc",
+          "accesorios[45].web_price_iva_inc",
+          "accesorios[46].precio_unit_iva_inc",
+          "accesorios[46].precio_por_ml_iva_inc",
+          "accesorios[46].web_price_iva_inc",
+          "accesorios[47].precio_unit_iva_inc",
+          "accesorios[47].precio_por_ml_iva_inc",
+          "accesorios[47].web_price_iva_inc",
+          "accesorios[48].precio_unit_iva_inc",
+          "accesorios[48].precio_por_ml_iva_inc",
+          "accesorios[48].web_price_iva_inc",
+          "accesorios[49].precio_unit_iva_inc",
+          "accesorios[49].precio_por_ml_iva_inc",
+          "accesorios[49].web_price_iva_inc",
+          "accesorios[50].precio_unit_iva_inc",
+          "accesorios[50].precio_por_ml_iva_inc",
+          "accesorios[50].web_price_iva_inc",
+          "accesorios[51].precio_unit_iva_inc",
+          "accesorios[51].precio_por_ml_iva_inc",
+          "accesorios[51].web_price_iva_inc",
+          "accesorios[52].precio_unit_iva_inc",
+          "accesorios[52].precio_por_ml_iva_inc",
+          "accesorios[52].web_price_iva_inc",
+          "accesorios[53].precio_unit_iva_inc",
+          "accesorios[53].precio_por_ml_iva_inc",
+          "accesorios[53].web_price_iva_inc",
+          "accesorios[54].precio_unit_iva_inc",
+          "accesorios[54].precio_por_ml_iva_inc",
+          "accesorios[54].web_price_iva_inc",
+          "accesorios[55].precio_unit_iva_inc",
+          "accesorios[55].precio_por_ml_iva_inc",
+          "accesorios[55].web_price_iva_inc",
+          "accesorios[56].precio_unit_iva_inc",
+          "accesorios[56].precio_por_ml_iva_inc",
+          "accesorios[56].web_price_iva_inc",
+          "accesorios[57].precio_unit_iva_inc",
+          "accesorios[57].precio_por_ml_iva_inc",
+          "accesorios[57].web_price_iva_inc",
+          "accesorios[58].precio_unit_iva_inc",
+          "accesorios[58].precio_por_ml_iva_inc",
+          "accesorios[58].web_price_iva_inc",
+          "accesorios[59].precio_unit_iva_inc",
+          "accesorios[59].precio_por_ml_iva_inc",
+          "accesorios[59].web_price_iva_inc",
+          "accesorios[60].precio_unit_iva_inc",
+          "accesorios[60].precio_por_ml_iva_inc",
+          "accesorios[60].web_price_iva_inc",
+          "accesorios[61].precio_unit_iva_inc",
+          "accesorios[61].precio_por_ml_iva_inc",
+          "accesorios[61].web_price_iva_inc",
+          "accesorios[62].precio_unit_iva_inc",
+          "accesorios[62].precio_por_ml_iva_inc",
+          "accesorios[62].web_price_iva_inc",
+          "accesorios[63].precio_unit_iva_inc",
+          "accesorios[63].precio_por_ml_iva_inc",
+          "accesorios[63].web_price_iva_inc",
+          "accesorios[64].precio_unit_iva_inc",
+          "accesorios[64].precio_por_ml_iva_inc",
+          "accesorios[64].web_price_iva_inc",
+          "accesorios[65].precio_unit_iva_inc",
+          "accesorios[65].precio_por_ml_iva_inc",
+          "accesorios[65].web_price_iva_inc",
+          "accesorios[66].precio_unit_iva_inc",
+          "accesorios[66].precio_por_ml_iva_inc",
+          "accesorios[66].web_price_iva_inc",
+          "accesorios[67].precio_unit_iva_inc",
+          "accesorios[67].precio_por_ml_iva_inc",
+          "accesorios[67].web_price_iva_inc",
+          "accesorios[68].precio_unit_iva_inc",
+          "accesorios[68].precio_por_ml_iva_inc",
+          "accesorios[68].web_price_iva_inc",
+          "accesorios[69].precio_unit_iva_inc",
+          "accesorios[69].precio_por_ml_iva_inc",
+          "accesorios[69].web_price_iva_inc",
+          "accesorios[70].precio_unit_iva_inc",
+          "accesorios[70].precio_por_ml_iva_inc",
+          "accesorios[70].web_price_iva_inc",
+          "accesorios[71].precio_unit_iva_inc",
+          "accesorios[71].precio_por_ml_iva_inc",
+          "accesorios[71].web_price_iva_inc",
+          "accesorios[72].precio_unit_iva_inc",
+          "accesorios[72].precio_por_ml_iva_inc",
+          "accesorios[72].web_price_iva_inc",
+          "accesorios[73].precio_unit_iva_inc",
+          "accesorios[73].precio_por_ml_iva_inc",
+          "accesorios[73].web_price_iva_inc",
+          "accesorios[74].precio_unit_iva_inc",
+          "accesorios[74].precio_por_ml_iva_inc",
+          "accesorios[74].web_price_iva_inc",
+          "accesorios[75].precio_unit_iva_inc",
+          "accesorios[75].precio_por_ml_iva_inc",
+          "accesorios[75].web_price_iva_inc",
+          "accesorios[76].precio_unit_iva_inc",
+          "accesorios[76].precio_por_ml_iva_inc",
+          "accesorios[76].web_price_iva_inc",
+          "accesorios[77].precio_unit_iva_inc",
+          "accesorios[77].precio_por_ml_iva_inc",
+          "accesorios[77].web_price_iva_inc",
+          "accesorios[78].precio_unit_iva_inc",
+          "accesorios[78].precio_por_ml_iva_inc",
+          "accesorios[78].web_price_iva_inc",
+          "accesorios[79].precio_unit_iva_inc",
+          "accesorios[79].precio_por_ml_iva_inc",
+          "accesorios[79].web_price_iva_inc",
+          "accesorios[80].precio_unit_iva_inc",
+          "accesorios[80].precio_por_ml_iva_inc",
+          "accesorios[80].web_price_iva_inc",
+          "accesorios[81].precio_unit_iva_inc",
+          "accesorios[81].precio_por_ml_iva_inc",
+          "accesorios[81].web_price_iva_inc",
+          "accesorios[82].precio_unit_iva_inc",
+          "accesorios[82].precio_por_ml_iva_inc",
+          "accesorios[82].web_price_iva_inc",
+          "accesorios[83].precio_unit_iva_inc",
+          "accesorios[83].precio_por_ml_iva_inc",
+          "accesorios[83].web_price_iva_inc",
+          "accesorios[84].precio_unit_iva_inc",
+          "accesorios[84].precio_por_ml_iva_inc",
+          "accesorios[84].web_price_iva_inc",
+          "accesorios[85].precio_unit_iva_inc",
+          "accesorios[85].precio_por_ml_iva_inc",
+          "accesorios[85].web_price_iva_inc",
+          "accesorios[86].precio_unit_iva_inc",
+          "accesorios[86].precio_por_ml_iva_inc",
+          "accesorios[86].web_price_iva_inc",
+          "accesorios[87].precio_unit_iva_inc",
+          "accesorios[87].precio_por_ml_iva_inc",
+          "accesorios[87].web_price_iva_inc",
+          "accesorios[88].precio_unit_iva_inc",
+          "accesorios[88].precio_por_ml_iva_inc",
+          "accesorios[88].web_price_iva_inc",
+          "accesorios[89].precio_unit_iva_inc",
+          "accesorios[89].precio_por_ml_iva_inc",
+          "accesorios[89].web_price_iva_inc",
+          "accesorios[90].precio_unit_iva_inc",
+          "accesorios[90].precio_por_ml_iva_inc",
+          "accesorios[90].web_price_iva_inc",
+          "accesorios[91].precio_unit_iva_inc",
+          "accesorios[91].precio_por_ml_iva_inc",
+          "accesorios[91].web_price_iva_inc",
+          "accesorios[92].precio_unit_iva_inc",
+          "accesorios[92].precio_por_ml_iva_inc",
+          "accesorios[92].web_price_iva_inc",
+          "accesorios[93].precio_unit_iva_inc",
+          "accesorios[93].precio_por_ml_iva_inc",
+          "accesorios[93].web_price_iva_inc",
+          "accesorios[94].precio_unit_iva_inc",
+          "accesorios[94].precio_por_ml_iva_inc",
+          "accesorios[94].web_price_iva_inc",
+          "accesorios[95].precio_unit_iva_inc",
+          "accesorios[95].precio_por_ml_iva_inc",
+          "accesorios[95].web_price_iva_inc",
+          "accesorios[96].precio_unit_iva_inc",
+          "accesorios[96].precio_por_ml_iva_inc",
+          "accesorios[96].web_price_iva_inc"
+        ],
+        "sample_prices": [
+          {
+            "field": "accesorios[0].precio_unit_iva_inc",
+            "value": 0.35
+          },
+          {
+            "field": "accesorios[0].web_price_iva_inc",
+            "value": 0.41
+          },
+          {
+            "field": "accesorios[1].precio_unit_iva_inc",
+            "value": 2.05
+          },
+          {
+            "field": "accesorios[1].web_price_iva_inc",
+            "value": 0.79
+          },
+          {
+            "field": "accesorios[2].precio_unit_iva_inc",
+            "value": 0.6
+          },
+          {
+            "field": "accesorios[2].web_price_iva_inc",
+            "value": 0.56
+          },
+          {
+            "field": "accesorios[3].precio_unit_iva_inc",
+            "value": 14.87
+          },
+          {
+            "field": "accesorios[3].precio_por_ml_iva_inc",
+            "value": 4.9581
+          },
+          {
+            "field": "accesorios[3].web_price_iva_inc",
+            "value": 17.35
+          },
+          {
+            "field": "accesorios[4].precio_unit_iva_inc",
+            "value": 17.57
+          },
+          {
+            "field": "accesorios[4].precio_por_ml_iva_inc",
+            "value": 5.856
+          },
+          {
+            "field": "accesorios[4].web_price_iva_inc",
+            "value": 20.5
+          },
+          {
+            "field": "accesorios[5].precio_unit_iva_inc",
+            "value": 28.96
+          },
+          {
+            "field": "accesorios[5].precio_por_ml_iva_inc",
+            "value": 9.5571
+          },
+          {
+            "field": "accesorios[5].web_price_iva_inc",
+            "value": 33.78
+          },
+          {
+            "field": "accesorios[6].precio_unit_iva_inc",
+            "value": 14.87
+          },
+          {
+            "field": "accesorios[6].precio_por_ml_iva_inc",
+            "value": 4.9581
+          },
+          {
+            "field": "accesorios[6].web_price_iva_inc",
+            "value": 17.35
+          },
+          {
+            "field": "accesorios[7].precio_unit_iva_inc",
+            "value": 15.43
+          },
+          {
+            "field": "accesorios[7].precio_por_ml_iva_inc",
+            "value": 5.1435
+          },
+          {
+            "field": "accesorios[7].web_price_iva_inc",
+            "value": 18.0
+          },
+          {
+            "field": "accesorios[8].precio_unit_iva_inc",
+            "value": 27.9
+          },
+          {
+            "field": "accesorios[8].precio_por_ml_iva_inc",
+            "value": 9.2092
+          },
+          {
+            "field": "accesorios[8].web_price_iva_inc",
+            "value": 32.55
+          },
+          {
+            "field": "accesorios[9].precio_unit_iva_inc",
+            "value": 87.64
+          },
+          {
+            "field": "accesorios[9].precio_por_ml_iva_inc",
+            "value": 28.9225
+          },
+          {
+            "field": "accesorios[9].web_price_iva_inc",
+            "value": 102.24
+          },
+          {
+            "field": "accesorios[10].precio_unit_iva_inc",
+            "value": 89.29
+          },
+          {
+            "field": "accesorios[10].precio_por_ml_iva_inc",
+            "value": 29.4684
+          },
+          {
+            "field": "accesorios[10].web_price_iva_inc",
+            "value": 104.17
+          },
+          {
+            "field": "accesorios[11].precio_unit_iva_inc",
+            "value": 90.55
+          },
+          {
+            "field": "accesorios[11].precio_por_ml_iva_inc",
+            "value": 29.884
+          },
+          {
+            "field": "accesorios[11].web_price_iva_inc",
+            "value": 105.64
+          },
+          {
+            "field": "accesorios[12].precio_unit_iva_inc",
+            "value": 84.84
+          },
+          {
+            "field": "accesorios[12].precio_por_ml_iva_inc",
+            "value": 27.9996
+          },
+          {
+            "field": "accesorios[12].web_price_iva_inc",
+            "value": 98.98
+          },
+          {
+            "field": "accesorios[13].precio_unit_iva_inc",
+            "value": 97.66
+          },
+          {
+            "field": "accesorios[13].precio_por_ml_iva_inc",
+            "value": 32.2322
+          },
+          {
+            "field": "accesorios[13].web_price_iva_inc",
+            "value": 113.94
+          },
+          {
+            "field": "accesorios[14].precio_unit_iva_inc",
+            "value": 97.27
+          },
+          {
+            "field": "accesorios[14].precio_por_ml_iva_inc",
+            "value": 32.1017
+          },
+          {
+            "field": "accesorios[14].web_price_iva_inc",
+            "value": 113.48
+          },
+          {
+            "field": "accesorios[15].precio_unit_iva_inc",
+            "value": 127.25
+          },
+          {
+            "field": "accesorios[15].precio_por_ml_iva_inc",
+            "value": 41.997
+          },
+          {
+            "field": "accesorios[15].web_price_iva_inc",
+            "value": 148.46
+          },
+          {
+            "field": "accesorios[16].precio_unit_iva_inc",
+            "value": 113.78
+          },
+          {
+            "field": "accesorios[16].precio_por_ml_iva_inc",
+            "value": 37.5495
+          },
+          {
+            "field": "accesorios[16].web_price_iva_inc",
+            "value": 132.74
+          },
+          {
+            "field": "accesorios[17].precio_unit_iva_inc",
+            "value": 113.78
+          },
+          {
+            "field": "accesorios[17].precio_por_ml_iva_inc",
+            "value": 37.5495
+          },
+          {
+            "field": "accesorios[17].web_price_iva_inc",
+            "value": 132.74
+          },
+          {
+            "field": "accesorios[18].precio_unit_iva_inc",
+            "value": 113.78
+          },
+          {
+            "field": "accesorios[18].precio_por_ml_iva_inc",
+            "value": 37.5495
+          },
+          {
+            "field": "accesorios[18].web_price_iva_inc",
+            "value": 132.74
+          },
+          {
+            "field": "accesorios[19].precio_unit_iva_inc",
+            "value": 19.44
+          },
+          {
+            "field": "accesorios[19].precio_por_ml_iva_inc",
+            "value": 6.4806
+          },
+          {
+            "field": "accesorios[19].web_price_iva_inc",
+            "value": 22.68
+          },
+          {
+            "field": "accesorios[20].precio_unit_iva_inc",
+            "value": 16.0
+          },
+          {
+            "field": "accesorios[20].precio_por_ml_iva_inc",
+            "value": 5.3338
+          },
+          {
+            "field": "accesorios[20].web_price_iva_inc",
+            "value": 18.67
+          },
+          {
+            "field": "accesorios[21].precio_unit_iva_inc",
+            "value": 18.17
+          },
+          {
+            "field": "accesorios[21].web_price_iva_inc",
+            "value": 22.12
+          },
+          {
+            "field": "accesorios[22].precio_unit_iva_inc",
+            "value": 42.97
+          },
+          {
+            "field": "accesorios[22].precio_por_ml_iva_inc",
+            "value": 14.3228
+          },
+          {
+            "field": "accesorios[22].web_price_iva_inc",
+            "value": 50.13
+          },
+          {
+            "field": "accesorios[23].precio_unit_iva_inc",
+            "value": 119.39
+          },
+          {
+            "field": "accesorios[23].precio_por_ml_iva_inc",
+            "value": 54.2683
+          },
+          {
+            "field": "accesorios[23].web_price_iva_inc",
+            "value": 139.29
+          },
+          {
+            "field": "accesorios[24].precio_unit_iva_inc",
+            "value": 28.75
+          },
+          {
+            "field": "accesorios[24].precio_por_ml_iva_inc",
+            "value": 9.4894
+          },
+          {
+            "field": "accesorios[24].web_price_iva_inc",
+            "value": 33.55
+          },
+          {
+            "field": "accesorios[25].web_price_iva_inc",
+            "value": 30.0
+          },
+          {
+            "field": "accesorios[26].precio_unit_iva_inc",
+            "value": 19.31
+          },
+          {
+            "field": "accesorios[26].precio_por_ml_iva_inc",
+            "value": 6.373
+          },
+          {
+            "field": "accesorios[26].web_price_iva_inc",
+            "value": 22.53
+          },
+          {
+            "field": "accesorios[27].precio_unit_iva_inc",
+            "value": 20.45
+          },
+          {
+            "field": "accesorios[27].precio_por_ml_iva_inc",
+            "value": 6.7499
+          },
+          {
+            "field": "accesorios[27].web_price_iva_inc",
+            "value": 23.86
+          },
+          {
+            "field": "accesorios[28].precio_unit_iva_inc",
+            "value": 21.51
+          },
+          {
+            "field": "accesorios[28].precio_por_ml_iva_inc",
+            "value": 7.0977
+          },
+          {
+            "field": "accesorios[28].web_price_iva_inc",
+            "value": 25.09
+          },
+          {
+            "field": "accesorios[29].precio_unit_iva_inc",
+            "value": 21.95
+          },
+          {
+            "field": "accesorios[29].precio_por_ml_iva_inc",
+            "value": 7.2443
+          },
+          {
+            "field": "accesorios[29].web_price_iva_inc",
+            "value": 23.64
+          },
+          {
+            "field": "accesorios[30].precio_unit_iva_inc",
+            "value": 19.12
+          },
+          {
+            "field": "accesorios[30].precio_por_ml_iva_inc",
+            "value": 6.3102
+          },
+          {
+            "field": "accesorios[30].web_price_iva_inc",
+            "value": 22.31
+          },
+          {
+            "field": "accesorios[31].precio_unit_iva_inc",
+            "value": 30.12
+          },
+          {
+            "field": "accesorios[31].precio_por_ml_iva_inc",
+            "value": 9.9415
+          },
+          {
+            "field": "accesorios[31].web_price_iva_inc",
+            "value": 35.14
+          },
+          {
+            "field": "accesorios[32].precio_unit_iva_inc",
+            "value": 27.63
+          },
+          {
+            "field": "accesorios[32].precio_por_ml_iva_inc",
+            "value": 9.1174
+          },
+          {
+            "field": "accesorios[32].web_price_iva_inc",
+            "value": 32.23
+          },
+          {
+            "field": "accesorios[33].precio_unit_iva_inc",
+            "value": 28.75
+          },
+          {
+            "field": "accesorios[33].precio_por_ml_iva_inc",
+            "value": 9.4894
+          },
+          {
+            "field": "accesorios[33].web_price_iva_inc",
+            "value": 33.55
+          },
+          {
+            "field": "accesorios[34].precio_unit_iva_inc",
+            "value": 29.03
+          },
+          {
+            "field": "accesorios[34].precio_por_ml_iva_inc",
+            "value": 9.5812
+          },
+          {
+            "field": "accesorios[34].web_price_iva_inc",
+            "value": 33.87
+          },
+          {
+            "field": "accesorios[35].precio_unit_iva_inc",
+            "value": 24.36
+          },
+          {
+            "field": "accesorios[35].precio_por_ml_iva_inc",
+            "value": 8.04
+          },
+          {
+            "field": "accesorios[35].web_price_iva_inc",
+            "value": 28.42
+          },
+          {
+            "field": "accesorios[36].precio_unit_iva_inc",
+            "value": 25.46
+          },
+          {
+            "field": "accesorios[36].precio_por_ml_iva_inc",
+            "value": 8.4018
+          },
+          {
+            "field": "accesorios[36].web_price_iva_inc",
+            "value": 29.7
+          },
+          {
+            "field": "accesorios[37].precio_unit_iva_inc",
+            "value": 27.23
+          },
+          {
+            "field": "accesorios[37].precio_por_ml_iva_inc",
+            "value": 9.0768
+          },
+          {
+            "field": "accesorios[37].web_price_iva_inc",
+            "value": 31.77
+          },
+          {
+            "field": "accesorios[38].precio_unit_iva_inc",
+            "value": 30.63
+          },
+          {
+            "field": "accesorios[38].precio_por_ml_iva_inc",
+            "value": 10.209
+          },
+          {
+            "field": "accesorios[38].web_price_iva_inc",
+            "value": 35.73
+          },
+          {
+            "field": "accesorios[39].precio_unit_iva_inc",
+            "value": 26.63
+          },
+          {
+            "field": "accesorios[39].precio_por_ml_iva_inc",
+            "value": 8.8767
+          },
+          {
+            "field": "accesorios[39].web_price_iva_inc",
+            "value": 31.07
+          },
+          {
+            "field": "accesorios[40].precio_unit_iva_inc",
+            "value": 27.67
+          },
+          {
+            "field": "accesorios[40].precio_por_ml_iva_inc",
+            "value": 9.2232
+          },
+          {
+            "field": "accesorios[40].web_price_iva_inc",
+            "value": 32.28
+          },
+          {
+            "field": "accesorios[41].precio_unit_iva_inc",
+            "value": 28.75
+          },
+          {
+            "field": "accesorios[41].precio_por_ml_iva_inc",
+            "value": 9.5843
+          },
+          {
+            "field": "accesorios[41].web_price_iva_inc",
+            "value": 33.55
+          },
+          {
+            "field": "accesorios[42].precio_unit_iva_inc",
+            "value": 30.88
+          },
+          {
+            "field": "accesorios[42].precio_por_ml_iva_inc",
+            "value": 10.2919
+          },
+          {
+            "field": "accesorios[42].web_price_iva_inc",
+            "value": 36.02
+          },
+          {
+            "field": "accesorios[43].precio_unit_iva_inc",
+            "value": 25.34
+          },
+          {
+            "field": "accesorios[43].precio_por_ml_iva_inc",
+            "value": 8.4473
+          },
+          {
+            "field": "accesorios[43].web_price_iva_inc",
+            "value": 29.57
+          },
+          {
+            "field": "accesorios[44].precio_unit_iva_inc",
+            "value": 37.92
+          },
+          {
+            "field": "accesorios[44].precio_por_ml_iva_inc",
+            "value": 12.6397
+          },
+          {
+            "field": "accesorios[44].web_price_iva_inc",
+            "value": 44.24
+          },
+          {
+            "field": "accesorios[45].precio_unit_iva_inc",
+            "value": 35.46
+          },
+          {
+            "field": "accesorios[45].precio_por_ml_iva_inc",
+            "value": 11.8194
+          },
+          {
+            "field": "accesorios[45].web_price_iva_inc",
+            "value": 41.37
+          },
+          {
+            "field": "accesorios[46].precio_unit_iva_inc",
+            "value": 38.74
+          },
+          {
+            "field": "accesorios[46].precio_por_ml_iva_inc",
+            "value": 12.9125
+          },
+          {
+            "field": "accesorios[46].web_price_iva_inc",
+            "value": 45.19
+          },
+          {
+            "field": "accesorios[47].precio_unit_iva_inc",
+            "value": 38.97
+          },
+          {
+            "field": "accesorios[47].precio_por_ml_iva_inc",
+            "value": 12.9906
+          },
+          {
+            "field": "accesorios[47].web_price_iva_inc",
+            "value": 45.47
+          },
+          {
+            "field": "accesorios[48].precio_unit_iva_inc",
+            "value": 32.34
+          },
+          {
+            "field": "accesorios[48].precio_por_ml_iva_inc",
+            "value": 10.7791
+          },
+          {
+            "field": "accesorios[48].web_price_iva_inc",
+            "value": 37.73
+          },
+          {
+            "field": "accesorios[49].precio_unit_iva_inc",
+            "value": 32.34
+          },
+          {
+            "field": "accesorios[49].precio_por_ml_iva_inc",
+            "value": 10.7791
+          },
+          {
+            "field": "accesorios[49].web_price_iva_inc",
+            "value": 37.73
+          },
+          {
+            "field": "accesorios[50].precio_unit_iva_inc",
+            "value": 28.5
+          },
+          {
+            "field": "accesorios[50].precio_por_ml_iva_inc",
+            "value": 9.5014
+          },
+          {
+            "field": "accesorios[50].web_price_iva_inc",
+            "value": 33.25
+          },
+          {
+            "field": "accesorios[51].precio_unit_iva_inc",
+            "value": 29.79
+          },
+          {
+            "field": "accesorios[51].precio_por_ml_iva_inc",
+            "value": 9.9308
+          },
+          {
+            "field": "accesorios[51].web_price_iva_inc",
+            "value": 34.76
+          },
+          {
+            "field": "accesorios[52].precio_unit_iva_inc",
+            "value": 44.58
+          },
+          {
+            "field": "accesorios[52].precio_por_ml_iva_inc",
+            "value": 14.8596
+          },
+          {
+            "field": "accesorios[52].web_price_iva_inc",
+            "value": 52.01
+          },
+          {
+            "field": "accesorios[53].precio_unit_iva_inc",
+            "value": 38.74
+          },
+          {
+            "field": "accesorios[53].precio_por_ml_iva_inc",
+            "value": 12.9125
+          },
+          {
+            "field": "accesorios[53].web_price_iva_inc",
+            "value": 45.19
+          },
+          {
+            "field": "accesorios[54].precio_unit_iva_inc",
+            "value": 33.34
+          },
+          {
+            "field": "accesorios[54].precio_por_ml_iva_inc",
+            "value": 11.0017
+          },
+          {
+            "field": "accesorios[54].web_price_iva_inc",
+            "value": 38.89
+          },
+          {
+            "field": "accesorios[55].precio_unit_iva_inc",
+            "value": 36.53
+          },
+          {
+            "field": "accesorios[55].precio_por_ml_iva_inc",
+            "value": 12.055
+          },
+          {
+            "field": "accesorios[55].web_price_iva_inc",
+            "value": 42.61
+          },
+          {
+            "field": "accesorios[56].precio_unit_iva_inc",
+            "value": 34.42
+          },
+          {
+            "field": "accesorios[56].precio_por_ml_iva_inc",
+            "value": 11.3593
+          },
+          {
+            "field": "accesorios[56].web_price_iva_inc",
+            "value": 40.16
+          },
+          {
+            "field": "accesorios[57].precio_unit_iva_inc",
+            "value": 31.18
+          },
+          {
+            "field": "accesorios[57].precio_por_ml_iva_inc",
+            "value": 10.2915
+          },
+          {
+            "field": "accesorios[57].web_price_iva_inc",
+            "value": 36.38
+          },
+          {
+            "field": "accesorios[58].precio_unit_iva_inc",
+            "value": 35.47
+          },
+          {
+            "field": "accesorios[58].precio_por_ml_iva_inc",
+            "value": 11.7072
+          },
+          {
+            "field": "accesorios[58].web_price_iva_inc",
+            "value": 41.38
+          },
+          {
+            "field": "accesorios[59].precio_unit_iva_inc",
+            "value": 37.62
+          },
+          {
+            "field": "accesorios[59].precio_por_ml_iva_inc",
+            "value": 12.4174
+          },
+          {
+            "field": "accesorios[59].web_price_iva_inc",
+            "value": 43.9
+          },
+          {
+            "field": "accesorios[60].precio_unit_iva_inc",
+            "value": 20.28
+          },
+          {
+            "field": "accesorios[60].web_price_iva_inc",
+            "value": 23.66
+          },
+          {
+            "field": "accesorios[61].precio_unit_iva_inc",
+            "value": 13.8
+          },
+          {
+            "field": "accesorios[62].precio_unit_iva_inc",
+            "value": 24.9
+          },
+          {
+            "field": "accesorios[63].precio_unit_iva_inc",
+            "value": 36.9
+          },
+          {
+            "field": "accesorios[64].precio_unit_iva_inc",
+            "value": 62.1
+          },
+          {
+            "field": "accesorios[65].precio_unit_iva_inc",
+            "value": 256.5
+          },
+          {
+            "field": "accesorios[68].precio_unit_iva_inc",
+            "value": 165.9
+          },
+          {
+            "field": "accesorios[69].precio_unit_iva_inc",
+            "value": 95.1
+          },
+          {
+            "field": "accesorios[69].precio_por_ml_iva_inc",
+            "value": 13.9855
+          },
+          {
+            "field": "accesorios[69].web_price_iva_inc",
+            "value": 110.95
+          },
+          {
+            "field": "accesorios[70].precio_unit_iva_inc",
+            "value": 77.15
+          },
+          {
+            "field": "accesorios[70].precio_por_ml_iva_inc",
+            "value": 11.346
+          },
+          {
+            "field": "accesorios[70].web_price_iva_inc",
+            "value": 90.01
+          },
+          {
+            "field": "accesorios[71].precio_unit_iva_inc",
+            "value": 15.15
+          },
+          {
+            "field": "accesorios[71].precio_por_ml_iva_inc",
+            "value": 5.0508
+          },
+          {
+            "field": "accesorios[71].web_price_iva_inc",
+            "value": 17.68
+          },
+          {
+            "field": "accesorios[72].precio_unit_iva_inc",
+            "value": 17.04
+          },
+          {
+            "field": "accesorios[72].precio_por_ml_iva_inc",
+            "value": 5.6803
+          },
+          {
+            "field": "accesorios[72].web_price_iva_inc",
+            "value": 19.88
+          },
+          {
+            "field": "accesorios[73].precio_unit_iva_inc",
+            "value": 21.26
+          },
+          {
+            "field": "accesorios[73].precio_por_ml_iva_inc",
+            "value": 7.0858
+          },
+          {
+            "field": "accesorios[73].web_price_iva_inc",
+            "value": 24.8
+          },
+          {
+            "field": "accesorios[74].precio_unit_iva_inc",
+            "value": 25.55
+          },
+          {
+            "field": "accesorios[74].precio_por_ml_iva_inc",
+            "value": 8.5156
+          },
+          {
+            "field": "accesorios[74].web_price_iva_inc",
+            "value": 29.8
+          },
+          {
+            "field": "accesorios[75].precio_unit_iva_inc",
+            "value": 13.83
+          },
+          {
+            "field": "accesorios[75].precio_por_ml_iva_inc",
+            "value": 4.6116
+          },
+          {
+            "field": "accesorios[75].web_price_iva_inc",
+            "value": 16.14
+          },
+          {
+            "field": "accesorios[76].precio_unit_iva_inc",
+            "value": 12.2
+          },
+          {
+            "field": "accesorios[76].precio_por_ml_iva_inc",
+            "value": 4.065
+          },
+          {
+            "field": "accesorios[76].web_price_iva_inc",
+            "value": 14.23
+          },
+          {
+            "field": "accesorios[77].precio_unit_iva_inc",
+            "value": 14.87
+          },
+          {
+            "field": "accesorios[77].precio_por_ml_iva_inc",
+            "value": 4.9581
+          },
+          {
+            "field": "accesorios[77].web_price_iva_inc",
+            "value": 17.35
+          },
+          {
+            "field": "accesorios[78].precio_unit_iva_inc",
+            "value": 16.0
+          },
+          {
+            "field": "accesorios[78].precio_por_ml_iva_inc",
+            "value": 5.3338
+          },
+          {
+            "field": "accesorios[78].web_price_iva_inc",
+            "value": 18.67
+          },
+          {
+            "field": "accesorios[79].precio_unit_iva_inc",
+            "value": 12.8
+          },
+          {
+            "field": "accesorios[79].precio_por_ml_iva_inc",
+            "value": 4.2651
+          },
+          {
+            "field": "accesorios[79].web_price_iva_inc",
+            "value": 14.93
+          },
+          {
+            "field": "accesorios[80].precio_unit_iva_inc",
+            "value": 18.72
+          },
+          {
+            "field": "accesorios[80].precio_por_ml_iva_inc",
+            "value": 6.2415
+          },
+          {
+            "field": "accesorios[80].web_price_iva_inc",
+            "value": 21.85
+          },
+          {
+            "field": "accesorios[81].precio_unit_iva_inc",
+            "value": 21.49
+          },
+          {
+            "field": "accesorios[81].precio_por_ml_iva_inc",
+            "value": 7.1638
+          },
+          {
+            "field": "accesorios[81].web_price_iva_inc",
+            "value": 25.07
+          },
+          {
+            "field": "accesorios[82].precio_unit_iva_inc",
+            "value": 25.78
+          },
+          {
+            "field": "accesorios[82].precio_por_ml_iva_inc",
+            "value": 8.5937
+          },
+          {
+            "field": "accesorios[82].web_price_iva_inc",
+            "value": 30.08
+          },
+          {
+            "field": "accesorios[83].precio_unit_iva_inc",
+            "value": 25.99
+          },
+          {
+            "field": "accesorios[83].precio_por_ml_iva_inc",
+            "value": 8.662
+          },
+          {
+            "field": "accesorios[83].web_price_iva_inc",
+            "value": 30.32
+          },
+          {
+            "field": "accesorios[84].precio_unit_iva_inc",
+            "value": 12.8
+          },
+          {
+            "field": "accesorios[84].precio_por_ml_iva_inc",
+            "value": 4.2651
+          },
+          {
+            "field": "accesorios[84].web_price_iva_inc",
+            "value": 14.93
+          },
+          {
+            "field": "accesorios[85].precio_unit_iva_inc",
+            "value": 16.16
+          },
+          {
+            "field": "accesorios[85].precio_por_ml_iva_inc",
+            "value": 5.3875
+          },
+          {
+            "field": "accesorios[85].web_price_iva_inc",
+            "value": 18.86
+          },
+          {
+            "field": "accesorios[86].precio_unit_iva_inc",
+            "value": 34.73
+          },
+          {
+            "field": "accesorios[86].precio_por_ml_iva_inc",
+            "value": 17.363
+          },
+          {
+            "field": "accesorios[86].web_price_iva_inc",
+            "value": 40.51
+          },
+          {
+            "field": "accesorios[87].precio_unit_iva_inc",
+            "value": 26.6
+          },
+          {
+            "field": "accesorios[87].precio_por_ml_iva_inc",
+            "value": 13.3004
+          },
+          {
+            "field": "accesorios[87].web_price_iva_inc",
+            "value": 31.03
+          },
+          {
+            "field": "accesorios[88].precio_unit_iva_inc",
+            "value": 11.58
+          },
+          {
+            "field": "accesorios[88].web_price_iva_inc",
+            "value": 13.51
+          },
+          {
+            "field": "accesorios[89].precio_unit_iva_inc",
+            "value": 45.9
+          },
+          {
+            "field": "accesorios[89].web_price_iva_inc",
+            "value": 51.4
+          },
+          {
+            "field": "accesorios[90].precio_unit_iva_inc",
+            "value": 38.57
+          },
+          {
+            "field": "accesorios[91].precio_unit_iva_inc",
+            "value": 1.17
+          },
+          {
+            "field": "accesorios[91].web_price_iva_inc",
+            "value": 1.37
+          },
+          {
+            "field": "accesorios[92].precio_unit_iva_inc",
+            "value": 1.55
+          },
+          {
+            "field": "accesorios[92].web_price_iva_inc",
+            "value": 1.81
+          },
+          {
+            "field": "accesorios[93].precio_unit_iva_inc",
+            "value": 1.67
+          },
+          {
+            "field": "accesorios[93].web_price_iva_inc",
+            "value": 1.95
+          },
+          {
+            "field": "accesorios[94].precio_unit_iva_inc",
+            "value": 0.15
+          },
+          {
+            "field": "accesorios[94].web_price_iva_inc",
+            "value": 0.09
+          },
+          {
+            "field": "accesorios[95].precio_unit_iva_inc",
+            "value": 11.07
+          },
+          {
+            "field": "accesorios[95].precio_por_ml_iva_inc",
+            "value": 3.6893
+          },
+          {
+            "field": "accesorios[95].web_price_iva_inc",
+            "value": 12.91
+          },
+          {
+            "field": "accesorios[96].precio_unit_iva_inc",
+            "value": 3.81
+          },
+          {
+            "field": "accesorios[96].web_price_iva_inc",
+            "value": 4.44
+          }
+        ]
+      },
+      "bom_rules.json": {
+        "products_count": 0,
+        "price_fields_found": [
+          "convenciones.iva.incluido_en_precios",
+          "ejemplo_calculo.resultado_bom[0].precio_unit",
+          "ejemplo_calculo.resultado_bom[1].precio_unit",
+          "ejemplo_calculo.resultado_bom[2].precio_unit",
+          "ejemplo_calculo.resultado_bom[3].precio_unit",
+          "ejemplo_calculo.resultado_bom[4].precio_unit",
+          "ejemplo_calculo.resultado_bom[5].precio_unit",
+          "ejemplo_calculo.resultado_bom[6].precio_unit",
+          "ejemplo_calculo.resultado_bom[7].precio_unit",
+          "ejemplo_calculo.resultado_bom[8].precio_unit",
+          "ejemplo_calculo.resultado_bom[9].precio_unit",
+          "ejemplo_calculo.resultado_bom[10].precio_unit",
+          "ejemplo_calculo.resultado_bom[11].precio_unit"
+        ],
+        "sample_prices": [
+          {
+            "field": "convenciones.iva.incluido_en_precios",
+            "value": true
+          },
+          {
+            "field": "ejemplo_calculo.resultado_bom[0].precio_unit",
+            "value": 46.07
+          },
+          {
+            "field": "ejemplo_calculo.resultado_bom[5].precio_unit",
+            "value": 3.81
+          },
+          {
+            "field": "ejemplo_calculo.resultado_bom[6].precio_unit",
+            "value": 0.15
+          },
+          {
+            "field": "ejemplo_calculo.resultado_bom[7].precio_unit",
+            "value": 2.05
+          },
+          {
+            "field": "ejemplo_calculo.resultado_bom[8].precio_unit",
+            "value": 1.55
+          },
+          {
+            "field": "ejemplo_calculo.resultado_bom[9].precio_unit",
+            "value": 11.58
+          },
+          {
+            "field": "ejemplo_calculo.resultado_bom[10].precio_unit",
+            "value": 18.17
+          }
+        ]
+      },
+      "BMC_Base_Unificada_v4.json": {
+        "products_count": 0,
+        "price_fields_found": [
+          "productos.ISODEC_EPS.espesores.100mm.precio_shopify",
+          "productos.ISODEC_EPS.espesores.150mm.precio_shopify",
+          "productos.ISODEC_EPS.espesores.200mm.precio_shopify",
+          "productos.ISODEC_EPS.espesores.250mm.precio_shopify",
+          "productos.ISODEC_PIR.espesores.50mm.precio_shopify",
+          "productos.ISODEC_PIR.espesores.80mm.precio_shopify",
+          "productos.ISODEC_PIR.espesores.120mm.precio_shopify",
+          "productos.ISOPANEL_EPS.espesores.50mm.precio_shopify",
+          "productos.ISOPANEL_EPS.espesores.100mm.precio_shopify",
+          "productos.ISOPANEL_EPS.espesores.150mm.precio_shopify",
+          "productos.ISOPANEL_EPS.espesores.200mm.precio_shopify",
+          "productos.ISOPANEL_EPS.espesores.250mm.precio_shopify",
+          "productos.ISOROOF_3G.espesores.30mm.precio_shopify",
+          "productos.ISOROOF_3G.espesores.50mm.precio_shopify",
+          "productos.ISOROOF_3G.espesores.80mm.precio_shopify",
+          "productos.ISOROOF_PLUS.espesores.80mm.precio_shopify",
+          "productos.ISOROOF_FOIL.espesores.30mm.precio_shopify",
+          "productos.ISOROOF_FOIL.espesores.50mm.precio_shopify",
+          "productos.ISOWALL_PIR.espesores.50mm.precio_shopify",
+          "productos.ISOWALL_PIR.espesores.80mm.precio_shopify",
+          "sistemas_fijacion.varilla_tuerca.componentes.varilla_roscada.precio",
+          "sistemas_fijacion.varilla_tuerca.componentes.tuercas.precio",
+          "sistemas_fijacion.varilla_tuerca.componentes.arandela_carrocero.precio",
+          "sistemas_fijacion.varilla_tuerca.componentes.arandela_plana.precio",
+          "sistemas_fijacion.varilla_tuerca.componentes.arandela_pp.precio",
+          "sistemas_fijacion.varilla_tuerca.componentes.taco_expansivo.precio",
+          "sistemas_fijacion.caballete_tornillo.componentes.caballete.precio",
+          "sistemas_fijacion.caballete_tornillo.componentes.tornillo_aguja_5.precio",
+          "sistemas_fijacion.caballete_tornillo.componentes.tornillo_t1.precio",
+          "sistemas_fijacion.hormigon.componentes.kit_anclaje.precio",
+          "sistemas_fijacion.hormigon.componentes.tornillo_mecha.precio"
+        ],
+        "sample_prices": [
+          {
+            "field": "productos.ISODEC_EPS.espesores.100mm.precio_shopify",
+            "value": 46.07
+          },
+          {
+            "field": "productos.ISODEC_EPS.espesores.150mm.precio_shopify",
+            "value": 51.5
+          },
+          {
+            "field": "productos.ISODEC_EPS.espesores.200mm.precio_shopify",
+            "value": 57.0
+          },
+          {
+            "field": "productos.ISODEC_EPS.espesores.250mm.precio_shopify",
+            "value": 62.5
+          },
+          {
+            "field": "productos.ISODEC_PIR.espesores.50mm.precio_shopify",
+            "value": 51.02
+          },
+          {
+            "field": "productos.ISODEC_PIR.espesores.80mm.precio_shopify",
+            "value": 55.0
+          },
+          {
+            "field": "productos.ISODEC_PIR.espesores.120mm.precio_shopify",
+            "value": 62.0
+          },
+          {
+            "field": "productos.ISOPANEL_EPS.espesores.50mm.precio_shopify",
+            "value": 41.88
+          },
+          {
+            "field": "productos.ISOPANEL_EPS.espesores.100mm.precio_shopify",
+            "value": 46.0
+          },
+          {
+            "field": "productos.ISOPANEL_EPS.espesores.150mm.precio_shopify",
+            "value": 51.5
+          },
+          {
+            "field": "productos.ISOPANEL_EPS.espesores.200mm.precio_shopify",
+            "value": 57.0
+          },
+          {
+            "field": "productos.ISOPANEL_EPS.espesores.250mm.precio_shopify",
+            "value": 62.5
+          },
+          {
+            "field": "productos.ISOROOF_3G.espesores.30mm.precio_shopify",
+            "value": 48.74
+          },
+          {
+            "field": "productos.ISOROOF_3G.espesores.50mm.precio_shopify",
+            "value": 53.0
+          },
+          {
+            "field": "productos.ISOROOF_3G.espesores.80mm.precio_shopify",
+            "value": 62.0
+          },
+          {
+            "field": "productos.ISOROOF_PLUS.espesores.80mm.precio_shopify",
+            "value": 71.76
+          },
+          {
+            "field": "productos.ISOROOF_FOIL.espesores.30mm.precio_shopify",
+            "value": 39.54
+          },
+          {
+            "field": "productos.ISOROOF_FOIL.espesores.50mm.precio_shopify",
+            "value": 44.0
+          },
+          {
+            "field": "productos.ISOWALL_PIR.espesores.50mm.precio_shopify",
+            "value": 54.65
+          },
+          {
+            "field": "productos.ISOWALL_PIR.espesores.80mm.precio_shopify",
+            "value": 64.0
+          },
+          {
+            "field": "sistemas_fijacion.varilla_tuerca.componentes.varilla_roscada.precio",
+            "value": 19.9
+          },
+          {
+            "field": "sistemas_fijacion.varilla_tuerca.componentes.tuercas.precio",
+            "value": 2.0
+          },
+          {
+            "field": "sistemas_fijacion.varilla_tuerca.componentes.arandela_carrocero.precio",
+            "value": 32.7
+          },
+          {
+            "field": "sistemas_fijacion.varilla_tuerca.componentes.arandela_plana.precio",
+            "value": 4.0
+          },
+          {
+            "field": "sistemas_fijacion.varilla_tuerca.componentes.arandela_pp.precio",
+            "value": 26.2
+          },
+          {
+            "field": "sistemas_fijacion.varilla_tuerca.componentes.taco_expansivo.precio",
+            "value": 8.7
+          },
+          {
+            "field": "sistemas_fijacion.caballete_tornillo.componentes.caballete.precio",
+            "value": 9.2
+          },
+          {
+            "field": "sistemas_fijacion.caballete_tornillo.componentes.tornillo_aguja_5.precio",
+            "value": 17.0
+          },
+          {
+            "field": "sistemas_fijacion.caballete_tornillo.componentes.tornillo_t1.precio",
+            "value": 5.0
+          },
+          {
+            "field": "sistemas_fijacion.hormigon.componentes.kit_anclaje.precio",
+            "value": 11.8
+          },
+          {
+            "field": "sistemas_fijacion.hormigon.componentes.tornillo_mecha.precio",
+            "value": 14.4
+          }
+        ]
+      },
+      "panelin_truth_bmcuruguay_web_only_v2.json": {
+        "products_count": 0,
+        "price_fields_found": [
+          "catalog_snapshots.bmcuruguay_shopify_public.isopanel_eps_paredes_fachadas.price_display",
+          "catalog_snapshots.bmcuruguay_shopify_public.isodec_eps_techo.price_display",
+          "catalog_snapshots.bmcuruguay_shopify_public.isodec_pir_techo.price_display",
+          "catalog_snapshots.bmcuruguay_shopify_public.isowall_pir_fachadas.price_display",
+          "catalog_snapshots.bmcuruguay_shopify_public.isoroof_3g.price_display",
+          "catalog_snapshots.bmcuruguay_shopify_public.isoroof_plus_3g.price_display",
+          "catalog_snapshots.bmcuruguay_shopify_public.isoroof_foil_3g.price_display",
+          "catalog_snapshots.bmcuruguay_shopify_public.hiansa_panel_5g_becam.price_display"
+        ],
+        "sample_prices": []
+      },
+      "perfileria_index.json": {
+        "products_count": 0,
+        "price_fields_found": [
+          "items.6828.precio_unit_iva_inc",
+          "items.6828.precio_por_ml",
+          "items.BBAL.precio_unit_iva_inc",
+          "items.BBAL.precio_por_ml",
+          "items.BBAS3G.precio_unit_iva_inc",
+          "items.BBAS3G.precio_por_ml",
+          "items.6865.precio_unit_iva_inc",
+          "items.6865.precio_por_ml",
+          "items.BBESUP.precio_unit_iva_inc",
+          "items.BBESUP.precio_por_ml",
+          "items.CUMROOF3M.precio_unit_iva_inc",
+          "items.CUMROOF3M.precio_por_ml",
+          "items.6847.precio_unit_iva_inc",
+          "items.6847.precio_por_ml",
+          "items.GFS30.precio_unit_iva_inc",
+          "items.GFS30.precio_por_ml",
+          "items.GFS50.precio_unit_iva_inc",
+          "items.GFS50.precio_por_ml",
+          "items.GFS80.precio_unit_iva_inc",
+          "items.GFS80.precio_por_ml",
+          "items.GFCGR30.precio_unit_iva_inc",
+          "items.GFCGR30.precio_por_ml",
+          "items.6838.precio_unit_iva_inc",
+          "items.6838.precio_por_ml",
+          "items.GF120DC.precio_unit_iva_inc",
+          "items.GF120DC.precio_por_ml",
+          "items.6839.precio_unit_iva_inc",
+          "items.6839.precio_por_ml",
+          "items.6840.precio_unit_iva_inc",
+          "items.6840.precio_por_ml",
+          "items.6841.precio_unit_iva_inc",
+          "items.6841.precio_por_ml",
+          "items.GF80DC.precio_unit_iva_inc",
+          "items.GF80DC.precio_por_ml",
+          "items.GLDCAM50.precio_unit_iva_inc",
+          "items.GLDCAM50.precio_por_ml",
+          "items.GLDCAM80.precio_unit_iva_inc",
+          "items.GLDCAM80.precio_por_ml",
+          "items.GL30.precio_unit_iva_inc",
+          "items.GL30.precio_por_ml",
+          "items.GL40.precio_unit_iva_inc",
+          "items.GL40.precio_por_ml",
+          "items.GL50.precio_unit_iva_inc",
+          "items.GL50.precio_por_ml",
+          "items.GL80.precio_unit_iva_inc",
+          "items.GL80.precio_por_ml",
+          "items.6842.precio_unit_iva_inc",
+          "items.6842.precio_por_ml",
+          "items.GL120DC.precio_unit_iva_inc",
+          "items.GL120DC.precio_por_ml",
+          "items.6843.precio_unit_iva_inc",
+          "items.6843.precio_por_ml",
+          "items.6844.precio_unit_iva_inc",
+          "items.6844.precio_por_ml",
+          "items.6845.precio_unit_iva_inc",
+          "items.6845.precio_por_ml",
+          "items.GL80DC.precio_unit_iva_inc",
+          "items.GL80DC.precio_por_ml",
+          "items.GSDECAM50.precio_unit_iva_inc",
+          "items.GSDECAM50.precio_por_ml",
+          "items.GSDECAM80.precio_unit_iva_inc",
+          "items.GSDECAM80.precio_por_ml",
+          "items.GFSUP30.precio_unit_iva_inc",
+          "items.GFSUP30.precio_por_ml",
+          "items.GFSUP40.precio_unit_iva_inc",
+          "items.GFSUP40.precio_por_ml",
+          "items.GFSUP50.precio_unit_iva_inc",
+          "items.GFSUP50.precio_por_ml",
+          "items.GFSUP80.precio_unit_iva_inc",
+          "items.GFSUP80.precio_por_ml",
+          "items.PLECHU98.precio_unit_iva_inc",
+          "items.PLECHU98.precio_por_ml",
+          "items.PU250MM.precio_unit_iva_inc",
+          "items.PU250MM.precio_por_ml",
+          "items.PU100MM.precio_unit_iva_inc",
+          "items.PU100MM.precio_por_ml",
+          "items.PU150MM.precio_unit_iva_inc",
+          "items.PU150MM.precio_por_ml",
+          "items.PU200MM.precio_unit_iva_inc",
+          "items.PU200MM.precio_por_ml",
+          "items.PU50MM.precio_unit_iva_inc",
+          "items.PU50MM.precio_por_ml"
+        ],
+        "sample_prices": [
+          {
+            "field": "items.6828.precio_unit_iva_inc",
+            "value": 14.87
+          },
+          {
+            "field": "items.6828.precio_por_ml",
+            "value": 4.9567
+          },
+          {
+            "field": "items.BBAL.precio_unit_iva_inc",
+            "value": 15.43
+          },
+          {
+            "field": "items.BBAL.precio_por_ml",
+            "value": 5.1433
+          },
+          {
+            "field": "items.BBAS3G.precio_unit_iva_inc",
+            "value": 28.96
+          },
+          {
+            "field": "items.BBAS3G.precio_por_ml",
+            "value": 9.5578
+          },
+          {
+            "field": "items.6865.precio_unit_iva_inc",
+            "value": 14.87
+          },
+          {
+            "field": "items.6865.precio_por_ml",
+            "value": 4.9567
+          },
+          {
+            "field": "items.BBESUP.precio_unit_iva_inc",
+            "value": 27.9
+          },
+          {
+            "field": "items.BBESUP.precio_por_ml",
+            "value": 9.2079
+          },
+          {
+            "field": "items.CUMROOF3M.precio_unit_iva_inc",
+            "value": 119.39
+          },
+          {
+            "field": "items.CUMROOF3M.precio_por_ml",
+            "value": 54.2682
+          },
+          {
+            "field": "items.6847.precio_unit_iva_inc",
+            "value": 28.75
+          },
+          {
+            "field": "items.6847.precio_por_ml",
+            "value": 9.4884
+          },
+          {
+            "field": "items.GFS30.precio_unit_iva_inc",
+            "value": 19.31
+          },
+          {
+            "field": "items.GFS30.precio_por_ml",
+            "value": 6.3729
+          },
+          {
+            "field": "items.GFS50.precio_unit_iva_inc",
+            "value": 20.45
+          },
+          {
+            "field": "items.GFS50.precio_por_ml",
+            "value": 6.7492
+          },
+          {
+            "field": "items.GFS80.precio_unit_iva_inc",
+            "value": 21.51
+          },
+          {
+            "field": "items.GFS80.precio_por_ml",
+            "value": 7.099
+          },
+          {
+            "field": "items.GFCGR30.precio_unit_iva_inc",
+            "value": 21.95
+          },
+          {
+            "field": "items.GFCGR30.precio_por_ml",
+            "value": 7.2442
+          },
+          {
+            "field": "items.6838.precio_unit_iva_inc",
+            "value": 19.12
+          },
+          {
+            "field": "items.6838.precio_por_ml",
+            "value": 6.3102
+          },
+          {
+            "field": "items.GF120DC.precio_unit_iva_inc",
+            "value": 25.46
+          },
+          {
+            "field": "items.GF120DC.precio_por_ml",
+            "value": 8.4026
+          },
+          {
+            "field": "items.6839.precio_unit_iva_inc",
+            "value": 27.63
+          },
+          {
+            "field": "items.6839.precio_por_ml",
+            "value": 9.1188
+          },
+          {
+            "field": "items.6840.precio_unit_iva_inc",
+            "value": 28.75
+          },
+          {
+            "field": "items.6840.precio_por_ml",
+            "value": 9.4884
+          },
+          {
+            "field": "items.6841.precio_unit_iva_inc",
+            "value": 29.03
+          },
+          {
+            "field": "items.6841.precio_por_ml",
+            "value": 9.5809
+          },
+          {
+            "field": "items.GF80DC.precio_unit_iva_inc",
+            "value": 24.36
+          },
+          {
+            "field": "items.GF80DC.precio_por_ml",
+            "value": 8.0396
+          },
+          {
+            "field": "items.GLDCAM50.precio_unit_iva_inc",
+            "value": 27.23
+          },
+          {
+            "field": "items.GLDCAM50.precio_por_ml",
+            "value": 9.0767
+          },
+          {
+            "field": "items.GLDCAM80.precio_unit_iva_inc",
+            "value": 30.63
+          },
+          {
+            "field": "items.GLDCAM80.precio_por_ml",
+            "value": 10.21
+          },
+          {
+            "field": "items.GL30.precio_unit_iva_inc",
+            "value": 26.63
+          },
+          {
+            "field": "items.GL30.precio_por_ml",
+            "value": 8.8767
+          },
+          {
+            "field": "items.GL40.precio_unit_iva_inc",
+            "value": 27.67
+          },
+          {
+            "field": "items.GL40.precio_por_ml",
+            "value": 9.2233
+          },
+          {
+            "field": "items.GL50.precio_unit_iva_inc",
+            "value": 28.75
+          },
+          {
+            "field": "items.GL50.precio_por_ml",
+            "value": 9.5833
+          },
+          {
+            "field": "items.GL80.precio_unit_iva_inc",
+            "value": 30.88
+          },
+          {
+            "field": "items.GL80.precio_por_ml",
+            "value": 10.2933
+          },
+          {
+            "field": "items.6842.precio_unit_iva_inc",
+            "value": 25.34
+          },
+          {
+            "field": "items.6842.precio_por_ml",
+            "value": 8.4467
+          },
+          {
+            "field": "items.GL120DC.precio_unit_iva_inc",
+            "value": 37.92
+          },
+          {
+            "field": "items.GL120DC.precio_por_ml",
+            "value": 12.64
+          },
+          {
+            "field": "items.6843.precio_unit_iva_inc",
+            "value": 35.46
+          },
+          {
+            "field": "items.6843.precio_por_ml",
+            "value": 11.82
+          },
+          {
+            "field": "items.6844.precio_unit_iva_inc",
+            "value": 38.74
+          },
+          {
+            "field": "items.6844.precio_por_ml",
+            "value": 12.9133
+          },
+          {
+            "field": "items.6845.precio_unit_iva_inc",
+            "value": 38.74
+          },
+          {
+            "field": "items.6845.precio_por_ml",
+            "value": 12.9133
+          },
+          {
+            "field": "items.GL80DC.precio_unit_iva_inc",
+            "value": 32.34
+          },
+          {
+            "field": "items.GL80DC.precio_por_ml",
+            "value": 10.78
+          },
+          {
+            "field": "items.GSDECAM50.precio_unit_iva_inc",
+            "value": 33.34
+          },
+          {
+            "field": "items.GSDECAM50.precio_por_ml",
+            "value": 11.0033
+          },
+          {
+            "field": "items.GSDECAM80.precio_unit_iva_inc",
+            "value": 36.53
+          },
+          {
+            "field": "items.GSDECAM80.precio_por_ml",
+            "value": 12.0561
+          },
+          {
+            "field": "items.GFSUP30.precio_unit_iva_inc",
+            "value": 34.42
+          },
+          {
+            "field": "items.GFSUP30.precio_por_ml",
+            "value": 11.3597
+          },
+          {
+            "field": "items.GFSUP40.precio_unit_iva_inc",
+            "value": 31.18
+          },
+          {
+            "field": "items.GFSUP40.precio_por_ml",
+            "value": 10.2904
+          },
+          {
+            "field": "items.GFSUP50.precio_unit_iva_inc",
+            "value": 35.47
+          },
+          {
+            "field": "items.GFSUP50.precio_por_ml",
+            "value": 11.7063
+          },
+          {
+            "field": "items.GFSUP80.precio_unit_iva_inc",
+            "value": 37.62
+          },
+          {
+            "field": "items.GFSUP80.precio_por_ml",
+            "value": 12.4158
+          },
+          {
+            "field": "items.PLECHU98.precio_unit_iva_inc",
+            "value": 95.1
+          },
+          {
+            "field": "items.PLECHU98.precio_por_ml",
+            "value": 13.9853
+          },
+          {
+            "field": "items.PU250MM.precio_unit_iva_inc",
+            "value": 12.8
+          },
+          {
+            "field": "items.PU250MM.precio_por_ml",
+            "value": 4.2667
+          },
+          {
+            "field": "items.PU100MM.precio_unit_iva_inc",
+            "value": 15.15
+          },
+          {
+            "field": "items.PU100MM.precio_por_ml",
+            "value": 5.05
+          },
+          {
+            "field": "items.PU150MM.precio_unit_iva_inc",
+            "value": 17.04
+          },
+          {
+            "field": "items.PU150MM.precio_por_ml",
+            "value": 5.68
+          },
+          {
+            "field": "items.PU200MM.precio_unit_iva_inc",
+            "value": 21.26
+          },
+          {
+            "field": "items.PU200MM.precio_por_ml",
+            "value": 7.0867
+          },
+          {
+            "field": "items.PU50MM.precio_unit_iva_inc",
+            "value": 16.0
+          },
+          {
+            "field": "items.PU50MM.precio_por_ml",
+            "value": 5.3333
+          }
+        ]
+      }
+    },
+    "file_sizes": {
+      "BMC_Base_Conocimiento_GPT-2.json": {
+        "bytes": 16363,
+        "formatted": "16.0 KB"
+      },
+      "accessories_catalog.json": {
+        "bytes": 48671,
+        "formatted": "47.5 KB"
+      },
+      "bom_rules.json": {
+        "bytes": 20687,
+        "formatted": "20.2 KB"
+      },
+      "bromyros_pricing_gpt_optimized.json": {
+        "bytes": 131970,
+        "formatted": "128.9 KB"
+      },
+      "shopify_catalog_v1.json": {
+        "bytes": 759740,
+        "formatted": "741.9 KB"
+      },
+      "BMC_Base_Unificada_v4.json": {
+        "bytes": 10826,
+        "formatted": "10.6 KB"
+      },
+      "panelin_truth_bmcuruguay_web_only_v2.json": {
+        "bytes": 6528,
+        "formatted": "6.4 KB"
+      },
+      "perfileria_index.json": {
+        "bytes": 14830,
+        "formatted": "14.5 KB"
+      }
+    },
+    "schema_issues": [],
+    "score": 100
+  },
+  "compatibility": {
+    "cross_references": [],
+    "imports_checked": 5,
+    "missing_imports": [],
+    "score": 100
+  },
+  "performance": {
+    "file_sizes": {
+      "total_kb_size": 1010.5859375,
+      "largest_files": [
+        {
+          "path": "bromyros_pricing_gpt_optimized.json",
+          "size": 131970,
+          "size_formatted": "128.9 KB"
+        },
+        {
+          "path": "shopify_catalog_v1.json",
+          "size": 759740,
+          "size_formatted": "741.9 KB"
+        }
+      ],
+      "optimization_potential": {}
+    },
+    "complexity_metrics": {
+      "total_lines_of_code": 987,
+      "python_files_analyzed": 1
+    },
+    "score": 85
+  },
+  "summary": {
+    "overall_health": 92,
+    "critical_issues": 0,
+    "high_issues": 0,
+    "medium_issues": 0,
+    "total_recommendations": 0
+  }
+}

@@ -1,0 +1,29 @@
+agent:
+  name: "EVOLUCIONADOR"
+  version: "1.0.0"
+  mission: "Evolutionary Repository Intelligence"
+  execution_mode: "autonomous"
+  
+capabilities:
+  analysis_depth: "MAXIMUM"
+  optimization_level: "QUANTUM"
+  perfection_threshold: 100
+  
+schedule:
+  daily_analysis: "00:00 UTC"
+  weekly_deep_scan: "Sunday 02:00 UTC"
+  monthly_evolution_report: "1st of month 04:00 UTC"
+  
+thresholds:
+  functionality_minimum: 95
+  efficiency_minimum: 90
+  speed_target_percentile: 95
+  cost_reduction_goal: 25
+  
+targets:
+  - knowledge_base_consistency
+  - calculation_accuracy
+  - api_performance
+  - documentation_completeness
+  - code_quality
+  - formula_optimization

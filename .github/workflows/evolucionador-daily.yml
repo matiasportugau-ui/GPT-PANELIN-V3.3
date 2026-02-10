@@ -1,0 +1,69 @@
+name: 🧬 EVOLUCIONADOR Daily Evolution
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    
+    steps:
+      - name: 🔍 Clone Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: 📦 Install Dependencies
+        run: |
+          pip install -r .evolucionador/requirements.txt
+      
+      - name: 🧬 Run EVOLUCIONADOR Analysis
+        run: |
+          python .evolucionador/core/analyzer.py
+        env:
+          REPO_PATH: ${{ github.workspace }}
+      
+      - name: 📊 Generate Evolution Report
+        run: |
+          python .evolucionador/reports/generator.py
+      
+      - name: �� Save Report
+        run: |
+          mkdir -p .evolucionador/reports/history
+          cp .evolucionador/reports/latest.md .evolucionador/reports/history/$(date +%Y-%m-%d).md
+      
+      - name: 🚀 Create Issue with Findings
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('.evolucionador/reports/latest.md', 'utf8');
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🧬 EVOLUCIONADOR Report - ${new Date().toISOString().split('T')[0]}`,
+              body: report,
+              labels: ['evolucionador', 'automated', 'evolution-report']
+            });
+      
+      - name: 📝 Commit Report History
+        run: |
+          git config user.name "EVOLUCIONADOR Bot"
+          git config user.email "evolucionador@gpt-panelin.ai"
+          git add .evolucionador/reports/history/
+          git add .evolucionador/knowledge/
+          git commit -m "🧬 EVOLUCIONADOR: Daily evolution report $(date +%Y-%m-%d)" || echo "No changes"
+          git push || echo "Nothing to push"
