@@ -199,7 +199,7 @@ def create_upload_package(output_dir: str = "GPT_Upload_Package"):
         "- Request PDF generation",
     ])
 
-    with open(output_path / "README.txt", 'w') as f:
+    with open(output_path / "README.txt", 'w', encoding='utf-8', newline='\n') as f:
         f.write('\n'.join(readme_content))
 
     # Copy the main checklist
