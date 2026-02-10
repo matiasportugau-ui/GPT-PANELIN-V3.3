@@ -51,7 +51,7 @@ FILE_SIZE_RANGES = {
     "bromyros_pricing_gpt_optimized.json": (50, 1000),
     "shopify_catalog_v1.json": (200, 2000),
     "BMC_Base_Unificada_v4.json": (5, 1000),
-    "panelin_truth_bmcuruguay_web_only_v2.json": (2, 500),
+    "panelin_truth_bmcuruguay_web_only_v2.json": (3, 500),
     "bmc_logo.png": (10, 200),
 }
 
