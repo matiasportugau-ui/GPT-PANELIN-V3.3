@@ -2,7 +2,7 @@
   "name": "gpt-panelin-v3.2",
   "version": "3.2.0",
   "description": "A modern web-based panel for managing and interacting with GPT models",
-  "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
