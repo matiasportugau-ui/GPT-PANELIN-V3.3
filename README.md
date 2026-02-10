@@ -401,15 +401,43 @@ The complete OpenAPI 3.1.0 schema is integrated into the GPT configuration. Key 
 
 ## 🚀 Installation & Deployment
 
+### Quick Start
+
+**🚀 For fast deployment, we provide automated helper tools:**
+
+```bash
+# Step 1: Validate all required files exist
+python validate_gpt_files.py
+
+# Step 2: Package files for easy upload
+python package_gpt_files.py
+
+# Step 3: Follow instructions in GPT_Upload_Package/
+```
+
+See [QUICK_START_GPT_UPLOAD.md](QUICK_START_GPT_UPLOAD.md) for streamlined deployment guide, or [GPT_UPLOAD_CHECKLIST.md](GPT_UPLOAD_CHECKLIST.md) for comprehensive instructions.
+
 ### Prerequisites
 
 - OpenAI GPT Builder account
 - Access to OpenAI Custom GPTs (ChatGPT Plus or Enterprise)
 - All knowledge base files from this repository
+- Python 3.7+ (for helper scripts)
 
 ### Deployment Steps
 
 #### 1. Prepare Knowledge Base Files
+
+**Option A: Use the Helper Scripts (Recommended)**
+
+Run the packaging script to organize all files:
+```bash
+python package_gpt_files.py
+```
+
+This creates `GPT_Upload_Package/` with files organized by upload phase. Each phase includes an INSTRUCTIONS.txt file.
+
+**Option B: Manual Preparation**
 
 Ensure all required files are ready for upload:
 
@@ -431,12 +459,15 @@ Ensure all required files are ready for upload:
 - [ ] `GPT_INSTRUCTIONS_PRICING.md`
 - [ ] `GPT_PDF_INSTRUCTIONS.md`
 
+**Validation:**
+Run `python validate_gpt_files.py` to verify all files exist and are valid before upload.
+
 #### 2. Configure GPT in OpenAI
 
 1. Go to OpenAI GPT Builder: https://chat.openai.com/gpts/editor
-2. Create new GPT or edit existing "Panelin 3.2"
+2. Create new GPT or edit existing "Panelin 3.3"
 3. **Configure basic info:**
-   - Name: `Panelin 3.2`
+   - Name: `Panelin 3.3`
    - Description: Use description from [Panelin_GPT_config.json](Panelin_GPT_config.json)
    - Profile image: Upload `bmc_logo.png` (optional)
 
