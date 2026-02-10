@@ -1,6 +1,6 @@
-# Panelin 3.2 - BMC Assistant Pro GPT Configuration
+# Panelin 3.3 - BMC Assistant Pro GPT Configuration
 
-![Version](https://img.shields.io/badge/version-3.2-blue) ![GPT](https://img.shields.io/badge/platform-OpenAI%20GPT-green) ![KB](https://img.shields.io/badge/KB%20version-7.0-orange) ![Status](https://img.shields.io/badge/status-production-success)
+![Version](https://img.shields.io/badge/version-3.3-blue) ![GPT](https://img.shields.io/badge/platform-OpenAI%20GPT-green) ![KB](https://img.shields.io/badge/KB%20version-7.0-orange) ![Status](https://img.shields.io/badge/status-production-success)
 
 **Complete configuration files and knowledge base for Panelin GPT - Professional quotation assistant for BMC Uruguay panel systems**
 
@@ -25,7 +25,7 @@
 
 ## 🎯 Overview
 
-**Panelin 3.2** (BMC Assistant Pro) is an advanced AI assistant specialized in generating professional quotations for construction panel systems. This repository contains all configuration files, knowledge bases, and documentation needed to deploy and operate the GPT on OpenAI's platform.
+**Panelin 3.3** (BMC Assistant Pro) is an advanced AI assistant specialized in generating professional quotations for construction panel systems. This repository contains all configuration files, knowledge bases, and documentation needed to deploy and operate the GPT on OpenAI's platform.
 
 ### What is Panelin?
 
@@ -91,11 +91,11 @@ Panelin is a technical sales assistant that:
 
 ### Basic Information
 
-- **Name**: Panelin 3.2
-- **Description**: BMC Assistant Pro - Specialized technical quotation assistant for panel systems (ISODEC, ISOPANEL, ISOROOF, ISOWALL, ISOFRIG) with complete BOM calculation, PDF generation, and professional advisory. Knowledge Base v7.0 with 70+ accessories catalog and parametric rules for 6 construction systems.
+- **Name**: Panelin 3.3
+- **Description**: BMC Assistant Pro - Specialized technical quotation assistant for panel systems (ISODEC, ISOPANEL, ISOROOF, ISOWALL, ISOFRIG) with complete BOM calculation, enhanced PDF generation (v2.0), and professional advisory. Knowledge Base v7.0 with 70+ accessories catalog and parametric rules for 6 construction systems.
 - **Instructions**: See [Instrucciones GPT.rtf](Instrucciones%20GPT.rtf) for complete system instructions
-- **Version**: 3.2 (KB v7.0)
-- **Last Updated**: 2026-02-07
+- **Version**: 3.3 (KB v7.0, PDF Template v2.0)
+- **Last Updated**: 2026-02-10
 
 ### Conversation Starters
 
@@ -122,7 +122,7 @@ Panelin is a technical sales assistant that:
 ## 📁 Repository Structure
 
 ```
-GPT-PANELIN-V3.2/
+GPT-PANELIN-V3.3/
 ├── README.md                                    # This file
 ├── LICENSE                                      # Repository license
 │
@@ -147,6 +147,13 @@ GPT-PANELIN-V3.2/
 │   ├── GPT_INSTRUCTIONS_PRICING.md              # Fast pricing lookups guide
 │   ├── GPT_PDF_INSTRUCTIONS.md                  # PDF generation workflow
 │   └── GPT_OPTIMIZATION_ANALYSIS.md             # System analysis & improvements
+│
+├── PDF GENERATION MODULE (NEW in v3.3)
+│   ├── panelin_reports/__init__.py              # Package initialization
+│   ├── panelin_reports/pdf_generator.py         # Enhanced PDF generator v2.0
+│   ├── panelin_reports/pdf_styles.py            # BMC branding and styles
+│   ├── panelin_reports/test_pdf_generation.py   # Testing suite
+│   └── panelin_reports/assets/bmc_logo.png      # BMC logo for PDFs
 │
 ├── DATA FILES
 │   ├── normalized_full_cleaned.csv              # Raw product data (515 rows)
@@ -743,7 +750,31 @@ When reporting issues with the GPT or KB:
 
 ## 📜 Version History
 
-### v3.2 / KB v7.0 (2026-02-07) - Current
+### v3.3 / KB v7.0 / PDF Template v2.0 (2026-02-10) - Current
+
+**Major Features:**
+- ✅ **Enhanced PDF Generation Template v2.0** (from PR #215)
+  - Professional BMC logo header with 2-column layout
+  - Styled tables with alternating row colors (#EDEDED header, #FAFAFA rows)
+  - Right-aligned numeric columns for better readability
+  - Formatted comments section with per-line bold/red styling
+  - Bank transfer footer with grid/borders
+  - 1-page optimization (shrinks comments before other content)
+  - ReportLab-based implementation
+
+**New Module:**
+- `panelin_reports/` - Complete PDF generation package
+  - `pdf_generator.py` - Enhanced PDF generator v2.0
+  - `pdf_styles.py` - BMC branding and style definitions
+  - `test_pdf_generation.py` - Comprehensive testing suite
+
+**Updates:**
+- All existing v3.2 features retained
+- PDF generation now matches official BMC quotation template
+- Enhanced professional presentation for client delivery
+- Automated testing suite with 5 test cases
+
+### v3.2 / KB v7.0 (2026-02-07)
 
 **Major Features:**
 - ✅ Complete BOM validation with autoportancia v3.1
@@ -825,11 +856,12 @@ For technical support or questions about this GPT configuration:
 
 ---
 
-**Version:** 3.2  
+**Version:** 3.3  
 **Knowledge Base Version:** 7.0  
-**Last Updated:** 2026-02-07  
+**PDF Template Version:** 2.0  
+**Last Updated:** 2026-02-10  
 **Maintained by:** BMC Uruguay Development Team  
 
 ---
 
-*This README provides complete documentation for deploying and operating the Panelin 3.2 GPT. For detailed technical specifications, consult the individual documentation files referenced throughout this document.* 
+*This README provides complete documentation for deploying and operating the Panelin 3.3 GPT. For detailed technical specifications, consult the individual documentation files referenced throughout this document.* 

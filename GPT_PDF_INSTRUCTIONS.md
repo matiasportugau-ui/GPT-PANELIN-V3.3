@@ -298,6 +298,97 @@ This generates sample PDFs in `panelin_reports/output/` for review.
 
 ---
 
-**Integration Status**: ✅ Ready for production use  
-**Last Updated**: 2026-01-28  
+## Plantilla PDF BMC (Diseño y Formato) - NEW v2.0
+
+> Actualizado 2026-02-10. Esta sección documenta el diseño visual/formato de la plantilla 
+> de cotización PDF profesional de BMC Uruguay implementada en v3.3.
+
+### Logo y Header
+
+- **Logo oficial**: `/mnt/data/Logo_BMC- PNG.png` (fallback: `panelin_reports/assets/bmc_logo.png`)
+- **Layout header**: 2 columnas → `[Logo (izquierda) | Título centrado (derecha)]`
+- **Altura logo**: ~18 mm, ancho auto (mantiene aspect ratio), máx ~55 mm ancho
+- **Título**: `COTIZACIÓN – {descripción_producto}` en negrita, centrado, color `#003366`
+- **Fuente título**: Helvetica-Bold 14 pt
+- **Sin padding extra**; alineado verticalmente al centro
+
+### Estilo de Tablas (Materiales)
+
+- **Header row**: fondo `#EDEDED`, fuente Helvetica-Bold ~9.1 pt, centrado
+- **Filas de datos**: fuente Helvetica ~8.6 pt
+- **Filas alternantes**: blanco / `#FAFAFA` (muy gris claro)
+- **Columnas numéricas** (Unid/Cant/USD/Total): **alineadas a la derecha**
+- **Columna producto** (primera): alineada a la izquierda
+- **Líneas de grilla**: delgadas (0.4 pt), color `#D0D0D0`
+- **Línea debajo del header**: 0.8 pt, color `#CCCCCC`
+- **Padding**: 2.5 pt top/bottom, 5 pt left/right (compacto)
+- **repeatRows=1**: si la tabla se extiende a múltiples páginas, repetir header
+
+### Bloque COMENTARIOS (después de la tabla)
+
+- **Título de sección**: "COMENTARIOS:" en negrita
+- **Lista con viñetas** (•), fuente más pequeña que la tabla
+- **Fuente base**: ~8.0–8.2 pt, leading ~9.3–9.6
+- **Reglas de formato por línea**:
+
+| Texto (contiene) | Formato |
+|-------------------------------------------------------------------|-------------------|
+| "Entrega de 10 a 15 días, dependemos de producción." | **BOLD** |
+| "Oferta válida por 10 días a partir de la fecha." | **RED** |
+| "Incluye descuentos de Pago al Contado. Seña del 60%..." | **BOLD + RED** |
+| Cualquier otra línea | Normal (negro) |
+
+- URLs (ej. YouTube) se incluyen como texto plano sin romper el layout
+
+### Footer: Bloque de Transferencia Bancaria
+
+Después de los comentarios, insertar un bloque con cuadrícula/bordes:
+
+- **Grid/box lines visibles**: borde exterior (1 pt) + líneas internas entre filas (0.5 pt)
+- **Primera fila**: fondo gris claro (`#EDEDED`)
+- **Fuente**: ~8.4 pt, primera fila en negrita
+
+| Izquierda | Derecha |
+|------------------------------------------------------|-------------------------------------------------------------|
+| **Depósito Bancario** | **Titular: Metalog SAS – RUT: 120403630012** |
+| Caja de Ahorro - BROU. | Número de Cuenta Dólares : 110520638-00002 |
+| Por cualquier duda, consultar al 092 663 245. | <u style="color:blue">Lea los Términos y Condiciones</u> |
+
+- Tercera fila, celda derecha: texto en **azul + subrayado** (`#1155CC`)
+
+### Regla "1 página primero"
+
+1. El PDF debe caber en **1 página** siempre que sea posible.
+2. Si el contenido desborda:
+   - **Primero** reducir fuente y leading de la sección COMENTARIOS (hasta ~6.8 pt / 7.8 leading)
+   - **Nunca** cambiar tamaño de fuente o layout de las tablas de materiales
+3. Intentos progresivos: `(8.1, 9.5) → (7.6, 8.8) → (7.2, 8.3) → (6.8, 7.8)`
+4. Si aun así no cabe, se permite multi-página (con header de tabla repetido)
+
+### Márgenes
+
+- **Izquierda/Derecha**: ~12 mm
+- **Superior**: ~10 mm
+- **Inferior**: ~9 mm
+
+### Función de entrada canónica
+
+```python
+from panelin_reports import build_quote_pdf
+
+pdf_path = build_quote_pdf(
+    data=quotation_data,
+    output_path="cotizacion_cliente.pdf",
+    logo_path="/mnt/data/Logo_BMC- PNG.png"
+)
+```
+
+`build_quote_pdf` resuelve el logo automáticamente (prueba la ruta explícita, luego fallbacks)
+y delega a `generate_quotation_pdf`.
+
+---
+
+**Integration Status**: ✅ Ready for production use (v2.0)  
+**Last Updated**: 2026-02-10  
+**Template Version**: 2.0  
 **Requires**: ReportLab library (already installed)
