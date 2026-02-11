@@ -14,18 +14,22 @@ from typing import Dict, Tuple
 REQUIRED_FILES = {
     "Phase 1: Master Knowledge Base (Level 1)": [
         "BMC_Base_Conocimiento_GPT-2.json",
+        "bromyros_pricing_master.json",
         "accessories_catalog.json",
         "bom_rules.json",
     ],
     "Phase 2: Optimized Lookups (Level 1.5-1.6)": [
         "bromyros_pricing_gpt_optimized.json",
         "shopify_catalog_v1.json",
+        "shopify_catalog_index_v1.csv",
     ],
     "Phase 3: Validation & Dynamic Data (Level 2-3)": [
         "BMC_Base_Unificada_v4.json",
         "panelin_truth_bmcuruguay_web_only_v2.json",
     ],
     "Phase 4: Documentation & Guides (Level 4)": [
+        "Aleros -2.rtf",
+        "panelin_context_consolidacion_sin_backend.md",
         "PANELIN_KNOWLEDGE_BASE_GUIDE.md",
         "PANELIN_QUOTATION_PROCESS.md",
         "PANELIN_TRAINING_GUIDE.md",
@@ -48,8 +52,10 @@ FILE_SIZE_RANGES = {
     "BMC_Base_Conocimiento_GPT-2.json": (5, 2000),
     "accessories_catalog.json": (10, 500),
     "bom_rules.json": (5, 500),
+    "bromyros_pricing_master.json": (50, 5000),
     "bromyros_pricing_gpt_optimized.json": (50, 1000),
     "shopify_catalog_v1.json": (200, 2000),
+    "shopify_catalog_index_v1.csv": (10, 1000),
     "BMC_Base_Unificada_v4.json": (5, 1000),
     "panelin_truth_bmcuruguay_web_only_v2.json": (3, 500),
     "bmc_logo.png": (10, 200),
