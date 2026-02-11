@@ -133,7 +133,7 @@ def copy_knowledge_files() -> List[Dict[str, Any]]:
                 "original": str(src_path.relative_to(SCRIPT_DIR).as_posix()),
                 "size": file_size,
                 "sha256": file_hash,
-                "loaded_at": datetime.now(timezone.utc).isoformat() + "Z"
+                "loaded_at": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
             }
             entries.append(entry)
         except Exception as e:
@@ -179,7 +179,7 @@ def generate_index(entries: List[Dict[str, Any]]) -> None:
     
     index_data = {
         "version": "1.0.0",
-        "generated_at": datetime.now(timezone.utc).isoformat() + "Z",
+        "generated_at": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
         "total_files": len(entries),
         "embeddings_enabled": GENERATE_EMBEDDINGS,
         "files": entries

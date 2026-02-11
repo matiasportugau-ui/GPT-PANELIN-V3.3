@@ -153,7 +153,15 @@ fi
 # Test 11: Check log file permissions
 echo -e "${YELLOW}[Test 11]${NC} Checking log file security..."
 if [[ -f ".boot-log" ]]; then
-    perms=$(stat -f "%Lp" .boot-log 2>/dev/null || stat -c "%a" .boot-log 2>/dev/null || echo "unknown")
+    # Check OS and use appropriate stat command
+    if [[ "$(uname)" == "Darwin" ]]; then
+        # macOS
+        perms=$(stat -f "%Lp" .boot-log 2>/dev/null || echo "unknown")
+    else
+        # Linux
+        perms=$(stat -c "%a" .boot-log 2>/dev/null || echo "unknown")
+    fi
+    
     if [[ "$perms" == "600" ]]; then
         test_result "Log file permissions" "PASS"
         echo "  ✓ Log file has secure permissions (600)"
