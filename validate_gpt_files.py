@@ -16,7 +16,7 @@ ALWAYS_REQUIRED_FILES = {
     "Instrucciones GPT.rtf",
     "bmc_logo.png",
     "panelin_reports/assets/bmc_logo.png",
-from typing import Dict, Tuple
+}
 
 # Define required files by category
 REQUIRED_FILES = {

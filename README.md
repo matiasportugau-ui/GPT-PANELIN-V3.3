@@ -94,7 +94,7 @@ Panelin is a technical sales assistant that:
 | Category | Feature | Description |
 |----------|---------|-------------|
 | **🧬 Autonomous Evolution** | EVOLUCIONADOR System | Daily automated analysis with 7 validators and 6 optimizers for continuous improvement |
-| **📦 Deployment Tools** | Validation Scripts | Automated validation of all 21 required files with dynamic config discovery |
+| **📦 Deployment Tools** | Validation Scripts | Automated validation of required files with dynamic config discovery |
 | **📦 Deployment Tools** | Packaging Scripts | Organized phased upload with instructions for each phase |
 | **📦 Deployment Tools** | API Smoke Tests | Secure connectivity testing with retry logic and timeout handling |
 | **✅ Quality Monitoring** | Comprehensive Testing | Test suites for PDF generation, OpenAI integration, validators, analyzers, and optimizers |
@@ -186,7 +186,7 @@ GPT-PANELIN-V3.3/
 │   │       └── bmc_logo.png                     # BMC logo for PDF headers
 │
 ├── DEPLOYMENT TOOLS
-│   ├── validate_gpt_files.py                    # Validates all 21 required files
+│   ├── validate_gpt_files.py                    # Dynamically discovers and validates required config files
 │   ├── package_gpt_files.py                     # Organizes files for phased upload
 │   └── test_panelin_api_connection.sh           # API smoke test script
 │
@@ -1254,7 +1254,7 @@ When reporting issues with the GPT or KB:
 - Handles multiple OpenAI API response shapes (Responses API, Chat Completions, Messages)
 - `extract_text()` function with structured/tool call fallbacks
 - Comprehensive test coverage (33 tests across 5 categories)
-- Zero external dependencies beyond OpenAI SDK
+- SDK-agnostic utilities: compatible with OpenAI SDK responses but does not require the SDK (Python stdlib only)
 
 **New Modules & Files:**
 - `openai_ecosystem/` - OpenAI API integration utilities
