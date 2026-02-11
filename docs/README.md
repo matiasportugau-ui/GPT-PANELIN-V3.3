@@ -17,6 +17,8 @@ Welcome to the **Panelin 3.3** documentation hub! This directory serves as the c
 | **Technical** | [Pricing Instructions](../GPT_INSTRUCTIONS_PRICING.md) | Fast pricing lookups guide |
 | **Technical** | [PDF Instructions](../GPT_PDF_INSTRUCTIONS.md) | PDF generation workflow |
 | **Analysis** | [Optimization Analysis](../GPT_OPTIMIZATION_ANALYSIS.md) | System analysis and improvements |
+| **MCP Research** | [MCP Research Prompt](../MCP_RESEARCH_PROMPT.md) | Structured prompt for MCP market research |
+| **MCP Research** | [MCP Server Comparative Analysis](../MCP_SERVER_COMPARATIVE_ANALYSIS.md) | Top 10 MCP comparison with cost analysis |
 
 ---
 
@@ -59,6 +61,13 @@ Analysis and implementation reports:
 
 1. **[Implementation Summary v3.3](../IMPLEMENTATION_SUMMARY_V3.3.md)** - v3.3 implementation details
 2. **[Evolucionador Final Report](../EVOLUCIONADOR_FINAL_REPORT.md)** - Complete evolution system report
+
+### 🔌 MCP Integration Research
+
+Market research and comparative analysis for MCP server integration:
+
+1. **[MCP Research Prompt](../MCP_RESEARCH_PROMPT.md)** - Structured prompt for MCP market research
+2. **[MCP Server Comparative Analysis](../MCP_SERVER_COMPARATIVE_ANALYSIS.md)** - Top 10 MCP server comparison with cost analysis for 1,500 sessions
 
 ---
 
