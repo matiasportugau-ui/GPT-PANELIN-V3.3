@@ -16,6 +16,7 @@ UPLOAD_PHASES = {
         "description": "Master Knowledge Base (Level 1) - UPLOAD FIRST",
         "files": [
             "BMC_Base_Conocimiento_GPT-2.json",
+            "bromyros_pricing_master.json",
             "accessories_catalog.json",
             "bom_rules.json",
         ],
@@ -26,6 +27,7 @@ UPLOAD_PHASES = {
         "files": [
             "bromyros_pricing_gpt_optimized.json",
             "shopify_catalog_v1.json",
+            "shopify_catalog_index_v1.csv",
         ],
         "pause_after": "2 minutes",
     },
@@ -40,6 +42,8 @@ UPLOAD_PHASES = {
     "Phase_4_Documentation": {
         "description": "Documentation & Guides (Level 4)",
         "files": [
+            "Aleros -2.rtf",
+            "panelin_context_consolidacion_sin_backend.md",
             "PANELIN_KNOWLEDGE_BASE_GUIDE.md",
             "PANELIN_QUOTATION_PROCESS.md",
             "PANELIN_TRAINING_GUIDE.md",

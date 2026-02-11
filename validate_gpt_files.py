@@ -8,48 +8,26 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, List, Set, Tuple
 
-# Define required files by category
-REQUIRED_FILES = {
-    "Phase 1: Master Knowledge Base (Level 1)": [
-        "BMC_Base_Conocimiento_GPT-2.json",
-        "accessories_catalog.json",
-        "bom_rules.json",
-    ],
-    "Phase 2: Optimized Lookups (Level 1.5-1.6)": [
-        "bromyros_pricing_gpt_optimized.json",
-        "shopify_catalog_v1.json",
-    ],
-    "Phase 3: Validation & Dynamic Data (Level 2-3)": [
-        "BMC_Base_Unificada_v4.json",
-        "panelin_truth_bmcuruguay_web_only_v2.json",
-    ],
-    "Phase 4: Documentation & Guides (Level 4)": [
-        "PANELIN_KNOWLEDGE_BASE_GUIDE.md",
-        "PANELIN_QUOTATION_PROCESS.md",
-        "PANELIN_TRAINING_GUIDE.md",
-        "GPT_INSTRUCTIONS_PRICING.md",
-        "GPT_PDF_INSTRUCTIONS.md",
-        "GPT_OPTIMIZATION_ANALYSIS.md",
-        "README.md",
-    ],
-    "Phase 5: Supporting Files": [
-        "Instrucciones GPT.rtf",
-        "Panelin_GPT_config.json",
-    ],
-    "Phase 6: Assets": [
-        "bmc_logo.png",
-    ],
+CONFIG_FILE = "Panelin_GPT_config.json"
+ALWAYS_REQUIRED_FILES = {
+    CONFIG_FILE,
+    "Instrucciones GPT.rtf",
+    "bmc_logo.png",
+    "panelin_reports/assets/bmc_logo.png",
 }
+DIFF_SCAN_EXTENSIONS = {".json", ".md", ".rtf", ".png", ".csv"}
 
 # File size expectations (min, max) in KB
 FILE_SIZE_RANGES = {
     "BMC_Base_Conocimiento_GPT-2.json": (5, 2000),
     "accessories_catalog.json": (10, 500),
     "bom_rules.json": (5, 500),
+    "bromyros_pricing_master.json": (50, 5000),
     "bromyros_pricing_gpt_optimized.json": (50, 1000),
     "shopify_catalog_v1.json": (200, 2000),
+    "shopify_catalog_index_v1.csv": (10, 1000),
     "BMC_Base_Unificada_v4.json": (5, 1000),
     "panelin_truth_bmcuruguay_web_only_v2.json": (3, 500),
     "bmc_logo.png": (10, 200),
@@ -124,6 +102,49 @@ def validate_file(filepath: Path) -> Dict:
     return result
 
 
+def normalize_file_reference(file_reference: str) -> str:
+    """Normalize file references to canonical POSIX paths."""
+    return Path(file_reference).as_posix()
+
+
+def load_required_files_from_config(repo_root: Path) -> Tuple[Dict[str, List[str]], Set[str], Set[str]]:
+    """Read hierarchy file references from Panelin_GPT_config.json and derive required sets."""
+    config_path = repo_root / CONFIG_FILE
+    with open(config_path, "r", encoding="utf-8") as f:
+        config = json.load(f)
+
+    hierarchy = config.get("knowledge_base", {}).get("hierarchy", {})
+    if not isinstance(hierarchy, dict):
+        raise ValueError("knowledge_base.hierarchy must be an object in Panelin_GPT_config.json")
+
+    required_by_phase: Dict[str, List[str]] = {}
+    hierarchy_required: Set[str] = set()
+
+    for level_name, file_entries in hierarchy.items():
+        if not isinstance(file_entries, list):
+            continue
+
+        normalized_entries = [normalize_file_reference(entry) for entry in file_entries if isinstance(entry, str)]
+        if normalized_entries:
+            phase_name = f"Hierarchy: {level_name}"
+            required_by_phase[phase_name] = sorted(set(normalized_entries))
+            hierarchy_required.update(normalized_entries)
+
+    runtime_required = {normalize_file_reference(path) for path in ALWAYS_REQUIRED_FILES}
+    required_by_phase["Always-required runtime files"] = sorted(runtime_required)
+
+    return required_by_phase, hierarchy_required, hierarchy_required | runtime_required
+
+
+def discover_present_candidate_files(repo_root: Path) -> Set[str]:
+    """Discover potentially uploadable knowledge/runtime assets for diff reporting."""
+    return {
+        path.relative_to(repo_root).as_posix()
+        for path in repo_root.rglob("*")
+        if path.is_file() and path.suffix.lower() in DIFF_SCAN_EXTENSIONS
+    }
+
+
 def main():
     """Main validation function."""
     print("=" * 80)
@@ -140,8 +161,14 @@ def main():
     missing_files = []
     invalid_files = []
 
+    try:
+        required_files_by_phase, hierarchy_required, required_files = load_required_files_from_config(repo_root)
+    except Exception as exc:
+        print(f"❌ Failed to load required files from {CONFIG_FILE}: {exc}")
+        return 1
+
     # Validate each phase
-    for phase, files in REQUIRED_FILES.items():
+    for phase, files in required_files_by_phase.items():
         print(f"\n{phase}")
         print("-" * 80)
 
@@ -167,6 +194,12 @@ def main():
                 all_valid = False
                 invalid_files.append(filename)
 
+    present_candidates = discover_present_candidate_files(repo_root)
+    referenced_missing = sorted(f for f in hierarchy_required if f not in present_candidates)
+    present_not_referenced = sorted(
+        f for f in present_candidates if f not in required_files
+    )
+
     # Print summary
     print("\n" + "=" * 80)
     print("VALIDATION SUMMARY")
@@ -187,7 +220,24 @@ def main():
             print(f"   - {f}")
         print()
 
-    if all_valid and not missing_files:
+    print("Diff report")
+    print("-" * 80)
+    print("Referenced in config but missing:")
+    if referenced_missing:
+        for f in referenced_missing:
+            print(f"   - {f}")
+    else:
+        print("   - None")
+
+    print("Present but not referenced:")
+    if present_not_referenced:
+        for f in present_not_referenced:
+            print(f"   - {f}")
+    else:
+        print("   - None")
+    print()
+
+    if all_valid and not missing_files and not referenced_missing:
         print("✅ All files are present and valid!")
         print()
         print("You are ready to upload files to the GPT.")

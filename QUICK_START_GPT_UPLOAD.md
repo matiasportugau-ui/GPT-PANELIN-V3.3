@@ -9,7 +9,7 @@ This is a simplified guide for quickly uploading all required files to your Open
 python validate_gpt_files.py
 ```
 
-This checks that all 17 required files exist and are valid.
+This checks that all 21 required files exist and are valid.
 
 ### Step 2: Package Your Files (1 minute)
 ```bash
@@ -40,8 +40,10 @@ Each phase has an `INSTRUCTIONS.txt` file with specific guidance.
 - **BMC_Base_Conocimiento_GPT-2.json** - Main pricing & formulas
 - **accessories_catalog.json** - 70+ accessories with prices
 - **bom_rules.json** - BOM calculation rules
+- **bromyros_pricing_master.json** - BROMYROS master pricing
 - **bromyros_pricing_gpt_optimized.json** - Fast product lookups
 - **shopify_catalog_v1.json** - Product catalog
+- **shopify_catalog_index_v1.csv** - Catalog index for lookups
 - Plus validation and dynamic data files
 
 ### Documentation (Phase 4-5)
@@ -84,6 +86,30 @@ Add these 6 starters:
 
 ---
 
+## 🔌 API / Actions Connection (OpenAI GPT Builder)
+
+To enable real API calls (e.g. `/find_products`) from your GPT:
+
+1. Go to **GPT Builder → Actions**
+2. Import schema from `Esquema json.rtf`
+3. Configure auth:
+   - Type: **API Key**
+   - Header: `X-API-Key`
+   - Value: your Wolf API key
+4. Save and test endpoints:
+   - `GET /health` (should return 200)
+   - `POST /find_products` (requires key)
+
+Optional local smoke test before configuring Builder:
+
+```bash
+./test_panelin_api_connection.sh
+# with key:
+WOLF_API_KEY=your_key ./test_panelin_api_connection.sh
+```
+
+---
+
 ## ✅ Verification Checklist
 
 After upload, test these queries:
@@ -120,7 +146,7 @@ For more detailed instructions, see:
 ## 🎯 Success Criteria
 
 Your GPT is ready when:
-- ✅ All 17 files uploaded successfully
+- ✅ All 21 files uploaded successfully
 - ✅ Code Interpreter enabled
 - ✅ Knowledge base queries return correct prices
 - ✅ PDF generation works
