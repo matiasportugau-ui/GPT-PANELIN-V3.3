@@ -18,7 +18,7 @@ import json
 import hashlib
 from pathlib import Path
 from typing import Dict, List, Tuple
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class ValidationError(Exception):
@@ -28,19 +28,19 @@ class ValidationError(Exception):
 
 def log_info(message: str) -> None:
     """Log info message with timestamp"""
-    timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"[{timestamp}] [INFO] {message}", flush=True)
 
 
 def log_error(message: str) -> None:
     """Log error message with timestamp"""
-    timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"[{timestamp}] [ERROR] {message}", file=sys.stderr, flush=True)
 
 
 def log_success(message: str) -> None:
     """Log success message with timestamp"""
-    timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"[{timestamp}] [SUCCESS] {message}", flush=True)
 
 

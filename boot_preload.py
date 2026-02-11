@@ -23,7 +23,7 @@ import json
 import hashlib
 import shutil
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 # Configuration
@@ -39,19 +39,19 @@ class PreloadError(Exception):
 
 def log_info(message: str) -> None:
     """Log info message with timestamp"""
-    timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"[{timestamp}] [INFO] {message}", flush=True)
 
 
 def log_warn(message: str) -> None:
     """Log warning message with timestamp"""
-    timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = datetime.now(datetime.UTC).strftime("%Y-%m-%dT%H:%M:%SZ") if hasattr(datetime, 'UTC') else datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"[{timestamp}] [WARN] {message}", file=sys.stderr, flush=True)
 
 
 def log_error(message: str) -> None:
     """Log error message with timestamp"""
-    timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = datetime.now(datetime.UTC).strftime("%Y-%m-%dT%H:%M:%SZ") if hasattr(datetime, 'UTC') else datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"[{timestamp}] [ERROR] {message}", file=sys.stderr, flush=True)
 
 
@@ -72,7 +72,7 @@ def get_file_metadata(file_path: Path) -> Dict:
         "size": stat.st_size,
         "sha256": calculate_sha256(file_path),
         "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
-        "indexed": datetime.utcnow().isoformat()
+        "indexed": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -183,7 +183,7 @@ def create_knowledge_index() -> Dict:
             log_error(f"Failed to index {file_path}: {e}")
     
     index = {
-        "created": datetime.utcnow().isoformat(),
+        "created": datetime.now(timezone.utc).isoformat(),
         "files": indexed_files,
         "total_files": len(indexed_files),
         "total_size": total_size,
@@ -246,7 +246,7 @@ def generate_embeddings_placeholder(index: Dict) -> Dict:
     # In production, implement actual embeddings generation here
     # For now, just mark as generated
     index["embeddings_generated"] = True
-    index["embeddings_generated_at"] = datetime.utcnow().isoformat()
+    index["embeddings_generated_at"] = datetime.now(timezone.utc).isoformat()
     
     log_info("Embeddings generation completed (placeholder)")
     
