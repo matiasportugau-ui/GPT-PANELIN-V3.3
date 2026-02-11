@@ -16,6 +16,9 @@ jobs:
     name: Boot Smoke Test
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: read
+    
     env:
       GENERATE_EMBEDDINGS: 0  # Never generate embeddings in CI
       PYTHONUNBUFFERED: 1
