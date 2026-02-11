@@ -117,6 +117,33 @@ Panelin is a technical sales assistant that:
 | Image Generation | ✅ Enabled | Educational diagrams only |
 | Code Interpreter | ✅ Enabled | **CRITICAL** - PDF generation, data analysis, calculations |
 
+### 🚀 Auto-Boot System (NEW in v3.3)
+
+Panelin 3.3 includes an **automatic knowledge base indexing system** that executes at the start of every conversation:
+
+**What it does:**
+- 🔍 Scans all uploaded knowledge files automatically
+- 📊 Generates structured index table showing all available files
+- ✅ Displays operational log (4 phases: scan → index → validate → ready)
+- 🎯 Provides file-specific conversation starters
+- 🔒 Maintains security (hides internal reasoning, shows only operational logs)
+
+**Key files:**
+- **GPT_BOOT_INSTRUCTIONS_COMPACT.md** - Ready-to-use boot directive (prepend to instructions)
+- **GPT_BOOT_IMPLEMENTATION_GUIDE.md** - Detailed deployment guide
+- **GPT_SYSTEM_PROMPT_AUTOBOOT.md** - Complete technical specification
+- **GPT_BOOT_QUICK_REFERENCE.md** - Quick reference card
+
+**Quick deployment:** Copy `GPT_BOOT_INSTRUCTIONS_COMPACT.md` and paste at the **TOP** of the GPT instructions field.
+
+**Benefits:**
+- ✅ Users see exactly what files the GPT has access to
+- ✅ All files are easily referenceable by name during conversations
+- ✅ Transparent initialization process builds user trust
+- ✅ Consistent experience across all sessions
+
+See [GPT_BOOT_IMPLEMENTATION_GUIDE.md](GPT_BOOT_IMPLEMENTATION_GUIDE.md) for complete deployment instructions.
+
 ---
 
 ## 📁 Repository Structure
@@ -147,6 +174,12 @@ GPT-PANELIN-V3.3/
 │   ├── GPT_INSTRUCTIONS_PRICING.md              # Fast pricing lookups guide
 │   ├── GPT_PDF_INSTRUCTIONS.md                  # PDF generation workflow
 │   └── GPT_OPTIMIZATION_ANALYSIS.md             # System analysis & improvements
+│
+├── AUTO-BOOT SYSTEM (NEW in v3.3)
+│   ├── GPT_BOOT_INSTRUCTIONS_COMPACT.md         # Ready-to-use boot directive
+│   ├── GPT_BOOT_IMPLEMENTATION_GUIDE.md         # Detailed deployment guide
+│   ├── GPT_SYSTEM_PROMPT_AUTOBOOT.md            # Complete technical specification
+│   └── GPT_BOOT_QUICK_REFERENCE.md              # Quick reference card
 │
 ├── PDF GENERATION MODULE (NEW in v3.3)
 │   ├── panelin_reports/__init__.py              # Package initialization
@@ -472,8 +505,10 @@ Run `python validate_gpt_files.py` to verify all files exist and are valid befor
    - Profile image: Upload `bmc_logo.png` (optional)
 
 4. **Configure instructions:**
-   - Copy full instructions from `Instrucciones GPT.rtf`
+   - **NEW in v3.3:** For automatic file indexing at session start, prepend `GPT_BOOT_INSTRUCTIONS_COMPACT.md` to the instructions
+   - Then copy full instructions from `Instrucciones GPT.rtf`
    - OR use the instructions section from `Panelin_GPT_config.json`
+   - See [GPT_BOOT_IMPLEMENTATION_GUIDE.md](GPT_BOOT_IMPLEMENTATION_GUIDE.md) for detailed auto-boot setup
 
 5. **Configure conversation starters:**
    - Add the 6 conversation starters from the configuration file

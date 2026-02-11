@@ -178,8 +178,18 @@ All markdown documentation files that guide the GPT's behavior:
 3. **Profile Image**: Upload `bmc_logo.png` (optional)
 
 ### Step 3: Configure Instructions
-**Option A**: Upload `Instrucciones GPT.rtf` as a knowledge file  
-**Option B**: Copy instructions from `Panelin_GPT_config.json` → `instructions` field and paste in Instructions box
+**NEW in v3.3 - Auto-Boot System (Recommended):**
+For automatic file indexing at session start, prepend `GPT_BOOT_INSTRUCTIONS_COMPACT.md` to the instructions field. This enables:
+- ✅ Automatic knowledge base scanning at every session start
+- ✅ Structured index table of all uploaded files
+- ✅ Transparent operational logs
+- ✅ File-specific conversation starters
+
+**Option A**: Copy `GPT_BOOT_INSTRUCTIONS_COMPACT.md` + `Instrucciones GPT.rtf` and paste in Instructions box (auto-boot + full instructions)  
+**Option B**: Upload `Instrucciones GPT.rtf` as a knowledge file (traditional approach)  
+**Option C**: Copy instructions from `Panelin_GPT_config.json` → `instructions` field and paste in Instructions box
+
+**📖 See [GPT_BOOT_IMPLEMENTATION_GUIDE.md](GPT_BOOT_IMPLEMENTATION_GUIDE.md) for detailed auto-boot setup instructions.**
 
 ### Step 4: Enable Capabilities
 In GPT Builder, enable these capabilities:
