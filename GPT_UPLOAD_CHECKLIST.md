@@ -163,7 +163,7 @@ All markdown documentation files that guide the GPT's behavior:
 - **Size**: ~30 KB
 - **Note**: Reference file, not strictly required to upload
 
-#### 17. bmc_logo.png
+#### 21. bmc_logo.png
 - **Purpose**: BMC Uruguay logo for PDF headers
 - **Size**: ~48 KB
 - **Usage**: Used by Code Interpreter for PDF generation

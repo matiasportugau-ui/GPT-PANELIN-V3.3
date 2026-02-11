@@ -16,6 +16,43 @@ ALWAYS_REQUIRED_FILES = {
     "Instrucciones GPT.rtf",
     "bmc_logo.png",
     "panelin_reports/assets/bmc_logo.png",
+from typing import Dict, Tuple
+
+# Define required files by category
+REQUIRED_FILES = {
+    "Phase 1: Master Knowledge Base (Level 1)": [
+        "BMC_Base_Conocimiento_GPT-2.json",
+        "bromyros_pricing_master.json",
+        "accessories_catalog.json",
+        "bom_rules.json",
+    ],
+    "Phase 2: Optimized Lookups (Level 1.5-1.6)": [
+        "bromyros_pricing_gpt_optimized.json",
+        "shopify_catalog_v1.json",
+        "shopify_catalog_index_v1.csv",
+    ],
+    "Phase 3: Validation & Dynamic Data (Level 2-3)": [
+        "BMC_Base_Unificada_v4.json",
+        "panelin_truth_bmcuruguay_web_only_v2.json",
+    ],
+    "Phase 4: Documentation & Guides (Level 4)": [
+        "Aleros -2.rtf",
+        "panelin_context_consolidacion_sin_backend.md",
+        "PANELIN_KNOWLEDGE_BASE_GUIDE.md",
+        "PANELIN_QUOTATION_PROCESS.md",
+        "PANELIN_TRAINING_GUIDE.md",
+        "GPT_INSTRUCTIONS_PRICING.md",
+        "GPT_PDF_INSTRUCTIONS.md",
+        "GPT_OPTIMIZATION_ANALYSIS.md",
+        "README.md",
+    ],
+    "Phase 5: Supporting Files": [
+        "Instrucciones GPT.rtf",
+        "Panelin_GPT_config.json",
+    ],
+    "Phase 6: Assets": [
+        "bmc_logo.png",
+    ],
 }
 DIFF_SCAN_EXTENSIONS = {".json", ".md", ".rtf", ".png", ".csv"}
 
