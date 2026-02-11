@@ -19,6 +19,7 @@ Welcome to the **Panelin 3.3** documentation hub! This directory serves as the c
 | **Analysis** | [Optimization Analysis](../GPT_OPTIMIZATION_ANALYSIS.md) | System analysis and improvements |
 | **MCP Research** | [MCP Research Prompt](../MCP_RESEARCH_PROMPT.md) | Structured prompt for MCP market research |
 | **MCP Research** | [MCP Server Comparative Analysis](../MCP_SERVER_COMPARATIVE_ANALYSIS.md) | Top 10 MCP comparison with cost analysis |
+| **MCP Agent** | [MCP Architect Agent Prompt](../MCP_AGENT_ARCHITECT_PROMPT.md) | AI agent for OpenAI + GitHub MCP architecture |
 
 ---
 
@@ -68,6 +69,7 @@ Market research and comparative analysis for MCP server integration:
 
 1. **[MCP Research Prompt](../MCP_RESEARCH_PROMPT.md)** - Structured prompt for MCP market research
 2. **[MCP Server Comparative Analysis](../MCP_SERVER_COMPARATIVE_ANALYSIS.md)** - Top 10 MCP server comparison with cost analysis for 1,500 sessions
+3. **[MCP Architect Agent Prompt](../MCP_AGENT_ARCHITECT_PROMPT.md)** - Specialized AI agent for OpenAI MCP + GitHub MCP integration architecture
 
 ---
 
