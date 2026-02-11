@@ -332,7 +332,23 @@ class PanelinPreloadSystem:
         
         # Preload data
         preload_config = context.get("preload_config", {})
-        if preload_config.get("cache_on_startup"):
+        cache_on_startup_value = preload_config.get("cache_on_startup")
+
+        # Support both boolean and list forms for cache_on_startup.
+        # - If it's a list, a non-empty list enables preloading; an empty list disables it.
+        # - If it's a boolean, use it directly.
+        # - For any other type, fall back to standard truthiness.
+        if isinstance(cache_on_startup_value, list):
+            should_preload = bool(cache_on_startup_value)
+            # Surface the requested keys for visibility, even if the underlying
+            # preload implementation currently loads a fixed set.
+            result["requested_preload_keys"] = cache_on_startup_value
+        elif isinstance(cache_on_startup_value, bool):
+            should_preload = cache_on_startup_value
+        else:
+            should_preload = bool(cache_on_startup_value)
+
+        if should_preload:
             preload_status = self.preload_critical_data()
             result["preload_status"] = preload_status
         
