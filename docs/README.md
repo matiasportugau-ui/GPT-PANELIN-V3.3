@@ -17,6 +17,11 @@ Welcome to the **Panelin 3.3** documentation hub! This directory serves as the c
 | **Technical** | [Pricing Instructions](../GPT_INSTRUCTIONS_PRICING.md) | Fast pricing lookups guide |
 | **Technical** | [PDF Instructions](../GPT_PDF_INSTRUCTIONS.md) | PDF generation workflow |
 | **Analysis** | [Optimization Analysis](../GPT_OPTIMIZATION_ANALYSIS.md) | System analysis and improvements |
+| **MCP Research** | [MCP Research Prompt](../MCP_RESEARCH_PROMPT.md) | Structured prompt for MCP market research |
+| **MCP Research** | [MCP Server Comparative Analysis](../MCP_SERVER_COMPARATIVE_ANALYSIS.md) | Top 10 MCP comparison with cost analysis |
+| **MCP Agent** | [MCP Architect Agent Prompt](../MCP_AGENT_ARCHITECT_PROMPT.md) | AI agent for OpenAI + GitHub MCP architecture |
+| **MCP Migration** | [KB Architecture Audit](../KB_ARCHITECTURE_AUDIT.md) | Critical review of all KB files for MCP transition |
+| **MCP Migration** | [KB MCP Migration Prompt](../KB_MCP_MIGRATION_PROMPT.md) | Executable prompt for KB restructuring |
 
 ---
 
@@ -59,6 +64,27 @@ Analysis and implementation reports:
 
 1. **[Implementation Summary v3.3](../IMPLEMENTATION_SUMMARY_V3.3.md)** - v3.3 implementation details
 2. **[Evolucionador Final Report](../EVOLUCIONADOR_FINAL_REPORT.md)** - Complete evolution system report
+
+### 🔌 MCP Integration Research
+
+Market research and comparative analysis for MCP server integration:
+
+1. **[MCP Research Prompt](../MCP_RESEARCH_PROMPT.md)** - Structured prompt for MCP market research
+2. **[MCP Server Comparative Analysis](../MCP_SERVER_COMPARATIVE_ANALYSIS.md)** - Top 10 MCP server comparison with cost analysis for 1,500 sessions
+3. **[MCP Architect Agent Prompt](../MCP_AGENT_ARCHITECT_PROMPT.md)** - Specialized AI agent for OpenAI MCP + GitHub MCP integration architecture
+4. **[KB Architecture Audit](../KB_ARCHITECTURE_AUDIT.md)** - Critical review of all KB files with MCP migration analysis
+5. **[KB MCP Migration Prompt](../KB_MCP_MIGRATION_PROMPT.md)** - Executable prompt and results for KB restructuring
+
+### 📦 Archived Documents
+
+Historical review artifacts moved to `archive/` (decisions implemented, no longer active):
+
+- `BOOT_PRS_COMPARISON.md` — PR #15/18/19 comparison
+- `BRANCH_REVIEW_REPORT.md` — PR #27 branch analysis
+- `PULL_REQUESTS_REVIEW.md` — 9-PR overview
+- `PR_REVIEW_README.md` — Review navigation guide
+- `PR_CONSOLIDATION_ACTION_PLAN.md` — Consolidation plan
+- `README_REVIEW_SUMMARY.md` — README audit
 
 ---
 
@@ -133,6 +159,6 @@ All knowledge base files with their hierarchy level:
 
 ---
 
-**Version:** 1.0  
-**Last Updated:** 2026-02-10  
+**Version:** 1.1  
+**Last Updated:** 2026-02-11  
 **Compatible with:** GPT-PANELIN v3.3

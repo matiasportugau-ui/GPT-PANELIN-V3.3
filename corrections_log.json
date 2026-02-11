@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "description": "Knowledge Base error corrections log for GPT-PANELIN. Records identified errors in KB files for tracking, correction, and persistence across sessions. Each entry in the corrections array follows the schema defined below. See the example entry for the expected format.",
+  "usage": "When PANELIN produces an incorrect quotation or references wrong data, log the correction here so it can be applied to the source KB file and persist across all future sessions.",
+  "schema": {
+    "id": "COR-NNN format",
+    "date": "ISO 8601 date",
+    "kb_file": "Name of the affected KB file",
+    "field": "JSON path or section reference to the incorrect data",
+    "wrong_value": "The incorrect value that was found",
+    "correct_value": "The corrected value",
+    "source": "How the error was discovered (user correction, validation, audit)",
+    "status": "pending | applied | rejected",
+    "applied_date": "Date the correction was applied to the KB file (null if pending)"
+  },
+  "example": {
+    "id": "COR-001",
+    "date": "2026-02-11",
+    "kb_file": "accessories_catalog.json",
+    "field": "items[32].price_usd",
+    "wrong_value": 15.50,
+    "correct_value": 18.75,
+    "source": "User correction in quotation session",
+    "status": "pending",
+    "applied_date": null
+  },
+  "corrections": []
+}
