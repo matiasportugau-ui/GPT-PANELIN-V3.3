@@ -1,0 +1,27 @@
+# GPT-PANELIN v3.3 — BMC Assistant Pro
+> Construction panel quotation system for BMC Uruguay. Generates professional quotations with BOM, accessories, PDF generation, and technical validation for isopaneles EPS/PIR.
+
+## Knowledge Base
+- [Core KB](BMC_Base_Conocimiento_GPT-2.json): Formulas, specs, autoportancia tables, business rules v6.0
+- [Pricing Master](bromyros_pricing_master.json): BROMYROS product pricing (USD, IVA 22% included)
+- [Accessories](accessories_catalog.json): 70+ accessories with real prices (multi-supplier)
+- [BOM Rules](bom_rules.json): Parametric BOM rules for 6 construction systems
+- [Shopify Catalog](shopify_catalog_v1.json): Full BMC product catalog with descriptions and variants
+
+## Documentation
+- [Quotation Process](PANELIN_QUOTATION_PROCESS.md): 5-phase quotation workflow
+- [PDF Instructions](GPT_PDF_INSTRUCTIONS.md): PDF generation workflow with BMC branding
+- [Pricing Instructions](GPT_INSTRUCTIONS_PRICING.md): Pricing lookup rules and hierarchy
+- [Training Guide](PANELIN_TRAINING_GUIDE.md): Sales training and evaluation system
+
+## MCP Architecture
+- [MCP Evolution Plan](MCP_CROSSCHECK_EVOLUTION_PLAN.md): Cross-check analysis and implementation roadmap
+- [MCP Architect](MCP_AGENT_ARCHITECT_PROMPT.md): MCP integration architecture and tool catalog
+- [MCP Analysis](MCP_SERVER_COMPARATIVE_ANALYSIS.md): Top 10 MCP server comparative analysis
+- [KB Audit](KB_ARCHITECTURE_AUDIT.md): KB architecture audit for MCP migration
+
+## MCP Tools
+- [price_check](mcp/tools/price_check.json): Product pricing lookup by SKU/family/type
+- [catalog_search](mcp/tools/catalog_search.json): Product catalog search with category filters
+- [bom_calculate](mcp/tools/bom_calculate.json): Parametric Bill of Materials calculator
+- [report_error](mcp/tools/report_error.json): KB error correction logger

@@ -1,0 +1,35 @@
+{
+  "name": "report_error",
+  "description": "Log a Knowledge Base error for correction. Records wrong values, correct values, and source file. Persists to corrections_log.json for tracking and eventual auto-correction via GitHub PRs.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "kb_file": {
+        "type": "string",
+        "description": "Name of the KB file containing the error (e.g., 'accessories_catalog.json')"
+      },
+      "field": {
+        "type": "string",
+        "description": "JSON path or field reference (e.g., 'items[32].price_usd')"
+      },
+      "wrong_value": {
+        "type": "string",
+        "description": "The incorrect value found"
+      },
+      "correct_value": {
+        "type": "string",
+        "description": "The correct value (from user or verified source)"
+      },
+      "source": {
+        "type": "string",
+        "enum": ["user_correction", "validation_check", "audit", "web_verification"],
+        "description": "How the error was discovered"
+      },
+      "notes": {
+        "type": "string",
+        "description": "Additional context about the correction"
+      }
+    },
+    "required": ["kb_file", "field", "wrong_value", "correct_value", "source"]
+  }
+}

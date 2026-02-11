@@ -74,6 +74,8 @@ Market research and comparative analysis for MCP server integration:
 3. **[MCP Architect Agent Prompt](../MCP_AGENT_ARCHITECT_PROMPT.md)** - Specialized AI agent for OpenAI MCP + GitHub MCP integration architecture
 4. **[KB Architecture Audit](../KB_ARCHITECTURE_AUDIT.md)** - Critical review of all KB files with MCP migration analysis
 5. **[KB MCP Migration Prompt](../KB_MCP_MIGRATION_PROMPT.md)** - Executable prompt and results for KB restructuring
+6. **[MCP Cross-Check & Evolution Plan](../MCP_CROSSCHECK_EVOLUTION_PLAN.md)** - Full cross-check analysis, gap audit, corrected cost projections, and fast-track execution plan
+7. **[MCP Server](../mcp/)** - MCP server skeleton with tool schemas, handlers, and config
 
 ### 📦 Archived Documents
 
@@ -159,6 +161,6 @@ All knowledge base files with their hierarchy level:
 
 ---
 
-**Version:** 1.1  
-**Last Updated:** 2026-02-11  
-**Compatible with:** GPT-PANELIN v3.3
+**Version:** 1.2
+**Last Updated:** 2026-02-11
+**Compatible with:** GPT-PANELIN v3.3 → v4.0 (MCP)
