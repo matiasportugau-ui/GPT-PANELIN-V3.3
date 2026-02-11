@@ -94,10 +94,12 @@ Panelin is a technical sales assistant that:
 | Category | Feature | Description |
 |----------|---------|-------------|
 | **🧬 Autonomous Evolution** | EVOLUCIONADOR System | Daily automated analysis with 7 validators and 6 optimizers for continuous improvement |
-| **📦 Deployment Tools** | Validation Scripts | Automated validation of all 21 required files before upload |
+| **📦 Deployment Tools** | Validation Scripts | Automated validation of all 21 required files with dynamic config discovery |
 | **📦 Deployment Tools** | Packaging Scripts | Organized phased upload with instructions for each phase |
-| **✅ Quality Monitoring** | Comprehensive Testing | Test suites for PDF generation, validators, analyzers, and optimizers |
-| **✅ Quality Monitoring** | GitHub Actions** | Daily automated workflow for evolution reports and issue creation |
+| **📦 Deployment Tools** | API Smoke Tests | Secure connectivity testing with retry logic and timeout handling |
+| **✅ Quality Monitoring** | Comprehensive Testing | Test suites for PDF generation, OpenAI integration, validators, analyzers, and optimizers |
+| **✅ Quality Monitoring** | GitHub Actions | Daily automated workflow for evolution reports and issue creation |
+| **🔧 Integration Utilities** | OpenAI Ecosystem Helpers | Response extraction and normalization for multiple API response shapes |
 | **📊 Self-Learning** | Pattern Recognition | Tracks discovered patterns and improvement opportunities |
 | **📊 Self-Learning** | Performance Benchmarking | Historical tracking of efficiency and quality metrics |
 
@@ -185,15 +187,25 @@ GPT-PANELIN-V3.3/
 │
 ├── DEPLOYMENT TOOLS
 │   ├── validate_gpt_files.py                    # Validates all 21 required files
-│   └── package_gpt_files.py                     # Organizes files for phased upload
+│   ├── package_gpt_files.py                     # Organizes files for phased upload
+│   └── test_panelin_api_connection.sh           # API smoke test script
 │
 ├── CALCULATION ENGINE
 │   ├── quotation_calculator_v3.py               # Python calculation engine v3.1
 │   └── quotation_calculator_v3.cpython-314.pyc  # Compiled bytecode
 │
+├── OPENAI ECOSYSTEM HELPERS
+│   └── openai_ecosystem/                        # OpenAI API integration utilities
+│       ├── __init__.py
+│       ├── client.py                            # Response extraction and normalization
+│       ├── test_client.py                       # Comprehensive test suite (33 tests)
+│       └── README.md                            # Module documentation
+│
 ├── DATA FILES
 │   ├── normalized_full_cleaned.csv              # Raw product data (515 rows)
-│   └── perfileria_index.json                    # Profile product index
+│   ├── perfileria_index.json                    # Profile product index
+│   ├── bromyros_pricing_master.json             # Complete supplier pricing data
+│   └── shopify_catalog_index_v1.csv             # Product catalog index
 │
 ├── ASSETS
 │   └── bmc_logo.png                             # BMC Uruguay logo (root copy)
@@ -995,13 +1007,44 @@ See [PANELIN_TRAINING_GUIDE.md](PANELIN_TRAINING_GUIDE.md) for details.
 | [IMPLEMENTATION_SUMMARY_V3.3.md](IMPLEMENTATION_SUMMARY_V3.3.md) | V3.3 changes and new features | 3.3 |
 | [EVOLUCIONADOR_FINAL_REPORT.md](EVOLUCIONADOR_FINAL_REPORT.md) | EVOLUCIONADOR completion report | 1.0.0 |
 
+### Module-Specific Documentation
+
+| Document | Description | Module |
+|----------|-------------|--------|
+| [openai_ecosystem/README.md](openai_ecosystem/README.md) | OpenAI API helpers usage guide | openai_ecosystem |
+| [panelin_reports/test_pdf_generation.py](panelin_reports/test_pdf_generation.py) | PDF generation test suite | panelin_reports |
+| [.evolucionador/README.md](.evolucionador/README.md) | EVOLUCIONADOR system guide | .evolucionador |
+
 ### Python Modules Documentation
 
 | Module | Description | Version |
 |--------|-------------|---------|
 | `quotation_calculator_v3.py` | Core calculation engine with Decimal precision, autoportancia validation, 6 construction systems | 3.1 |
 | `panelin_reports/` | Professional PDF generation with BMC branding, ReportLab-based | 2.0 |
+| `openai_ecosystem/` | OpenAI API response extraction and normalization utilities | 1.0 |
 | `.evolucionador/` | Autonomous evolution agent with 7 validators, 6 optimizers, report generator | 1.0.0 |
+
+#### OpenAI Ecosystem Module
+
+The `openai_ecosystem/` module provides utilities for working with OpenAI API responses:
+
+**Key Features:**
+- **`extract_text(response)`** - Normalizes text from multiple OpenAI response shapes
+  - Responses API style (`response.output_text`)
+  - Chat Completions (`response.choices[].message.content`)
+  - Message-oriented variants with structured/tool call fallbacks
+- **`extract_primary_output(response)`** - Classifies output as text/structured/tool_call/unknown
+- Handles edge cases: empty responses, missing fields, mixed content types
+- Compact diagnostic summaries when no text is available
+- Comprehensive test coverage: 33 tests across 5 categories
+
+**Use Cases:**
+- Normalizing responses from different OpenAI API endpoints
+- Extracting text from complex response structures
+- Handling tool calls and structured outputs
+- Deduplicating repeated content in multi-part responses
+
+**Documentation:** See [openai_ecosystem/README.md](openai_ecosystem/README.md) for detailed usage examples.
 
 ### API Documentation
 
@@ -1070,6 +1113,29 @@ python validate_gpt_files.py
 - ✅ JSON syntax validation
 - ✅ File size within expected ranges
 - ✅ File readability and accessibility
+
+#### 4. API Connection Tests
+**Location:** `test_panelin_api_connection.sh`
+
+```bash
+# Test Panelin API connectivity and authentication
+export WOLF_API_KEY="your_api_key_here"
+./test_panelin_api_connection.sh
+```
+
+**Test Coverage:**
+- ✅ Health check endpoint (no authentication)
+- ✅ Readiness check endpoint (no authentication)
+- ✅ Authenticated endpoints with API key
+- ✅ Product search functionality
+- ✅ Connection reliability with retries and timeouts
+- ✅ Secure handling of API keys (no exposure in process listings)
+
+**Security Features:**
+- Secure temporary file handling with `mktemp`
+- Automatic cleanup with `trap`
+- API key passed via curl config file (not command line)
+- Connection timeout and retry logic to prevent hanging
 
 ### Continuous Integration
 
@@ -1177,12 +1243,24 @@ When reporting issues with the GPT or KB:
 - Zero external dependencies (Python stdlib only)
 
 **3. Deployment Tools**
-- `validate_gpt_files.py` - Validates all 21 required files
+- `validate_gpt_files.py` - Validates all 21 required files with dynamic config discovery
 - `package_gpt_files.py` - Organizes files for phased upload
+- `test_panelin_api_connection.sh` - API smoke test with secure key handling
 - Comprehensive upload guides (Quick Start, User Guide, Checklist)
 - Automated file validation with JSON syntax checking
 
+**4. OpenAI Ecosystem Helpers** (New)
+- `openai_ecosystem/` - Response extraction and normalization utilities
+- Handles multiple OpenAI API response shapes (Responses API, Chat Completions, Messages)
+- `extract_text()` function with structured/tool call fallbacks
+- Comprehensive test coverage (33 tests across 5 categories)
+- Zero external dependencies beyond OpenAI SDK
+
 **New Modules & Files:**
+- `openai_ecosystem/` - OpenAI API integration utilities
+  - `client.py` - Response extraction and normalization (349 lines)
+  - `test_client.py` - Comprehensive test suite (449 lines, 33 tests)
+  - `README.md` - Module documentation with examples
 - `panelin_reports/` - Complete PDF generation package
   - `pdf_generator.py` - Enhanced PDF generator v2.0
   - `pdf_styles.py` - BMC branding and style definitions
@@ -1192,6 +1270,7 @@ When reporting issues with the GPT or KB:
   - `core/validator.py` - 7 validators (1,246 lines)
   - `core/optimizer.py` - Optimization algorithms
   - `reports/generator.py` - Report generator (50+ variables)
+- `test_panelin_api_connection.sh` - Secure API connectivity smoke test
 - `.github/workflows/evolucionador-daily.yml` - Daily automation
 - `requirements.txt` - Python dependencies (reportlab, pillow)
 - `.gitignore` - Proper exclusions
