@@ -9,6 +9,7 @@ Comprehensive test coverage for extract_text function covering:
 """
 
 import pytest
+import re
 import sys
 from pathlib import Path
 
@@ -357,7 +358,6 @@ class TestExtractTextDiagnostics:
         result = extract_text(response)
         assert result.startswith("[no text content;")
         # Should limit to 8 keys (extract the keys list from result)
-        import re
         keys_match = re.search(r"top-level keys=\[(.*?)\]", result)
         if keys_match:
             keys_str = keys_match.group(1)
