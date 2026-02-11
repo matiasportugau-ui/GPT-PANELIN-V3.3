@@ -18,7 +18,7 @@
 
 **Close PR #18: "feat(boot): implement idempotent BOOT architecture with validation and CI"**
 
-*Reason:* Duplicate of PR #15 created 20 minutes later. PR #15 is more mature and has active reviews.
+*Reason:* Duplicate of PR #15 created approximately 1 hour and 20 minutes later. PR #15 is more mature and has active reviews.
 
 **Suggested closing message:**
 ```markdown
@@ -44,7 +44,7 @@ Closes as duplicate.
 
 **Close PR #19: "feat(boot): idempotent BOOT initialization with secure knowledge indexing"**
 
-*Reason:* Duplicate of PR #15 created 26 minutes later. Minimal differentiation from #15 or #18.
+*Reason:* Duplicate of PR #15 created approximately 1 hour and 26 minutes later. Minimal differentiation from #15 or #18.
 
 **Suggested closing message:**
 ```markdown

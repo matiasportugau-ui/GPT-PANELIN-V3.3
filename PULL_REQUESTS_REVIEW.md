@@ -52,7 +52,7 @@ All three PRs implement:
 - Status: Draft, no comments
 - Features: Similar to #15, uses Python 3.9-slim Docker
 - Environment variables documented in table format
-- Created: 2026-02-11 00:55 (20 min after #15)
+- Created: 2026-02-11 00:55 (~1h 20m after #15)
 
 **PR #19:**
 - Status: Draft, no comments
@@ -178,11 +178,11 @@ All three PRs implement:
 ## Obsolete/Superseded PRs
 
 ### ❌ PR #18 - OBSOLETE
-**Reason:** Duplicate of PR #15, created 20 minutes later, less mature
+**Reason:** Duplicate of PR #15, created ~1h 20min later, less mature
 **Action:** Close with comment pointing to PR #15
 
 ### ❌ PR #19 - OBSOLETE  
-**Reason:** Duplicate of PR #15, created 6 minutes after #18, minimal differentiation
+**Reason:** Duplicate of PR #15, created ~1h 26min after #15 (6 minutes after #18), minimal differentiation
 **Action:** Close with comment pointing to PR #15
 
 ---

@@ -97,8 +97,8 @@ Assess PR #20 and PR #12 for merge or consolidation
 
 ### BOOT Architecture (5 PRs - DUPLICATE ISSUE)
 - **PR #15** ✅ Keep - Most mature, 18 review comments
-- **PR #18** ❌ Close - Duplicate, created 20min after #15
-- **PR #19** ❌ Close - Duplicate, created 26min after #15
+- **PR #18** ❌ Close - Duplicate, created ~1h 20min after #15
+- **PR #19** ❌ Close - Duplicate, created ~1h 26min after #15
 
 ### GPT Systems (3 PRs - RELATED CHAIN)
 - **PR #21** ✅ Merge first - Fixes bugs in PR #14
