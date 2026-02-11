@@ -4,8 +4,8 @@ This document provides a comprehensive checklist and guide for uploading all req
 
 ## 📋 Quick Start
 
-**Total Files to Upload**: 17 files  
-**Total Size**: Approximately 1.1 MB  
+**Total Files to Upload**: 21 files  
+**Total Size**: Approximately 1.3 MB  
 **Upload Time**: 10-15 minutes (with pauses for reindexing)
 
 ---
@@ -18,52 +18,56 @@ Upload files in this specific order to maintain the knowledge base hierarchy:
 These are the most important files and must be uploaded first to establish the source of truth.
 
 - [ ] **1. BMC_Base_Conocimiento_GPT-2.json** (PRIMARY - Panel prices, formulas, specs)
-- [ ] **2. accessories_catalog.json** (70+ accessories with real prices)
-- [ ] **3. bom_rules.json** (Parametric BOM rules for 6 construction systems)
+- [ ] **2. bromyros_pricing_master.json** (BROMYROS master pricing source)
+- [ ] **3. accessories_catalog.json** (70+ accessories with real prices)
+- [ ] **4. bom_rules.json** (Parametric BOM rules for 6 construction systems)
 
 ⏱️ **PAUSE 2-3 minutes** after Phase 1 for GPT to reindex
 
 ### Phase 2: Optimized Lookups (Level 1.5-1.6)
 Fast lookup indices and product catalogs.
 
-- [ ] **4. bromyros_pricing_gpt_optimized.json** (Fast product lookups)
-- [ ] **5. shopify_catalog_v1.json** (Product descriptions & images - NOT for pricing)
+- [ ] **5. bromyros_pricing_gpt_optimized.json** (Fast product lookups)
+- [ ] **6. shopify_catalog_v1.json** (Product descriptions & images - NOT for pricing)
+- [ ] **7. shopify_catalog_index_v1.csv** (Catalog index for fast lookups)
 
 ⏱️ **PAUSE 2 minutes** after Phase 2
 
 ### Phase 3: Validation & Dynamic Data (Level 2-3)
 Cross-reference and web pricing snapshots.
 
-- [ ] **6. BMC_Base_Unificada_v4.json** (Cross-reference validation)
-- [ ] **7. panelin_truth_bmcuruguay_web_only_v2.json** (Web pricing snapshot)
+- [ ] **8. BMC_Base_Unificada_v4.json** (Cross-reference validation)
+- [ ] **9. panelin_truth_bmcuruguay_web_only_v2.json** (Web pricing snapshot)
 
 ⏱️ **PAUSE 2 minutes** after Phase 3
 
 ### Phase 4: Documentation & Guides (Level 4)
 Process guides and usage documentation.
 
-- [ ] **8. PANELIN_KNOWLEDGE_BASE_GUIDE.md** (KB hierarchy & usage rules)
-- [ ] **9. PANELIN_QUOTATION_PROCESS.md** (5-phase quotation workflow)
-- [ ] **10. PANELIN_TRAINING_GUIDE.md** (Sales evaluation & training)
-- [ ] **11. GPT_INSTRUCTIONS_PRICING.md** (Fast pricing lookups guide)
-- [ ] **12. GPT_PDF_INSTRUCTIONS.md** (PDF generation workflow)
-- [ ] **13. GPT_OPTIMIZATION_ANALYSIS.md** (System analysis)
-- [ ] **14. README.md** (Complete project overview)
+- [ ] **10. Aleros -2.rtf** (Technical rules for aleros/voladizos)
+- [ ] **11. panelin_context_consolidacion_sin_backend.md** (SOP commands and context flow)
+- [ ] **12. PANELIN_KNOWLEDGE_BASE_GUIDE.md** (KB hierarchy & usage rules)
+- [ ] **13. PANELIN_QUOTATION_PROCESS.md** (5-phase quotation workflow)
+- [ ] **14. PANELIN_TRAINING_GUIDE.md** (Sales evaluation & training)
+- [ ] **15. GPT_INSTRUCTIONS_PRICING.md** (Fast pricing lookups guide)
+- [ ] **16. GPT_PDF_INSTRUCTIONS.md** (PDF generation workflow)
+- [ ] **17. GPT_OPTIMIZATION_ANALYSIS.md** (System analysis)
+- [ ] **18. README.md** (Complete project overview)
 
 ⏱️ **PAUSE 2 minutes** after Phase 4
 
 ### Phase 5: Supporting Files
 Additional context and reference files.
 
-- [ ] **15. Instrucciones GPT.rtf** (Full GPT system instructions - Optional, can paste in instructions field)
-- [ ] **16. Panelin_GPT_config.json** (Complete GPT configuration reference)
+- [ ] **19. Instrucciones GPT.rtf** (Full GPT system instructions - Optional, can paste in instructions field)
+- [ ] **20. Panelin_GPT_config.json** (Complete GPT configuration reference)
 
 ⏱️ **PAUSE 2 minutes** after Phase 5
 
 ### Phase 6: Assets
 Logo and brand assets.
 
-- [ ] **17. bmc_logo.png** (BMC Uruguay logo for PDFs)
+- [ ] **21. bmc_logo.png** (BMC Uruguay logo for PDFs)
 
 ---
 
@@ -159,7 +163,7 @@ All markdown documentation files that guide the GPT's behavior:
 - **Size**: ~30 KB
 - **Note**: Reference file, not strictly required to upload
 
-#### 17. bmc_logo.png
+#### 21. bmc_logo.png
 - **Purpose**: BMC Uruguay logo for PDF headers
 - **Size**: ~48 KB
 - **Usage**: Used by Code Interpreter for PDF generation
@@ -274,7 +278,7 @@ python validate_gpt_files.py
 ```
 
 This will:
-- ✅ Verify all 17 required files exist
+- ✅ Verify all 21 required files exist
 - ✅ Check file sizes are reasonable
 - ✅ Validate JSON syntax
 - ✅ Report any missing or invalid files
