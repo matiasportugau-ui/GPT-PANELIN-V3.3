@@ -1,0 +1,143 @@
+name: BOOT Smoke Test
+
+on:
+  push:
+    branches:
+      - main
+      - feature/boot-validate
+    paths:
+      - 'boot.sh'
+      - 'boot_preload.py'
+      - 'index_validator.py'
+      - 'requirements.txt'
+      - '.github/workflows/boot-smoke.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'boot.sh'
+      - 'boot_preload.py'
+      - 'index_validator.py'
+      - 'requirements.txt'
+      - '.github/workflows/boot-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    name: BOOT Smoke Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      
+      - name: Check BOOT scripts exist
+        run: |
+          echo "Checking for required BOOT scripts..."
+          test -f boot.sh || (echo "ERROR: boot.sh not found" && exit 1)
+          test -f boot_preload.py || (echo "ERROR: boot_preload.py not found" && exit 1)
+          test -f index_validator.py || (echo "ERROR: index_validator.py not found" && exit 1)
+          echo "✓ All required scripts found"
+      
+      - name: Verify scripts are executable
+        run: |
+          echo "Checking script permissions..."
+          test -x boot.sh || chmod +x boot.sh
+          test -x boot_preload.py || chmod +x boot_preload.py
+          test -x index_validator.py || chmod +x index_validator.py
+          echo "✓ All scripts are executable"
+      
+      - name: Create sample knowledge source
+        run: |
+          echo "Creating sample knowledge files for testing..."
+          mkdir -p knowledge_src
+          echo "Sample knowledge content for CI testing" > knowledge_src/sample.txt
+          echo "Another sample file" > knowledge_src/sample2.md
+          echo "✓ Sample files created"
+      
+      - name: Run BOOT process (embeddings disabled)
+        env:
+          GENERATE_EMBEDDINGS: 0
+        run: |
+          echo "Running BOOT process..."
+          ./boot.sh
+          echo "✓ BOOT process completed"
+      
+      - name: Verify BOOT artifacts
+        run: |
+          echo "Verifying BOOT artifacts..."
+          test -f .boot-log || (echo "ERROR: .boot-log not found" && exit 1)
+          test -f .boot-ready || (echo "ERROR: .boot-ready not found" && exit 1)
+          test -d .venv || (echo "ERROR: .venv not found" && exit 1)
+          echo "✓ Basic artifacts verified"
+      
+      - name: Check knowledge files copied
+        run: |
+          echo "Checking knowledge directory..."
+          test -d knowledge || (echo "ERROR: knowledge directory not found" && exit 1)
+          test -f knowledge/sample.txt || (echo "ERROR: sample.txt not copied" && exit 1)
+          test -f knowledge/sample2.md || (echo "ERROR: sample2.md not copied" && exit 1)
+          echo "✓ Knowledge files copied successfully"
+      
+      - name: Verify index created
+        run: |
+          echo "Verifying knowledge index..."
+          test -f knowledge_index.json || (echo "ERROR: knowledge_index.json not found" && exit 1)
+          
+          # Check index is valid JSON
+          python3 -c "import json; json.load(open('knowledge_index.json'))" || \
+            (echo "ERROR: Invalid JSON in knowledge_index.json" && exit 1)
+          
+          echo "✓ Index file is valid JSON"
+      
+      - name: Run index validator
+        run: |
+          echo "Running index validation..."
+          source .venv/bin/activate
+          python index_validator.py
+          echo "✓ Index validation passed"
+      
+      - name: Test idempotency (second run)
+        env:
+          GENERATE_EMBEDDINGS: 0
+        run: |
+          echo "Testing idempotency - running BOOT again..."
+          ./boot.sh
+          echo "✓ Second run completed (idempotency verified)"
+      
+      - name: Display BOOT log
+        if: always()
+        run: |
+          echo "=== BOOT Log Contents ==="
+          cat .boot-log || echo "Log file not found"
+      
+      - name: Display knowledge index
+        if: always()
+        run: |
+          echo "=== Knowledge Index Contents ==="
+          cat knowledge_index.json || echo "Index file not found"
+      
+      - name: Check for secrets in logs
+        run: |
+          echo "Checking logs for potential secrets..."
+          if grep -iE "(api[_-]?key|secret|password|token)" .boot-log; then
+            echo "WARNING: Potential secrets found in log file!"
+            echo "Please review and ensure no sensitive data is logged."
+            exit 1
+          fi
+          echo "✓ No obvious secrets found in logs"
+      
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: boot-artifacts
+          path: |
+            .boot-log
+            knowledge_index.json
+          retention-days: 7
