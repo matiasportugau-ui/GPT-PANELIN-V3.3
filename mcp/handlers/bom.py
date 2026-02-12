@@ -51,36 +51,50 @@ def _resolve_system_key(family: str, core: str, usage: str) -> str | None:
     return mapping.get((family_upper, usage_lower))
 
 
-def _get_autoportancia(family: str, core: str, thickness: int) -> float | None:
+def _get_autoportancia(
+    family: str,
+    core: str,
+    thickness: int,
+    producto_ref: str | None = None,
+) -> float | None:
     """Retrieve autoportancia (self-supporting span) from bom_rules.json.
     
     Returns the luz_max_m value for the given product family, core, and thickness.
     This is used to calculate the number of supports needed.
+    
+    If ``producto_ref`` is provided, it is used directly as the lookup key into
+    ``autoportancia.tablas`` (after upper-casing). This allows callers that
+    already resolved the system (and its producto_ref) to avoid duplicating
+    mapping logic here. If ``producto_ref`` is not provided, a best-effort
+    mapping is derived from ``family`` and ``core`` for backwards compatibility.
     """
     rules = _load_bom_rules()
     autoportancia_tables = rules.get("autoportancia", {}).get("tablas", {})
-    
-    # Build the key for the autoportancia table
-    family_upper = family.upper()
-    if family_upper == "ISOROOF":
-        key = "ISOROOF_3G"
-    elif family_upper == "ISODEC":
-        key = f"ISODEC_{core.upper()}"
-    elif family_upper == "ISOPANEL":
-        key = f"ISOPANEL_{core.upper()}"
-    elif family_upper == "ISOWALL":
-        # ISOWALL typically uses PIR
-        key = "ISOWALL_PIR"
-    elif family_upper == "ISOFRIG":
-        # ISOFRIG typically uses PIR
-        key = "ISOFRIG_PIR"
+
+    # Prefer explicit producto_ref when available to avoid duplicating mapping logic.
+    if producto_ref:
+        key = producto_ref.upper()
     else:
-        return None
-    
+        # Build the key for the autoportancia table from family/core as fallback.
+        family_upper = family.upper()
+        if family_upper == "ISOROOF":
+            key = "ISOROOF_3G"
+        elif family_upper == "ISODEC":
+            key = f"ISODEC_{core.upper()}"
+        elif family_upper == "ISOPANEL":
+            key = f"ISOPANEL_{core.upper()}"
+        elif family_upper == "ISOWALL":
+            # ISOWALL typically uses PIR
+            key = "ISOWALL_PIR"
+        elif family_upper == "ISOFRIG":
+            # ISOFRIG typically uses PIR
+            key = "ISOFRIG_PIR"
+        else:
+            return None
+
     thickness_str = str(thickness)
     table = autoportancia_tables.get(key, {})
     entry = table.get(thickness_str, {})
-    
     return entry.get("luz_max_m")
 
 
