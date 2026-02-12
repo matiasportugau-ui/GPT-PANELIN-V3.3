@@ -274,16 +274,18 @@ This document provides practical examples for using each of the four MCP tools e
   "tool": "report_error",
   "arguments": {
     "kb_file": "bromyros_pricing_master.json",
-    "field": "products.ISODEC_EPS_120",
+    "field": "data.products[index_to_find].sku",
     "wrong_value": "null",
-    "correct_value": "Product should exist: ISODEC EPS 120mm",
+    "correct_value": "Product should exist: ISODEC EPS 120mm with SKU ISODEC_EPS_120",
     "source": "validation_check",
-    "notes": "Product exists in catalog but missing from pricing data"
+    "notes": "Product exists in catalog but missing from pricing data. Note: data.products is an array; specify the actual index or search criteria."
   }
 }
 ```
 
 **Use Case:** Automated validation discovers missing data
+
+**Note:** The `bromyros_pricing_master.json` file stores products under `data.products` as an array. Use the appropriate array index or search pattern in the field path.
 
 ---
 

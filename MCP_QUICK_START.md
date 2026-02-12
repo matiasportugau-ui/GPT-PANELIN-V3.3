@@ -9,8 +9,8 @@
 ### Step 1: Install Dependencies
 
 ```bash
-cd mcp
-pip install -r requirements.txt
+# From the repository root
+pip install -r mcp/requirements.txt
 ```
 
 This installs:
@@ -22,13 +22,17 @@ This installs:
 
 ### Step 2: Start the Server
 
+**Important:** Run the server from the repository root (not from inside the `mcp/` directory) to ensure the local package is used.
+
 **For local testing (stdio transport):**
 ```bash
+# From the repository root
 python -m mcp.server
 ```
 
 **For remote hosting (SSE transport):**
 ```bash
+# From the repository root
 python -m mcp.server --transport sse --port 8000
 ```
 
@@ -39,10 +43,12 @@ The server communicates via standard input/output. Use an MCP client like Claude
 
 **With SSE transport:**
 ```bash
-# Test health endpoint
-curl http://localhost:8000/sse
+# The SSE endpoint will keep the connection open (Server-Sent Events stream).
+# To verify the server is running, check the server logs for startup messages,
+# or use a proper MCP client that can communicate with SSE endpoints.
 
-# The server is ready when it responds without errors
+# If you need to verify the server is listening:
+curl --max-time 2 http://localhost:8000/messages 2>&1 | grep -q "Method Not Allowed\|404" && echo "Server is running" || echo "Server not responding"
 ```
 
 ---
@@ -62,23 +68,43 @@ Your MCP server exposes 4 tools:
 
 ## 💡 Integration Examples
 
-### OpenAI Custom GPT
+There are two distinct integration paths in this project:
 
-1. Import tool schemas from `mcp/tools/*.json`
-2. Configure GPT Actions in OpenAI GPT Builder
-3. Map each tool to a GPT Action
-4. Test with sample queries
+### 1. MCP-compatible Clients (Model Context Protocol)
 
-### Claude Desktop
+**For local MCP clients (Claude Desktop, IDE extensions, etc.):**
 
-1. Start server with stdio transport: `python -m mcp.server`
-2. Configure Claude Desktop MCP settings
-3. Point to the server executable
-4. Tools will appear in Claude's interface
+1. Start server with stdio transport: `python -m mcp.server` (from repo root)
+2. Configure your MCP client to point to the server executable
+3. The client will discover available tools from the MCP protocol
 
-### Other MCP Clients
+**For remote MCP clients:**
 
-The server follows the [MCP specification](https://modelcontextprotocol.io) and works with any compliant client.
+1. Start server with SSE transport: `python -m mcp.server --transport sse --port 8000`
+2. Configure your MCP client to connect to the SSE endpoint
+3. Tools will be available via the MCP protocol over HTTP
+
+**MCP tool schemas are available at:**
+- `mcp/tools/price_check.json`
+- `mcp/tools/catalog_search.json`
+- `mcp/tools/bom_calculate.json`
+- `mcp/tools/report_error.json`
+
+These JSON files describe MCP tools and are consumed by MCP-aware clients.
+
+### 2. OpenAI Custom GPT Actions (HTTP / OpenAPI-based)
+
+**Note:** OpenAI Custom GPT Actions use HTTP endpoints defined by OpenAPI schemas, which is a different integration approach than MCP.
+
+To integrate with OpenAI Custom GPT Actions:
+
+1. Deploy the SSE transport server: `python -m mcp.server --transport sse --port 8000`
+2. Create HTTP endpoint wrappers that expose the MCP tools as REST APIs
+3. Generate an OpenAPI schema for those HTTP endpoints
+4. In OpenAI GPT Builder, import the OpenAPI specification
+5. Configure authentication for your deployed HTTP endpoints
+
+The MCP server's stdio transport cannot be used directly with OpenAI Custom GPT Actions, as Actions require HTTP endpoints.
 
 ---
 

@@ -654,9 +654,8 @@ The Model Context Protocol (MCP) is an open standard for connecting AI assistant
 #### Install Dependencies
 
 ```bash
-# Install MCP server dependencies
-cd mcp
-pip install -r requirements.txt
+# Install MCP server dependencies from the repository root
+pip install -r mcp/requirements.txt
 ```
 
 **Required packages:**
@@ -666,24 +665,24 @@ pip install -r requirements.txt
 - `httpx>=0.27.0` - HTTP client
 - `pydantic>=2.0.0` - Data validation
 
-#### Run with stdio Transport (Recommended)
+#### Run with stdio Transport (Local MCP Clients)
 
-For local testing and OpenAI Custom GPT Actions integration:
+For local MCP clients like Claude Desktop:
 
 ```bash
-# Run MCP server with stdio transport
+# Run from the repository root
 python -m mcp.server
 
 # The server will communicate via standard input/output
-# Perfect for local MCP clients like Claude Desktop
+# Perfect for local MCP clients
 ```
 
 #### Run with SSE Transport (Remote Hosting)
 
-For remote deployments and web-based clients:
+For remote deployments and HTTP-based integrations:
 
 ```bash
-# Run MCP server with Server-Sent Events transport
+# Run from the repository root
 python -m mcp.server --transport sse --port 8000
 
 # Server will be available at:
@@ -813,23 +812,47 @@ python -m mcp.server --transport sse --port 8000
 - `audit` - Discovered during manual audit
 - `web_verification` - Verified against external source
 
-**Response:** Persists error to `corrections_log.json` for tracking and eventual auto-correction via GitHub PRs.
+**Response:** Persists error to `corrections_log.json` for tracking and potential future automation (e.g., generating GitHub PRs via external tools; not implemented in this repository).
 
-### Integration with OpenAI Custom GPTs
+### Integration Paths
 
-To integrate the MCP server with OpenAI Custom GPT Actions:
+There are two distinct integration paths in this project:
 
-1. **Start the MCP server** with stdio transport (default)
-2. **Configure GPT Action** in OpenAI GPT Builder:
-   - Import MCP tool schemas from `mcp/tools/*.json`
-   - Map tool endpoints to GPT Actions
-   - Configure authentication if needed
+#### 1. MCP-compatible Clients (Model Context Protocol)
 
-3. **Tool schemas are available at:**
-   - `mcp/tools/price_check.json`
-   - `mcp/tools/catalog_search.json`
-   - `mcp/tools/bom_calculate.json`
-   - `mcp/tools/report_error.json`
+**For local MCP clients (e.g., Claude Desktop, IDE extensions):**
+
+- Run the MCP server using the stdio transport (default): `python -m mcp.server` from repo root
+- Point your MCP client at the server executable
+- The client will discover available tools from the MCP protocol
+
+**For remote MCP clients:**
+
+- Run with SSE transport: `python -m mcp.server --transport sse --port 8000` from repo root
+- Configure your MCP client to connect to the SSE endpoint
+- Tools will be available via the MCP protocol over HTTP
+
+**MCP tool schemas are available at:**
+- `mcp/tools/price_check.json`
+- `mcp/tools/catalog_search.json`
+- `mcp/tools/bom_calculate.json`
+- `mcp/tools/report_error.json`
+
+These JSON files describe MCP tools and are consumed by MCP-aware clients, not directly by OpenAI Custom GPT Actions.
+
+#### 2. OpenAI Custom GPT Actions (HTTP / OpenAPI-based)
+
+**Note:** OpenAI Custom GPT Actions use HTTP endpoints defined by OpenAPI schemas, which is a different integration approach than MCP.
+
+To integrate with OpenAI Custom GPT Actions:
+
+1. Deploy the SSE transport server: `python -m mcp.server --transport sse --port 8000` from repo root
+2. Implement HTTP API wrappers that expose the MCP tools as REST endpoints
+3. Generate an OpenAPI specification for those HTTP endpoints
+4. In the OpenAI GPT Builder, create a new Action and import the OpenAPI specification
+5. Configure any required authentication for your deployed HTTP endpoint
+
+The MCP server's stdio transport cannot be used directly with OpenAI Custom GPT Actions, as Actions require HTTP endpoints accessible over the internet.
 
 ### Architecture
 

@@ -56,24 +56,27 @@ The MCP server provides **4 specialized tools** for construction panel quotation
 
 1. **Install dependencies:**
    ```bash
-   cd mcp
-   pip install -r requirements.txt
+   # From the repository root
+   pip install -r mcp/requirements.txt
    ```
 
 2. **Start the server:**
    ```bash
+   # From the repository root
    python -m mcp.server
    ```
 
 3. **Integrate with your AI assistant:**
-   - OpenAI Custom GPT: Import tool schemas from `mcp/tools/*.json`
-   - Claude Desktop: Configure MCP settings to point to the server
-   - Other MCP clients: Use the standard MCP protocol
+   - Local MCP clients (Claude Desktop, etc.): Use stdio transport (default)
+   - Remote MCP clients: Use SSE transport with `--transport sse --port 8000`
+   - OpenAI Custom GPT Actions: Deploy SSE server and create HTTP API wrappers (see documentation)
 
 ### Server Transports
 
-- **stdio transport** (default): For local testing and OpenAI Custom GPT Actions
-- **SSE transport** (optional): For remote hosting with `--transport sse --port 8000`
+- **stdio transport** (default): For local MCP clients (no HTTP endpoints)
+- **SSE transport** (optional): For remote hosting and HTTP-based integrations with `--transport sse --port 8000`
+
+**Important:** Always run the server from the repository root, not from inside the `mcp/` directory, to ensure the local package is used.
 
 ---
 
@@ -162,14 +165,15 @@ The MCP server implementation is:
 
 1. **Test the server:**
    ```bash
-   cd mcp
-   pip install -r requirements.txt
+   # From the repository root
+   pip install -r mcp/requirements.txt
    python -m mcp.server
    ```
 
-2. **Integrate with OpenAI Custom GPT:**
-   - Import tool schemas from `mcp/tools/*.json`
-   - Configure GPT Actions in OpenAI GPT Builder
+2. **Integrate with MCP clients:**
+   - For local MCP clients (Claude Desktop): Use stdio transport
+   - For remote MCP clients: Use SSE transport with `--transport sse --port 8000`
+   - For OpenAI Custom GPT Actions: Deploy SSE server, create HTTP API wrappers, and import OpenAPI spec
    - Test with sample queries from `MCP_USAGE_EXAMPLES.md`
 
 3. **Monitor and optimize:**
