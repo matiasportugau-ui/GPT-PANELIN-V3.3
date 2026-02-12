@@ -41,8 +41,9 @@ def _search_products(data: dict[str, Any], query: str, filter_type: str = "searc
         items = []
         for key, value in products.items():
             if isinstance(value, dict):
-                value["_key"] = key
-                items.append(value)
+                item = dict(value)
+                item["_key"] = key
+                items.append(item)
             elif isinstance(value, list):
                 items.extend(value)
         products = items
