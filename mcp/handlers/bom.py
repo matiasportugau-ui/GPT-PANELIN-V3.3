@@ -92,7 +92,11 @@ def _get_autoportancia(
         else:
             return None
 
-    thickness_str = str(thickness)
+    # Normalize thickness to integer string (e.g., 80.0 -> "80")
+    # The tool schema accepts JSON numbers which may be floats
+    thickness_int = int(thickness) if thickness else 0
+    thickness_str = str(thickness_int)
+    
     table = autoportancia_tables.get(key, {})
     entry = table.get(thickness_str, {})
     return entry.get("luz_max_m")
@@ -110,6 +114,13 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
 
     if not family or not usage or not length or not width:
         return {"error": "product_family, usage, length_m, and width_m are required"}
+    
+    # Validate thickness_mm
+    if not thickness or thickness <= 0:
+        return {
+            "error": "thickness_mm is required and must be a positive number",
+            "received": thickness
+        }
 
     rules = _load_bom_rules()
     system_key = _resolve_system_key(family, core, usage)
@@ -138,7 +149,10 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
     area_m2 = length * width
     
     # Calculate supports using correct formula: ROUNDUP((length_m / autoportancia) + 1)
-    autoportancia = _get_autoportancia(family, core, thickness)
+    # Use producto_ref from system to avoid duplicating mapping logic
+    producto_ref = system.get("producto_ref")
+    autoportancia = _get_autoportancia(family, core, thickness, producto_ref=producto_ref)
+    
     if autoportancia and autoportancia > 0:
         # Formula from quotation_calculator_v3.py:414-427 and bom_rules.json
         n_supports = max(2, math.ceil((length / autoportancia) + 1))
@@ -146,11 +160,11 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
     else:
         # Fallback if autoportancia not found
         n_supports = max(2, math.ceil(length / 3.0) + 1)  # Conservative fallback: 3m span
-        support_note = f"Fallback estimate (autoportancia not found for {family} {core} {thickness}mm)"
+        support_note = f"Fallback estimate (autoportancia not found for {family} {core} {int(thickness)}mm)"
 
     return {
         "system": system_key,
-        "product": f"{family} {core} {thickness}mm",
+        "product": f"{family} {core} {int(thickness)}mm",
         "dimensions": {"length_m": length, "width_m": width, "area_m2": area_m2},
         "panels": {"quantity": qty_panels, "note": "Verify against useful panel width from KB"},
         "supports": n_supports,
