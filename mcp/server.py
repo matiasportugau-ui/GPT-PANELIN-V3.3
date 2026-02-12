@@ -119,18 +119,18 @@ def main() -> None:
     elif args.transport == "sse":
         from mcp.server.sse import SseServerTransport
         from starlette.applications import Starlette
-        from starlette.routing import Route
+        from starlette.routing import Route, Mount
         import uvicorn
 
         server = create_server()
         sse = SseServerTransport("/messages")
 
-        async def handle_sse(request):
-            async with sse.connect_sse(request.scope, request.receive, request._send) as streams:
+        async def handle_sse_app(scope, receive, send):
+            async with sse.connect_sse(scope, receive, send) as streams:
                 await server.run(streams[0], streams[1], server.create_initialization_options())
 
         app = Starlette(routes=[
-            Route("/sse", endpoint=handle_sse),
+            Mount("/sse", app=handle_sse_app),
             Route("/messages", endpoint=sse.handle_post_message, methods=["POST"]),
         ])
         uvicorn.run(app, host="0.0.0.0", port=args.port)
