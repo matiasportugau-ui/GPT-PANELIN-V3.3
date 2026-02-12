@@ -35,6 +35,7 @@ def _next_id(corrections: list[dict[str, Any]]) -> str:
             num = int(cid.split("-")[1])
             last_num = max(last_num, num)
         except (IndexError, ValueError):
+            # Ignore malformed or unexpected ID formats; they don't affect next-ID generation.
             pass
     return f"COR-{last_num + 1:03d}"
 
