@@ -75,6 +75,8 @@ def _search_products(data: dict[str, Any], query: str, filter_type: str = "searc
                 if float(thickness) != float(thickness_mm):
                     match = False
             except (ValueError, TypeError):
+                # If thickness cannot be parsed as a float, ignore the thickness filter
+                # and keep the existing match decision.
                 pass
 
         if match:
