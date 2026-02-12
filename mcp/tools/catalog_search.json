@@ -1,0 +1,25 @@
+{
+  "name": "catalog_search",
+  "description": "Search the BMC product catalog for product details, descriptions, variants, and images. Returns lightweight results from the index; use product ID for full details.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Product name, category, or keyword to search"
+      },
+      "category": {
+        "type": "string",
+        "enum": ["techo", "pared", "camara", "accesorio", "all"],
+        "description": "Filter by product category. Default: 'all'",
+        "default": "all"
+      },
+      "limit": {
+        "type": "integer",
+        "description": "Max results to return (default: 5)",
+        "default": 5
+      }
+    },
+    "required": ["query"]
+  }
+}

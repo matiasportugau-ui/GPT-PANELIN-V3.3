@@ -1,0 +1,32 @@
+{
+  "name": "panelin-mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for GPT-PANELIN v3.3 — BMC Assistant Pro. Provides pricing lookup, catalog search, BOM calculation, and error reporting tools.",
+  "transport": ["stdio", "sse"],
+  "tools": [
+    "tools/price_check.json",
+    "tools/catalog_search.json",
+    "tools/bom_calculate.json",
+    "tools/report_error.json"
+  ],
+  "kb_paths": {
+    "pricing_master": "../bromyros_pricing_master.json",
+    "pricing_optimized": "../bromyros_pricing_gpt_optimized.json",
+    "accessories": "../accessories_catalog.json",
+    "bom_rules": "../bom_rules.json",
+    "shopify_catalog": "../shopify_catalog_v1.json",
+    "shopify_index": "../shopify_catalog_index_v1.csv",
+    "core_kb": "../BMC_Base_Conocimiento_GPT-2.json",
+    "corrections_log": "../corrections_log.json"
+  },
+  "openai_integration": {
+    "registration_method": "custom_gpt_actions",
+    "alternative": "responses_api_mcp_tool",
+    "docs": "https://platform.openai.com/docs/mcp"
+  },
+  "github_mcp": {
+    "server": "github/github-mcp-server",
+    "auth": "oauth",
+    "capabilities": ["repo_read", "issues", "pull_requests", "actions"]
+  }
+}
