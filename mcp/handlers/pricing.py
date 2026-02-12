@@ -13,10 +13,10 @@ from typing import Any
 KB_ROOT = Path(__file__).resolve().parent.parent.parent
 PRICING_FILE = KB_ROOT / "bromyros_pricing_master.json"
 
-_pricing_data: dict[str, Any] | None = None
+_pricing_data: dict[str, Any] | list[Any] | None = None
 
 
-def _load_pricing() -> dict[str, Any]:
+def _load_pricing() -> dict[str, Any] | list[Any]:
     global _pricing_data
     if _pricing_data is None:
         with open(PRICING_FILE, encoding="utf-8") as f:
@@ -28,7 +28,7 @@ def _normalize(text: str) -> str:
     return text.lower().strip().replace("-", "").replace("_", "").replace(" ", "")
 
 
-def _search_products(data: dict[str, Any], query: str, filter_type: str = "search",
+def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: str = "search",
                      thickness_mm: float | None = None) -> list[dict[str, Any]]:
     """Search pricing data for matching products."""
     results: list[dict[str, Any]] = []
