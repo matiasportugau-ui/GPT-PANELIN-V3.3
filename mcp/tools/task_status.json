@@ -1,0 +1,14 @@
+{
+  "name": "task_status",
+  "description": "Check the status and progress of a background task. Returns the task state (pending, running, completed, failed, cancelled), progress percentage, and timing information. Use the task_id returned by batch_bom_calculate, bulk_price_check, or full_quotation.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "task_id": {
+        "type": "string",
+        "description": "The task identifier returned when the task was submitted (e.g., 'TASK-A1B2C3D4')"
+      }
+    },
+    "required": ["task_id"]
+  }
+}

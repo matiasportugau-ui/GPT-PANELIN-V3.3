@@ -6,6 +6,15 @@ A minimal MCP server that exposes BMC quotation tools:
 - bom_calculate: Bill of Materials calculator
 - report_error: KB error correction logger
 
+Background task processing tools (async, long-running operations):
+- batch_bom_calculate: Submit batch BOM calculations
+- bulk_price_check: Submit bulk pricing lookups
+- full_quotation: Submit combined BOM + pricing + catalog quotation
+- task_status: Check background task progress
+- task_result: Retrieve completed task output
+- task_list: List recent background tasks
+- task_cancel: Cancel a pending/running task
+
 Usage:
     # stdio transport (for OpenAI Custom GPT Actions / local testing)
     python -m mcp.server
@@ -37,6 +46,15 @@ from .handlers.pricing import handle_price_check
 from .handlers.catalog import handle_catalog_search
 from .handlers.bom import handle_bom_calculate
 from .handlers.errors import handle_report_error
+from .handlers.tasks import (
+    handle_batch_bom_calculate,
+    handle_bulk_price_check,
+    handle_full_quotation,
+    handle_task_status,
+    handle_task_result,
+    handle_task_list,
+    handle_task_cancel,
+)
 
 TOOLS_DIR = Path(__file__).parent / "tools"
 
@@ -48,15 +66,44 @@ def _load_tool_schema(name: str) -> dict[str, Any]:
         return json.load(f)
 
 
-# Tool handler dispatch
+# Tool handler dispatch — core tools + background task tools
 TOOL_HANDLERS = {
+    # Core tools (synchronous)
     "price_check": handle_price_check,
     "catalog_search": handle_catalog_search,
     "bom_calculate": handle_bom_calculate,
     "report_error": handle_report_error,
+    # Background task tools (async)
+    "batch_bom_calculate": handle_batch_bom_calculate,
+    "bulk_price_check": handle_bulk_price_check,
+    "full_quotation": handle_full_quotation,
+    "task_status": handle_task_status,
+    "task_result": handle_task_result,
+    "task_list": handle_task_list,
+    "task_cancel": handle_task_cancel,
 }
 
 TOOL_NAMES = list(TOOL_HANDLERS.keys())
+
+
+def _init_task_workers() -> None:
+    """Register background task workers with the task manager.
+
+    Called once during server creation to wire up the worker functions
+    for each supported background task type.
+    """
+    from .tasks.manager import get_task_manager
+    from .tasks.models import TaskType
+    from .tasks.workers import (
+        batch_bom_worker,
+        bulk_pricing_worker,
+        full_quotation_worker,
+    )
+
+    manager = get_task_manager()
+    manager.register_worker(TaskType.BATCH_BOM, batch_bom_worker)
+    manager.register_worker(TaskType.BULK_PRICING, bulk_pricing_worker)
+    manager.register_worker(TaskType.FULL_QUOTATION, full_quotation_worker)
 
 
 def create_server() -> Any:
@@ -67,6 +114,9 @@ def create_server() -> Any:
             file=sys.stderr,
         )
         sys.exit(1)
+
+    # Initialize background task workers
+    _init_task_workers()
 
     server = Server("panelin-mcp-server")
 

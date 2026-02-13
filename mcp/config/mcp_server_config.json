@@ -1,13 +1,20 @@
 {
   "name": "panelin-mcp-server",
-  "version": "0.1.0",
-  "description": "MCP server for GPT-PANELIN v3.3 — BMC Assistant Pro. Provides pricing lookup, catalog search, BOM calculation, and error reporting tools.",
+  "version": "0.2.0",
+  "description": "MCP server for GPT-PANELIN v3.3 — BMC Assistant Pro. Provides pricing lookup, catalog search, BOM calculation, error reporting, and background task processing for batch operations and full quotation generation.",
   "transport": ["stdio", "sse"],
   "tools": [
     "tools/price_check.json",
     "tools/catalog_search.json",
     "tools/bom_calculate.json",
-    "tools/report_error.json"
+    "tools/report_error.json",
+    "tools/batch_bom_calculate.json",
+    "tools/bulk_price_check.json",
+    "tools/full_quotation.json",
+    "tools/task_status.json",
+    "tools/task_result.json",
+    "tools/task_list.json",
+    "tools/task_cancel.json"
   ],
   "kb_paths": {
     "pricing_master": "../bromyros_pricing_master.json",
