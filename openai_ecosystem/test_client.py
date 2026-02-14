@@ -666,6 +666,7 @@ class TestExtractPrimaryOutput:
         result = extract_primary_output(response)
         assert result["type"] == "tool_call"
         assert result["value"]["name"] == "bom_calculate"
+        assert result["value"]["expected_contract_version"] == "v1"
     def test_returns_unknown_with_diagnostic(self):
         """Test that unknown type with diagnostic is returned when no content."""
         response = {"id": "123", "model": "gpt-4"}
