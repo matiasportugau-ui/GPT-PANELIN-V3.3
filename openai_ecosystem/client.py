@@ -7,7 +7,10 @@ Pydantic models, or ad-hoc objects depending on transport and API family.
 from __future__ import annotations
 
 from dataclasses import asdict, is_dataclass
+import json
 from typing import Any
+
+from mcp_tools.contracts import TOOL_CONTRACT_VERSIONS
 
 
 def _get(obj: Any, key: str, default: Any = None) -> Any:
@@ -74,6 +77,94 @@ def _iter_output_items(response: Any) -> list[Any]:
         else:
             items.append(candidate)
     return items
+
+
+def _parse_tool_arguments(arguments: Any) -> Any:
+    """Normalize tool-call arguments payload (dict or JSON string)."""
+    if isinstance(arguments, str):
+        candidate = arguments.strip()
+        if not candidate:
+            return {}
+        try:
+            parsed = json.loads(candidate)
+            return _to_plain(parsed)
+        except Exception:
+            return {"raw": candidate}
+    if arguments is None:
+        return {}
+    return _to_plain(arguments)
+
+
+def _build_tool_call(name: Any, arguments: Any, call_id: Any = None) -> dict[str, Any]:
+    """Build normalized tool-call object with contract version hints."""
+    normalized_name = name if isinstance(name, str) else None
+    payload = {
+        "name": normalized_name,
+        "arguments": _parse_tool_arguments(arguments),
+        "id": call_id,
+    }
+    if normalized_name in TOOL_CONTRACT_VERSIONS:
+        payload["expected_contract_version"] = TOOL_CONTRACT_VERSIONS[normalized_name]
+    return payload
+
+
+def _iter_tool_calls(response: Any) -> list[dict[str, Any]]:
+    """Collect tool-calls across Responses and Chat Completions variants."""
+    found: list[dict[str, Any]] = []
+
+    for item in _iter_output_items(response):
+        item_type = (_get(item, "type") or "").lower()
+        if "tool" in item_type or "function" in item_type:
+            found.append(
+                _build_tool_call(
+                    _get(item, "name") or _get(item, "tool_name"),
+                    _get(item, "arguments") or _get(item, "input"),
+                    _get(item, "id"),
+                )
+            )
+
+        content = _get(item, "content")
+        if isinstance(content, list):
+            for part in content:
+                part_type = (_get(part, "type") or "").lower()
+                if "tool" in part_type or "function" in part_type:
+                    found.append(
+                        _build_tool_call(
+                            _get(part, "name") or _get(part, "tool_name"),
+                            _get(part, "arguments") or _get(part, "input"),
+                            _get(part, "id"),
+                        )
+                    )
+
+    choices = _get(response, "choices")
+    if isinstance(choices, list):
+        for choice in choices:
+            message = _get(choice, "message") or {}
+            tool_calls = _get(message, "tool_calls")
+            if isinstance(tool_calls, list):
+                for call in tool_calls:
+                    function = _get(call, "function") or {}
+                    found.append(
+                        _build_tool_call(
+                            _get(function, "name") or _get(call, "name"),
+                            _get(function, "arguments") or _get(call, "arguments"),
+                            _get(call, "id"),
+                        )
+                    )
+
+    message_tool_calls = _get(_get(response, "message"), "tool_calls")
+    if isinstance(message_tool_calls, list):
+        for call in message_tool_calls:
+            function = _get(call, "function") or {}
+            found.append(
+                _build_tool_call(
+                    _get(function, "name") or _get(call, "name"),
+                    _get(function, "arguments") or _get(call, "arguments"),
+                    _get(call, "id"),
+                )
+            )
+
+    return found
 
 
 def _extract_text_from_item(item: Any) -> list[str]:
@@ -201,35 +292,8 @@ def extract_primary_output(response: Any) -> dict[str, Any]:
         if isinstance(value, (dict, list)) and value:
             return {"type": "structured", "value": _to_plain(value)}
 
-    # Search first output item with explicit tool metadata.
-    for item in _iter_output_items(response):
-        item_type = (_get(item, "type") or "").lower()
-        if "tool" in item_type or "function" in item_type:
-            return {
-                "type": "tool_call",
-                "value": {
-                    "name": _get(item, "name") or _get(item, "tool_name"),
-                    "arguments": _to_plain(
-                        _get(item, "arguments") or _get(item, "input") or {}
-                    ),
-                    "id": _get(item, "id"),
-                },
-            }
-
-    # Some chat APIs place tool calls under message.tool_calls.
-    tool_calls = _get(_get(response, "message"), "tool_calls")
-    if isinstance(tool_calls, list) and tool_calls:
-        first = tool_calls[0]
-        function = _get(first, "function") or {}
-        return {
-            "type": "tool_call",
-            "value": {
-                "name": _get(function, "name") or _get(first, "name"),
-                "arguments": _to_plain(
-                    _get(function, "arguments") or _get(first, "arguments") or {}
-                ),
-                "id": _get(first, "id"),
-            },
-        }
+    tool_calls = _iter_tool_calls(response)
+    if tool_calls:
+        return {"type": "tool_call", "value": tool_calls[0]}
 
     return {"type": "unknown", "value": None, "diagnostic": _diagnostic_summary(response)}

@@ -1,0 +1,10 @@
+{
+  "input": {"query": "ISODEC-100-1000", "filter_type": "sku"},
+  "output": {
+    "ok": true,
+    "contract_version": "v1",
+    "matches": [
+      {"sku": "ISODEC-100-1000", "description": "Panel ISODEC 100 mm", "thickness_mm": 100, "price_usd_iva_inc": 58.7}
+    ]
+  }
+}

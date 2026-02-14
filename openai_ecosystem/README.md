@@ -69,8 +69,19 @@ Returned shape:
 
 - `{"type": "text", "value": "..."}`
 - `{"type": "structured", "value": {...}}`
-- `{"type": "tool_call", "value": {"name": "...", "arguments": {...}, "id": "..."}}`
+- `{"type": "tool_call", "value": {"name": "...", "arguments": {...}, "id": "...", "expected_contract_version": "v1"?}}`
 - `{"type": "unknown", "value": null, "diagnostic": "..."}`
+
+
+Tool-call extraction supports these paths:
+
+- `response.output[]` items with `type` containing `tool`/`function`
+- `response.output[].content[]` parts with `type` containing `tool`/`function`
+- `response.message.tool_calls[]`
+- `response.choices[].message.tool_calls[]`
+
+When `arguments` arrives as a JSON string, `extract_primary_output` attempts to parse it into an object.
+Known first-wave tool names (`kb_search`, `price_check`, `bom_calculate`, `catalog_search`, `quotation_store`) include `expected_contract_version: "v1"` in the returned tool metadata.
 
 ### Structured example
 

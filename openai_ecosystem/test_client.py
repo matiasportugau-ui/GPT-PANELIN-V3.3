@@ -432,6 +432,73 @@ class TestExtractPrimaryOutput:
         assert result["value"]["name"] == "get_weather"
         assert result["value"]["arguments"] == {"city": "Boston"}
 
+
+    def test_parses_tool_call_arguments_json_string(self):
+        """Tool-call arguments serialized as JSON string are parsed."""
+        response = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_2",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": '{"query": "ISODEC-100-1000", "filter_type": "sku"}'
+                        }
+                    }
+                ]
+            }
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["arguments"] == {
+            "query": "ISODEC-100-1000",
+            "filter_type": "sku"
+        }
+        assert result["value"]["expected_contract_version"] == "v1"
+
+    def test_extracts_tool_call_from_content_parts(self):
+        """Tool-call metadata nested under content[] is detected."""
+        response = {
+            "output": [
+                {
+                    "type": "message",
+                    "content": [
+                        {
+                            "type": "function_call",
+                            "name": "catalog_search",
+                            "arguments": {"query": "isodec"}
+                        }
+                    ]
+                }
+            ]
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["name"] == "catalog_search"
+        assert result["value"]["expected_contract_version"] == "v1"
+
+    def test_extracts_tool_call_from_choices_message(self):
+        """Chat Completions tool calls in choices[].message.tool_calls are supported."""
+        response = {
+            "choices": [
+                {
+                    "message": {
+                        "tool_calls": [
+                            {
+                                "id": "call_3",
+                                "function": {
+                                    "name": "bom_calculate",
+                                    "arguments": {"product_family": "ISODEC"}
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["name"] == "bom_calculate"
     def test_returns_unknown_with_diagnostic(self):
         """Test that unknown type with diagnostic is returned when no content."""
         response = {"id": "123", "model": "gpt-4"}
