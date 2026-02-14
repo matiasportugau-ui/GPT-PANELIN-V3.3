@@ -32,6 +32,19 @@ def _normalize(text: str) -> str:
     return text.lower().strip()
 
 
+def _to_lightweight(product: dict[str, Any]) -> dict[str, Any]:
+    """Extract only the fields needed for search results."""
+    return {
+        "id": product.get("id"),
+        "title": product.get("title", ""),
+        "handle": product.get("handle", ""),
+        "product_type": product.get("product_type", ""),
+        "vendor": product.get("vendor", ""),
+        "tags": product.get("tags", ""),
+        "status": product.get("status", ""),
+    }
+
+
 CATEGORY_MAP = {
     "techo": ["techo", "roof", "isoroof", "isodec", "cubierta"],
     "pared": ["pared", "wall", "isowall", "isopanel"],
@@ -40,57 +53,12 @@ CATEGORY_MAP = {
 }
 
 
-def _to_contract_result(product: dict[str, Any]) -> dict[str, Any]:
-    """Transform a product record to the v1 contract result format."""
-    product_id = product.get("id")
-    # Convert numeric IDs to strings as per contract
-    if isinstance(product_id, (int, float)):
-        product_id = str(int(product_id))
-    elif product_id is None:
-        product_id = ""
-    else:
-        product_id = str(product_id)
-    
-    name = product.get("title", "")
-    
-    # Map product_type or tags to category
-    ptype = _normalize(product.get("product_type", ""))
-    tags = _normalize(str(product.get("tags", "")))
-    searchable = f"{ptype} {tags}"
-    
-    category = "unknown"
-    for cat, keywords in CATEGORY_MAP.items():
-        if any(kw in searchable for kw in keywords):
-            category = cat
-            break
-    
-    # Build URL from handle if available
-    handle = product.get("handle", "")
-    url = f"https://bromyros.com/products/{handle}" if handle else ""
-    
-    result = {
-        "product_id": product_id,
-        "name": name,
-        "category": category
-    }
-    
-    if url:
-        result["url"] = url
-    
-    # Note: score would require actual relevance calculation, omitting for now
-    
-    return result
-
-
 async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute catalog_search tool and return results in v1 contract format."""
     """Execute catalog_search tool and return v1 contract envelope."""
     query = arguments.get("query", "")
     category = arguments.get("category", "all")
     limit = arguments.get("limit", 5)
 
-    # Validate query
-    if not query:
     # Validate query parameter (contract requires minLength=2, strip whitespace)
     query_stripped = query.strip() if isinstance(query, str) else ""
     if len(query_stripped) < 2:
@@ -99,11 +67,6 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
             "contract_version": "v1",
             "error": {
                 "code": "QUERY_TOO_SHORT",
-                "message": "Query parameter is required"
-            }
-        }
-    
-    if len(query) < 2:
                 "message": "Query parameter must be at least 2 characters long",
                 "details": {"query": query}
             }
@@ -121,13 +84,6 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
             "ok": False,
             "contract_version": "v1",
             "error": {
-                "code": "QUERY_TOO_SHORT",
-                "message": f"Query must be at least 2 characters long (received: {len(query)})",
-                "details": {"query": query, "length": len(query)}
-            }
-        }
-    
-    if len(query) > 120:
                 "code": "INTERNAL_ERROR",
                 "message": "Invalid 'limit' parameter. It must be an integer between 1 and 30.",
                 "details": {"limit": limit},
@@ -149,15 +105,6 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
             "ok": False,
             "contract_version": "v1",
             "error": {
-                "code": "QUERY_TOO_SHORT",  # Using contract-defined code
-                "message": f"Query must be at most 120 characters long (received: {len(query)})",
-                "details": {"query": query[:50] + "...", "length": len(query), "note": "Query too long"}
-            }
-        }
-    
-    # Validate category
-    valid_categories = ["techo", "pared", "camara", "accesorio", "all"]
-    if category not in valid_categories:
                 "code": "INVALID_CATEGORY",
                 "message": f"Invalid category '{category}'. Must be one of: {', '.join(valid_categories)}",
                 "details": {"category": category}
@@ -166,41 +113,25 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
 
     try:
         catalog = _load_catalog()
-    except (FileNotFoundError, json.JSONDecodeError, KeyError):
+    except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
         # Catalog data file issues - use CATALOG_UNAVAILABLE
         logger.exception("Catalog data unavailable")
         return {
             "ok": False,
             "contract_version": "v1",
             "error": {
-                "code": "INVALID_CATEGORY",
-                "message": f"Invalid category '{category}'. Must be one of: {', '.join(valid_categories)}",
-                "details": {"received": category, "valid_options": valid_categories}
-            }
-        }
-    
-    # Validate limit
-    if not isinstance(limit, int) or limit < 1 or limit > 30:
                 "code": "CATALOG_UNAVAILABLE",
                 "message": "Catalog data is currently unavailable",
                 "details": {}
             }
         }
-    except Exception:
+    except Exception as e:
         # Other unexpected errors during catalog loading
         logger.exception("Error loading catalog")
         return {
             "ok": False,
             "contract_version": "v1",
             "error": {
-                "code": "INTERNAL_ERROR",  # Using available contract code for input validation
-                "message": f"Limit must be an integer between 1 and 30 (received: {limit})",
-                "details": {"received": limit, "min": 1, "max": 30}
-            }
-        }
-
-    try:
-        catalog = _load_catalog()
                 "code": "INTERNAL_ERROR",
                 "message": "Internal error processing catalog_search request",
                 "details": {}
@@ -230,7 +161,6 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
                 if not any(kw in searchable for kw in category_keywords):
                     continue
 
-            results.append(_to_contract_result(product))
             # Transform to contract schema format, using the lightweight helper as the base
             lightweight = _to_lightweight(product)
             result = {
@@ -256,20 +186,8 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
             "contract_version": "v1",
             "results": results
         }
-    
-    except FileNotFoundError:
-        return {
-            "ok": False,
-            "contract_version": "v1",
-            "error": {
-                "code": "CATALOG_UNAVAILABLE",
-                "message": "Catalog file not found",
-                "details": {"file": str(CATALOG_FILE)}
-            }
-        }
-    except Exception as e:
 
-    except Exception:
+    except Exception as e:
         # Log the full exception for debugging
         logger.exception("Error processing catalog_search request")
         
@@ -278,8 +196,6 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
             "contract_version": "v1",
             "error": {
                 "code": "INTERNAL_ERROR",
-                "message": f"Internal error during catalog search: {str(e)}",
-                "details": {"exception_type": type(e).__name__}
                 "message": "Internal error processing catalog_search request",
                 "details": {}
             }
