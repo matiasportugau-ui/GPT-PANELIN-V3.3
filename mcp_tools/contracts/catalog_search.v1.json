@@ -14,23 +14,55 @@
     "required": ["query"]
   },
   "output_schema": {
-    "type": "array",
-    "items": {
-      "type": "object",
-      "additionalProperties": true,
-      "properties": {
-        "id": {
-          "oneOf": [
-            {"type": "string"},
-            {"type": "integer"}
-          ]
+    "oneOf": [
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {"const": true},
+          "contract_version": {"const": "v1"},
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "id": {
+                  "oneOf": [
+                    {"type": "string"},
+                    {"type": "integer"}
+                  ]
+                },
+                "title": {"type": "string"},
+                "handle": {"type": "string"},
+                "product_type": {"type": "string"}
+              },
+              "required": ["id", "title"]
+            }
+          }
         },
-        "title": {"type": "string"},
-        "handle": {"type": "string"},
-        "product_type": {"type": "string"}
+        "required": ["ok", "contract_version", "results"]
       },
-      "required": ["id", "title"]
-    }
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {"const": false},
+          "contract_version": {"const": "v1"},
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {"type": "string", "enum": ["INVALID_CATEGORY", "QUERY_TOO_SHORT", "CATALOG_UNAVAILABLE", "INTERNAL_ERROR"]},
+              "message": {"type": "string"},
+              "details": {"type": "object"}
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["ok", "contract_version", "error"]
+      }
+    ]
   },
   "error_codes": ["INVALID_CATEGORY", "QUERY_TOO_SHORT", "CATALOG_UNAVAILABLE", "INTERNAL_ERROR"]
 }

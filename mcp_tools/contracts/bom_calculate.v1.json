@@ -18,7 +18,50 @@
     "required": ["product_family", "thickness_mm", "usage", "length_m", "width_m"]
   },
   "output_schema": {
-    "type": "object"
+    "oneOf": [
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {"const": true},
+          "contract_version": {"const": "v1"},
+          "system": {"type": "string"},
+          "product": {"type": "string"},
+          "dimensions": {
+            "type": "object",
+            "properties": {
+              "length_m": {"type": "number"},
+              "width_m": {"type": "number"},
+              "area_m2": {"type": "number"}
+            }
+          },
+          "panels": {"type": "object"},
+          "supports": {"type": "number"},
+          "supports_note": {"type": "string"},
+          "bom_rules_applied": {"type": "object"}
+        },
+        "required": ["ok", "contract_version"]
+      },
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {"const": false},
+          "contract_version": {"const": "v1"},
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {"type": "string", "enum": ["INVALID_DIMENSIONS", "INVALID_THICKNESS", "RULE_NOT_FOUND", "INTERNAL_ERROR"]},
+              "message": {"type": "string"},
+              "details": {"type": "object"}
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["ok", "contract_version", "error"]
+      }
+    ]
   },
   "error_codes": ["INVALID_DIMENSIONS", "INVALID_THICKNESS", "RULE_NOT_FOUND", "INTERNAL_ERROR"]
 }

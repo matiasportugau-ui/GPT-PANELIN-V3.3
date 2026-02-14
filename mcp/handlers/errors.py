@@ -41,7 +41,7 @@ def _next_id(corrections: list[dict[str, Any]]) -> str:
 
 
 async def handle_report_error(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Log a KB error correction."""
+    """Log a KB error correction and return v1 contract envelope."""
     kb_file = arguments.get("kb_file")
     field = arguments.get("field")
     wrong_value = arguments.get("wrong_value")
@@ -49,36 +49,64 @@ async def handle_report_error(arguments: dict[str, Any]) -> dict[str, Any]:
     source = arguments.get("source", "user_correction")
     notes = arguments.get("notes", "")
 
+    # Validate required parameters
     if (
         kb_file is None
         or field is None
         or wrong_value is None
         or correct_value is None
     ):
-        return {"error": "kb_file, field, wrong_value, and correct_value are required"}
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_PARAMETERS",
+                "message": "kb_file, field, wrong_value, and correct_value are required",
+                "details": {
+                    "kb_file": kb_file is not None,
+                    "field": field is not None,
+                    "wrong_value": wrong_value is not None,
+                    "correct_value": correct_value is not None
+                }
+            }
+        }
 
-    data = _load_corrections()
-    corrections = data.get("corrections", [])
+    try:
+        data = _load_corrections()
+        corrections = data.get("corrections", [])
 
-    entry = {
-        "id": _next_id(corrections),
-        "date": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "kb_file": kb_file,
-        "field": field,
-        "wrong_value": wrong_value,
-        "correct_value": correct_value,
-        "source": source,
-        "notes": notes,
-        "status": "pending",
-        "applied_date": None,
-    }
+        entry = {
+            "id": _next_id(corrections),
+            "date": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "kb_file": kb_file,
+            "field": field,
+            "wrong_value": wrong_value,
+            "correct_value": correct_value,
+            "source": source,
+            "notes": notes,
+            "status": "pending",
+            "applied_date": None,
+        }
 
-    corrections.append(entry)
-    data["corrections"] = corrections
-    _save_corrections(data)
+        corrections.append(entry)
+        data["corrections"] = corrections
+        _save_corrections(data)
 
-    return {
-        "message": f"Correction {entry['id']} logged successfully",
-        "correction": entry,
-        "total_pending": sum(1 for c in corrections if c.get("status") == "pending"),
-    }
+        return {
+            "ok": True,
+            "contract_version": "v1",
+            "message": f"Correction {entry['id']} logged successfully",
+            "correction": entry,
+            "total_pending": sum(1 for c in corrections if c.get("status") == "pending"),
+        }
+    
+    except Exception as e:
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": f"Failed to log correction: {str(e)}",
+                "details": {"exception_type": type(e).__name__}
+            }
+        }

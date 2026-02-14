@@ -18,11 +18,36 @@
     "date": "2026-02-11",
     "kb_file": "accessories_catalog.json",
     "field": "items[32].price_usd",
-    "wrong_value": 15.50,
+    "wrong_value": 15.5,
     "correct_value": 18.75,
     "source": "User correction in quotation session",
     "status": "pending",
     "applied_date": null
   },
-  "corrections": []
+  "corrections": [
+    {
+      "id": "COR-001",
+      "date": "2026-02-14T09:51:58Z",
+      "kb_file": "test_file.json",
+      "field": "items[0].price",
+      "wrong_value": "100",
+      "correct_value": "150",
+      "source": "user_correction",
+      "notes": "Test correction",
+      "status": "pending",
+      "applied_date": null
+    },
+    {
+      "id": "COR-002",
+      "date": "2026-02-14T09:52:21Z",
+      "kb_file": "test_file.json",
+      "field": "items[0].price",
+      "wrong_value": "100",
+      "correct_value": "150",
+      "source": "user_correction",
+      "notes": "Test correction",
+      "status": "pending",
+      "applied_date": null
+    }
+  ]
 }

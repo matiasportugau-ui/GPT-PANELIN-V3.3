@@ -1,0 +1,207 @@
+name: 🧪 MCP Tests & Validation
+
+on:
+  push:
+    branches: [main, develop, 'copilot/**']
+    paths:
+      - 'mcp/**'
+      - 'mcp_tools/**'
+      - '.github/workflows/mcp-tests.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'mcp/**'
+      - 'mcp_tools/**'
+  workflow_dispatch:
+
+jobs:
+  test-handlers:
+    name: Test MCP Handlers
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔍 Clone Repository
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: 📦 Install Dependencies
+        run: |
+          pip install -r mcp/requirements.txt
+          pip install -r mcp/tests/requirements.txt
+      
+      - name: 🧪 Run Handler Tests
+        run: |
+          cd mcp/tests
+          pytest test_handlers.py -v --cov=../handlers --cov-report=term-missing
+      
+      - name: 📊 Upload Coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: mcp/tests/.coverage
+  
+  validate-contracts:
+    name: Validate Tool Contracts
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔍 Clone Repository
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: 📦 Install JSON Schema Validator
+        run: |
+          pip install jsonschema>=4.20.0
+      
+      - name: ✅ Validate Contract Schemas
+        run: |
+          python3 << 'EOF'
+          import json
+          import sys
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+          
+          contracts_dir = Path("mcp_tools/contracts")
+          errors = []
+          
+          # Validate all v1 contract files
+          for contract_file in contracts_dir.glob("*.v1.json"):
+              try:
+                  with open(contract_file) as f:
+                      contract = json.load(f)
+                  
+                  # Basic structure validation
+                  required_keys = ["tool_name", "contract_version", "description", "input_schema", "output_schema"]
+                  for key in required_keys:
+                      if key not in contract:
+                          errors.append(f"{contract_file.name}: Missing required key '{key}'")
+                  
+                  # Validate that contract_version is "v1"
+                  if contract.get("contract_version") != "v1":
+                      errors.append(f"{contract_file.name}: contract_version must be 'v1'")
+                  
+                  # Validate output_schema has v1 envelope structure
+                  output_schema = contract.get("output_schema", {})
+                  if "oneOf" in output_schema:
+                      # Should have success and error cases
+                      cases = output_schema["oneOf"]
+                      if len(cases) < 2:
+                          errors.append(f"{contract_file.name}: output_schema.oneOf should have at least 2 cases")
+                  
+                  print(f"✓ {contract_file.name}")
+              
+              except json.JSONDecodeError as e:
+                  errors.append(f"{contract_file.name}: Invalid JSON - {e}")
+              except Exception as e:
+                  errors.append(f"{contract_file.name}: {e}")
+          
+          if errors:
+              print("\n❌ Contract validation errors:")
+              for error in errors:
+                  print(f"  - {error}")
+              sys.exit(1)
+          else:
+              print("\n✅ All contracts valid!")
+          EOF
+  
+  validate-kb-files:
+    name: Validate Knowledge Base Files
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔍 Clone Repository
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: ✅ Validate KB JSON Files
+        run: |
+          python3 << 'EOF'
+          import json
+          import sys
+          from pathlib import Path
+          
+          kb_files = [
+              "bromyros_pricing_master.json",
+              "accessories_catalog.json",
+              "bom_rules.json",
+              "shopify_catalog_v1.json",
+              "BMC_Base_Conocimiento_GPT-2.json",
+              "corrections_log.json"
+          ]
+          
+          errors = []
+          
+          for kb_file in kb_files:
+              path = Path(kb_file)
+              if not path.exists():
+                  print(f"⚠️  {kb_file} not found (skipping)")
+                  continue
+              
+              try:
+                  with open(path) as f:
+                      data = json.load(f)
+                  
+                  # Check file size
+                  size_kb = path.stat().st_size / 1024
+                  print(f"✓ {kb_file} ({size_kb:.1f} KB)")
+                  
+                  if size_kb > 2000:
+                      print(f"  ⚠️  Large file (>{size_kb:.0f}KB) - consider optimization")
+              
+              except json.JSONDecodeError as e:
+                  errors.append(f"{kb_file}: Invalid JSON - {e}")
+              except Exception as e:
+                  errors.append(f"{kb_file}: {e}")
+          
+          if errors:
+              print("\n❌ KB validation errors:")
+              for error in errors:
+                  print(f"  - {error}")
+              sys.exit(1)
+          else:
+              print("\n✅ All KB files valid!")
+          EOF
+  
+  check-mcp-server:
+    name: Check MCP Server
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔍 Clone Repository
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: 📦 Install Dependencies
+        run: |
+          pip install -r mcp/requirements.txt || true
+      
+      - name: 🔍 Check Server Syntax
+        run: |
+          python3 -m py_compile mcp/server.py
+          python3 -m py_compile mcp/handlers/*.py
+          echo "✅ All MCP files have valid Python syntax"
+      
+      - name: 📋 List MCP Tools
+        run: |
+          echo "🔧 Available MCP Tools:"
+          ls -1 mcp/tools/*.json | xargs -I {} basename {} .json | sed 's/^/  - /'
+          echo ""
+          echo "📜 Available Contracts:"
+          ls -1 mcp_tools/contracts/*.v1.json | xargs -I {} basename {} .v1.json | sed 's/^/  - /'
