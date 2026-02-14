@@ -46,87 +46,87 @@ class PanelinMCPServer:
             Dict with tool definitions including schemas
         """
         return {
-                  "find_products": {
-                      "type": "object",
-                      "name": "find_products",
-                      "description": "Search for construction panels using natural language",
-                      "input_schema": {
-                          "type": "object",
-                          "properties": {
-                              "query": {
-                                  "type": "string",
-                                  "description": "Natural language search query"
-                              },
-                              "max_results": {
-                                  "type": "integer",
-                                  "description": "Maximum results to return",
-                                  "default": 5
-                              }
-                          },
-                          "required": ["query"]
-                      },
-                      "approval_required": False
-                  },
-                  "get_product_price": {
-                      "type": "object",
-                      "name": "get_product_price",
-                      "description": "Get current price for a specific product",
-                      "input_schema": {
-                          "type": "object",
-                          "properties": {
-                              "product_id": {
-                                  "type": "string",
-                                  "description": "Product ID"
-                              }
-                          },
-                          "required": ["product_id"]
-                      },
-                      "approval_required": False
-                  },
-                  "check_availability": {
-                      "type": "object",
-                      "name": "check_availability",
-                      "description": "Check product availability and delivery",
-                      "input_schema": {
-                          "type": "object",
-                          "properties": {
-                              "product_id": {
-                                  "type": "string",
-                                  "description": "Product ID"
-                              },
-                              "quantity_needed": {
-                                  "type": "number",
-                                  "description": "Quantity needed (m²)"
-                              }
-                          },
-                          "required": ["product_id", "quantity_needed"]
-                      },
-                      "approval_required": False
-                  },
-                  "calculate_quote": {
-                      "type": "object",
-                      "name": "calculate_quote",
-                      "description": "Generate quotation with pricing (REQUIRES APPROVAL)",
-                      "input_schema": {
-                          "type": "object",
-                          "properties": {
-                              "product_id": {"type": "string"},
-                              "length_m": {"type": "number"},
-                              "width_m": {"type": "number"},
-                              "quantity": {"type": "integer", "default": 1},
-                              "discount_percent": {"type": "number", "default": 0},
-                              "include_accessories": {"type": "boolean", "default": True},
-                              "include_tax": {"type": "boolean", "default": True},
-                              "installation_type": {
-                                  "type": "string",
-                                  "enum": ["techo", "pared", "piso"]
-                              }
-                          },
-                          "required": ["product_id", "length_m", "width_m", "installation_type"]
-                      },
-                    "approval_required": True
-                }
+            "find_products": {
+                "type": "object",
+                "name": "find_products",
+                "description": "Search for construction panels using natural language",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "Natural language search query"
+                        },
+                        "max_results": {
+                            "type": "integer",
+                            "description": "Maximum results to return",
+                            "default": 5
+                        }
+                    },
+                    "required": ["query"]
+                },
+                "approval_required": False
+            },
+            "get_product_price": {
+                "type": "object",
+                "name": "get_product_price",
+                "description": "Get current price for a specific product",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        "product_id": {
+                            "type": "string",
+                            "description": "Product ID"
+                        }
+                    },
+                    "required": ["product_id"]
+                },
+                "approval_required": False
+            },
+            "check_availability": {
+                "type": "object",
+                "name": "check_availability",
+                "description": "Check product availability and delivery",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        "product_id": {
+                            "type": "string",
+                            "description": "Product ID"
+                        },
+                        "quantity_needed": {
+                            "type": "number",
+                            "description": "Quantity needed (m²)"
+                        }
+                    },
+                    "required": ["product_id", "quantity_needed"]
+                },
+                "approval_required": False
+            },
+            "calculate_quote": {
+                "type": "object",
+                "name": "calculate_quote",
+                "description": "Generate quotation with pricing (REQUIRES APPROVAL)",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        "product_id": {"type": "string"},
+                        "length_m": {"type": "number"},
+                        "width_m": {"type": "number"},
+                        "quantity": {"type": "integer", "default": 1},
+                        "discount_percent": {"type": "number", "default": 0},
+                        "include_accessories": {"type": "boolean", "default": True},
+                        "include_tax": {"type": "boolean", "default": True},
+                        "installation_type": {
+                            "type": "string",
+                            "enum": ["techo", "pared", "piso"]
+                        }
+                    },
+                    "required": ["product_id", "length_m", "width_m", "installation_type"]
+                },
+                "approval_required": True
             }
+        }
 
     def find_products(self, query: str, max_results: int = 5) -> Dict[str, Any]:
         """Search for products"""
