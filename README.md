@@ -1177,7 +1177,7 @@ python package_gpt_files.py
 ```
 - 📦 Creates organized `GPT_Upload_Package/` directory
 - 📁 Sorts files into 6 upload phases
-- 📝 Generates `INSTRUCTIONS.txt` for each phase
+- 📝 Generates an INSTRUCTIONS.txt guide for each phase
 - ⏱️ Specifies pause times between phases
 - 📊 Shows file counts and sizes per phase
 
@@ -1192,7 +1192,7 @@ GPT_Upload_Package/
 └── Phase_6_Assets/              # 1 file
 ```
 
-Each phase includes an `INSTRUCTIONS.txt` file with:
+Each phase includes an instructions file (INSTRUCTIONS.txt) with:
 - File listing and descriptions
 - Upload order requirements
 - Recommended pause time before next phase
