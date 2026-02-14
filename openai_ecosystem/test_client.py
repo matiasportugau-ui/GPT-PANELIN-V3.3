@@ -642,7 +642,6 @@ class TestExtractPrimaryOutput:
         # Asserts stable ordering: the first tool call in the list is selected.
         assert result["value"]["name"] == "first_tool"
         assert result["value"]["arguments"]["param"] == "first"
-        assert result["value"]["expected_contract_version"] == "v1"
 
     def test_extracts_tool_call_from_choices_message(self):
         """Chat Completions tool calls in choices[].message.tool_calls are supported."""
@@ -666,6 +665,33 @@ class TestExtractPrimaryOutput:
         result = extract_primary_output(response)
         assert result["type"] == "tool_call"
         assert result["value"]["name"] == "bom_calculate"
+        assert result["value"]["expected_contract_version"] == "v1"
+
+    def test_handles_malformed_tool_call_arguments_string(self):
+        """Malformed JSON tool-call arguments are wrapped in a raw field."""
+        malformed_args = "not valid json{"
+        response = {
+            "choices": [
+                {
+                    "message": {
+                        "tool_calls": [
+                            {
+                                "id": "call_4",
+                                "function": {
+                                    "name": "bom_calculate",
+                                    "arguments": malformed_args,
+                                },
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["name"] == "bom_calculate"
+        assert result["value"]["arguments"] == {"raw": malformed_args}
+
     def test_returns_unknown_with_diagnostic(self):
         """Test that unknown type with diagnostic is returned when no content."""
         response = {"id": "123", "model": "gpt-4"}
