@@ -38,6 +38,10 @@ class PanelinMCPResponsesAPI:
             "require_approval": {
                 "never": {
                     "tool_names": ["find_products", "get_product_price", "check_availability"]
+                    "tool_names": ["find_products", "get_product_price", "check_availability", "lookup_customer"]
+                },
+                "always": {
+                    "tool_names": ["persist_conversation", "register_correction", "save_customer"]
                 }
             }
         }]
@@ -139,6 +143,7 @@ class PanelinMCPResponsesAPI:
                 - Include accessories: true
                 - Include tax (IVA 22%): true
                 
+
                 Use the calculate_quote function to get the final pricing.
                 Present the quotation details clearly.
             """

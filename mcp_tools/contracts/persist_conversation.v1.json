@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "tool_name": "persist_conversation",
+  "contract_version": "v1",
+  "description": "Save conversation summary and quotation history to KB via Wolf API. Requires KB write password.",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "client_id": {
+        "type": "string",
+        "description": "Client identifier (phone or name-based)",
+        "minLength": 1
+      },
+      "summary": {
+        "type": "string",
+        "description": "Summary of the conversation and quotation details",
+        "minLength": 1
+      },
+      "quotation_ref": {
+        "type": "string",
+        "description": "Reference number for the quotation if applicable"
+      },
+      "products_discussed": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "List of products discussed in the conversation"
+      },
+      "password": {
+        "type": "string",
+        "description": "KB write password for authorization"
+      }
+    },
+    "required": ["client_id", "summary", "password"]
+  },
+  "output_schema": {
+    "oneOf": [
+      {
+        "type": "object",
+        "properties": {
+          "ok": { "const": true },
+          "contract_version": { "const": "v1" },
+          "conversation_id": { "type": "string" },
+          "stored_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["ok", "contract_version", "conversation_id", "stored_at"]
+      },
+      {
+        "type": "object",
+        "properties": {
+          "ok": { "const": false },
+          "contract_version": { "const": "v1" },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "message": { "type": "string" }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["ok", "contract_version", "error"]
+      }
+    ]
+  },
+  "error_codes": ["PASSWORD_REQUIRED", "INVALID_PASSWORD", "WOLF_API_ERROR", "INTERNAL_ERROR"]
+}

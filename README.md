@@ -1,10 +1,10 @@
-# Panelin 3.3 - BMC Assistant Pro GPT Configuration
+# Panelin 3.4 - BMC Assistant Pro GPT Configuration
 
-![Version](https://img.shields.io/badge/version-3.3-blue) ![GPT](https://img.shields.io/badge/platform-OpenAI%20GPT-green) ![KB](https://img.shields.io/badge/KB%20version-7.0-orange) ![Status](https://img.shields.io/badge/status-production-success) ![MCP](https://img.shields.io/badge/MCP-enabled-purple)
+![Version](https://img.shields.io/badge/version-3.4-blue) ![GPT](https://img.shields.io/badge/platform-OpenAI%20GPT-green) ![KB](https://img.shields.io/badge/KB%20version-7.0-orange) ![Status](https://img.shields.io/badge/status-production-success) ![MCP](https://img.shields.io/badge/MCP-v0.3.0-purple)
 
 **Complete configuration files and knowledge base for Panelin GPT - Professional quotation assistant for BMC Uruguay panel systems**
 
-**New in v3.3+:** MCP Server architecture for persistent tool access and GitHub integration
+**New in v3.4:** Wolf API KB Write — persist conversations, corrections, and customer data directly through chat
 
 ---
 
@@ -1976,7 +1976,23 @@ When reporting issues with the GPT or KB:
 
 ## 📜 Version History
 
-### v3.3 / KB v7.0 / PDF Template v2.0 (2026-02-10, Updated 2026-02-11) - Current
+### v3.4 / KB v7.0 / MCP v0.3.0 (2026-02-14) - Current
+
+**Wolf API KB Write Capabilities:**
+- **persist_conversation**: Save conversation summaries and quotation history to KB via Wolf API
+- **register_correction**: Register KB corrections detected during conversations for continuous improvement
+- **save_customer**: Store customer data (name, phone, address) for seamless repeat quotations
+- **lookup_customer**: Auto-retrieve returning customer info without re-asking
+- Password protection on all write operations (configurable via environment variable)
+- Uruguayan phone format validation (09XXXXXXX or +598XXXXXXXX)
+- 4 new MCP tool contracts (v1 envelope format with error codes)
+- OpenAI approval workflow for write operations
+- MCP server bumped to v0.3.0 with Wolf API config section
+- See `IMPLEMENTATION_SUMMARY_V3.4.md` for full details
+
+---
+
+### v3.3 / KB v7.0 / PDF Template v2.0 (2026-02-10, Updated 2026-02-11)
 
 **Major Features:**
 
