@@ -13,7 +13,9 @@
         "description": "Embedding vector associated with the quotation.",
         "items": {
           "type": "number"
-        }
+        },
+        "minItems": 1,
+        "maxItems": 8192
       },
       "include_similar": {
         "type": "boolean",

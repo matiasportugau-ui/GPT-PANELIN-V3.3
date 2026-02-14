@@ -43,8 +43,17 @@ def _as_bool(value: Any, default: bool) -> bool:
 
 
 def load_runtime_settings() -> RuntimeSettings:
-    with open(CONFIG_FILE, encoding="utf-8") as f:
-        config = json.load(f)
+    try:
+        with open(CONFIG_FILE, encoding="utf-8") as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(
+            f"Configuration file not found at {CONFIG_FILE}. Using default settings. "
+            "Create mcp/config/mcp_server_config.json to customize configuration."
+        )
+        config = {}
 
     flags = config.get("feature_flags", {})
     memory = config.get("memory", {})
@@ -57,7 +66,25 @@ def load_runtime_settings() -> RuntimeSettings:
     enable_vector_retrieval = _as_bool(os.getenv("ENABLE_VECTOR_RETRIEVAL"), enable_retrieval_default)
 
     file_store_relative = memory.get("file_store_path", "../quotation_memory.json")
-    file_store_path = (CONFIG_FILE.parent / file_store_relative).resolve()
+    
+    # Resolve the file store path relative to the config file, but guard against
+    # path traversal outside the expected configuration root directory.
+    # We treat the parent of the config directory as the allowed root so that
+    # the existing default ("../quotation_memory.json") remains valid.
+    base_dir = CONFIG_FILE.parent.parent.resolve()
+    file_store_relative_path = Path(file_store_relative)
+    
+    if file_store_relative_path.is_absolute():
+        raise ValueError(f"Invalid file_store_path '{file_store_relative}': absolute paths are not allowed.")
+    
+    file_store_path = (CONFIG_FILE.parent / file_store_relative_path).resolve()
+    try:
+        # Ensure the resolved path is within the allowed base directory.
+        file_store_path.relative_to(base_dir)
+    except ValueError:
+        raise ValueError(
+            f"Invalid file_store_path '{file_store_relative}': path traversal outside '{base_dir}' is not allowed."
+        )
 
     api_key_env = qdrant.get("api_key_env", "QDRANT_API_KEY")
     qdrant_api_key = os.getenv(api_key_env)

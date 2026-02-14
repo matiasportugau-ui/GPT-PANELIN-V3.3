@@ -8,9 +8,9 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Protocol, runtime_checkable
 
-import requests
+import httpx
 
 
 @dataclass
@@ -21,6 +21,7 @@ class StoredQuotation:
     embedding: list[float]
 
 
+@runtime_checkable
 class MemoryStore(Protocol):
     async def save_quotation(self, payload: dict[str, Any], embedding: list[float]) -> dict[str, Any]:
         ...
@@ -50,8 +51,8 @@ class FileStore:
     async def save_quotation(self, payload: dict[str, Any], embedding: list[float]) -> dict[str, Any]:
         items = self._load_items()
         record = StoredQuotation(
-            quotation_id=f"Q-{uuid.uuid4().hex[:10]}",
-            timestamp=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            quotation_id=f"Q-{uuid.uuid4().hex}",
+            timestamp=datetime.now(timezone.utc).isoformat(),
             payload=payload,
             embedding=embedding,
         )
@@ -87,23 +88,48 @@ class FileStore:
 
 
 class QdrantStore:
-    """Qdrant-backed memory store."""
+    """Qdrant-backed memory store with async HTTP client and context manager support."""
 
     def __init__(self, url: str, collection: str, timeout_seconds: float, api_key: str | None = None):
         self.url = url.rstrip("/")
         self.collection = collection
         self.timeout_seconds = timeout_seconds
-        self.session = requests.Session()
-        if api_key:
-            self.session.headers.update({"api-key": api_key})
+        self._client: httpx.AsyncClient | None = None
+        self._api_key = api_key
+        self._sync_client: httpx.Client | None = None
+
+    def _get_sync_client(self) -> httpx.Client:
+        """Get or create synchronous client for startup healthchecks."""
+        if self._sync_client is None:
+            headers = {}
+            if self._api_key is not None and self._api_key != "":
+                headers["Api-Key"] = self._api_key
+            self._sync_client = httpx.Client(headers=headers, timeout=self.timeout_seconds)
+        return self._sync_client
+
+    async def _get_client(self) -> httpx.AsyncClient:
+        """Get or create async HTTP client."""
+        if self._client is None:
+            headers = {}
+            if self._api_key is not None and self._api_key != "":
+                headers["Api-Key"] = self._api_key
+            self._client = httpx.AsyncClient(headers=headers, timeout=self.timeout_seconds)
+        return self._client
 
     def healthcheck(self) -> None:
-        response = self.session.get(f"{self.url}/collections", timeout=self.timeout_seconds)
+        """Perform a synchronous health check against the Qdrant collections endpoint.
+
+        This method uses a blocking HTTP client and is intended only for use during
+        process startup/initialisation, before the main asyncio event loop is running.
+        Do not call this method from within an active event loop.
+        """
+        client = self._get_sync_client()
+        response = client.get(f"{self.url}/collections")
         response.raise_for_status()
 
     async def save_quotation(self, payload: dict[str, Any], embedding: list[float]) -> dict[str, Any]:
-        quotation_id = f"Q-{uuid.uuid4().hex[:10]}"
-        timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        quotation_id = f"Q-{uuid.uuid4().hex}"
+        timestamp = datetime.now(timezone.utc).isoformat()
         point = {
             "points": [
                 {
@@ -117,10 +143,10 @@ class QdrantStore:
                 }
             ]
         }
-        response = self.session.put(
+        client = await self._get_client()
+        response = await client.put(
             f"{self.url}/collections/{self.collection}/points",
             json=point,
-            timeout=self.timeout_seconds,
         )
         response.raise_for_status()
         return {
@@ -135,10 +161,10 @@ class QdrantStore:
             "limit": limit,
             "with_payload": True,
         }
-        response = self.session.post(
+        client = await self._get_client()
+        response = await client.post(
             f"{self.url}/collections/{self.collection}/points/search",
             json=query,
-            timeout=self.timeout_seconds,
         )
         response.raise_for_status()
         points = response.json().get("result", [])
@@ -152,8 +178,38 @@ class QdrantStore:
             for p in points
         ]
 
+    async def close(self) -> None:
+        """Close the underlying HTTP clients and release network resources."""
+        if self._client is not None:
+            await self._client.aclose()
+            self._client = None
+        if self._sync_client is not None:
+            self._sync_client.close()
+            self._sync_client = None
+
+    async def __aenter__(self) -> "QdrantStore":
+        """Enable usage as an async context manager."""
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb) -> None:
+        """Ensure clients are closed when leaving an async context manager block."""
+        await self.close()
+
 
 def _cosine_similarity(v1: list[float], v2: list[float]) -> float:
+    """Calculate cosine similarity between two vectors.
+    
+    If vectors have different dimensions, truncates to the shorter length.
+    This truncation behavior can produce misleading similarity scores when
+    comparing vectors of significantly different dimensions.
+    
+    Args:
+        v1: First embedding vector.
+        v2: Second embedding vector.
+    
+    Returns:
+        Cosine similarity score between 0.0 and 1.0, or 0.0 if either vector is empty.
+    """
     size = min(len(v1), len(v2))
     if size == 0:
         return 0.0
