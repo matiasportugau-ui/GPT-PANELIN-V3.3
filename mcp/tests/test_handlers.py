@@ -66,7 +66,7 @@ class TestCatalogSearchHandler:
         async def run():
             result = await handle_catalog_search({
                 "query": "panel",
-                "category": "products"
+                "category": "techo"
             })
             # Check v1 envelope structure
             assert result["ok"] is True
@@ -107,7 +107,8 @@ class TestBOMCalculateHandler:
             # Check v1 envelope structure
             assert result["ok"] is True
             assert result["contract_version"] == "v1"
-            assert "bom" in result
+            assert "items" in result
+            assert "summary" in result
             
         asyncio.run(run())
 
