@@ -31,6 +31,16 @@ def _normalize(text: str) -> str:
     return text.lower().strip().replace("-", "").replace("_", "").replace(" ", "")
 
 
+def _extract_thickness(product: dict[str, Any]) -> float | None:
+    """Extract thickness value from product, checking multiple possible locations."""
+    thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
+    if thickness is None and "specifications" in product:
+        specs = product["specifications"]
+        if isinstance(specs, dict):
+            thickness = specs.get("thickness_mm", specs.get("espesor_mm"))
+    return thickness
+
+
 def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: str = "search",
                      thickness_mm: float | None = None) -> list[dict[str, Any]]:
     """Search pricing data for matching products."""
@@ -40,11 +50,19 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
     # Navigate the pricing structure — adapt to actual JSON shape
     if isinstance(data, list):
         products = data
-    elif isinstance(data, dict) and "data" in data and isinstance(data["data"], dict):
-        # Handle nested structure like {meta: {...}, data: {products: [...]}}
-        products = data["data"].get("products", data.get("products", data.get("items", [])))
+    elif isinstance(data, dict):
+        # First try the expected nested structure
+        if "data" in data and isinstance(data["data"], dict) and "products" in data["data"]:
+            products = data["data"]["products"]
+        # Fall back to flat structure for backwards compatibility
+        elif "products" in data:
+            products = data["products"]
+        elif "items" in data:
+            products = data["items"]
+        else:
+            products = []
     else:
-        products = data.get("products", data.get("items", []))
+        products = []
     if isinstance(products, dict):
         # Handle dict-keyed structures
         items = []
@@ -66,13 +84,7 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
         family = str(product.get("familia", product.get("family", product.get("_key", ""))))
         ptype = str(product.get("tipo", product.get("type", "")))
         name = str(product.get("nombre", product.get("name", product.get("title", ""))))
-        
-        # Extract thickness from various possible locations
-        thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
-        if thickness is None and "specifications" in product:
-            specs = product["specifications"]
-            if isinstance(specs, dict):
-                thickness = specs.get("thickness_mm", specs.get("espesor_mm"))
+        thickness = _extract_thickness(product)
 
         if filter_type == "sku" and norm_query in _normalize(sku):
             match = True
@@ -168,13 +180,7 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
         for product in results[:20]:  # Cap at 20 results
             sku = str(product.get("sku", product.get("SKU", product.get("codigo", ""))))
             name = str(product.get("nombre", product.get("name", product.get("title", ""))))
-            
-            # Extract thickness from various possible locations
-            thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
-            if thickness is None and "specifications" in product:
-                specs = product["specifications"]
-                if isinstance(specs, dict):
-                    thickness = specs.get("thickness_mm", specs.get("espesor_mm"))
+            thickness = _extract_thickness(product)
             
             # Extract price - try multiple paths in pricing data
             price = None
