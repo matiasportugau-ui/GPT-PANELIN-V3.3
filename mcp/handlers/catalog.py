@@ -7,9 +7,11 @@ Returns lightweight results (id, title, handle, type, vendor, tags).
 from __future__ import annotations
 
 import json
-import traceback
+import logging
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 KB_ROOT = Path(__file__).resolve().parent.parent.parent
 CATALOG_FILE = KB_ROOT / "shopify_catalog_v1.json"
@@ -57,48 +59,44 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
     category = arguments.get("category", "all")
     limit = arguments.get("limit", 5)
 
-    # Validate and normalize limit parameter (v1 contract: integer 1..30)
-    try:
-        limit_int = int(limit)
-    except (TypeError, ValueError):
+    # Validate query parameter (contract requires minLength=2, strip whitespace)
+    query_stripped = query.strip() if isinstance(query, str) else ""
+    if len(query_stripped) < 2:
         return {
             "ok": False,
             "contract_version": "v1",
             "error": {
-                "code": "INVALID_LIMIT",
+                "code": "QUERY_TOO_SHORT",
+                "message": "Query parameter must be at least 2 characters long",
+                "details": {"query": query}
+            }
+        }
+    
+    # Use the stripped query for processing
+    query = query_stripped
+
+    # Validate and normalize limit parameter (v1 contract: integer 1..30)
+    try:
+        limit_int = int(limit)
+    except (TypeError, ValueError):
+        # Use INTERNAL_ERROR since contract doesn't define INVALID_LIMIT
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INTERNAL_ERROR",
                 "message": "Invalid 'limit' parameter. It must be an integer between 1 and 30.",
                 "details": {"limit": limit},
             },
         }
 
+    # Clamp to valid range
     if limit_int < 1:
         limit_int = 1
     elif limit_int > 30:
         limit_int = 30
 
     limit = limit_int
-    # Validate query parameter
-    if not query:
-        return {
-            "ok": False,
-            "contract_version": "v1",
-            "error": {
-                "code": "QUERY_TOO_SHORT",
-                "message": "Query parameter is required",
-                "details": {}
-            }
-        }
-    
-    if len(query) < 2:
-        return {
-            "ok": False,
-            "contract_version": "v1",
-            "error": {
-                "code": "QUERY_TOO_SHORT",
-                "message": f"Query must be at least 2 characters, got {len(query)}",
-                "details": {"query": query}
-            }
-        }
 
     # Validate category parameter
     valid_categories = ["techo", "pared", "camara", "accesorio", "all"]
@@ -115,6 +113,32 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
 
     try:
         catalog = _load_catalog()
+    except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+        # Catalog data file issues - use CATALOG_UNAVAILABLE
+        logger.exception("Catalog data unavailable")
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "CATALOG_UNAVAILABLE",
+                "message": "Catalog data is currently unavailable",
+                "details": {}
+            }
+        }
+    except Exception as e:
+        # Other unexpected errors during catalog loading
+        logger.exception("Error loading catalog")
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": "Internal error processing catalog_search request",
+                "details": {}
+            }
+        }
+    
+    try:
         norm_query = _normalize(query)
 
         # Determine category keywords
@@ -146,7 +170,7 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
             }
 
             # Add optional fields if available
-            handle_val = lightweight.get("handle", "") or ""
+            handle_val = lightweight.get("handle", "")
             if handle_val:
                 result["url"] = f"https://bmcuruguay.uy/products/{handle_val}"
             # Simple relevance score based on position in search results
@@ -164,8 +188,8 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
         }
 
     except Exception as e:
-        # Log the full exception for debugging (in production, use proper logging)
-        traceback.print_exc()
+        # Log the full exception for debugging
+        logger.exception("Error processing catalog_search request")
         
         return {
             "ok": False,

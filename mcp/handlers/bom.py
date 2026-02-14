@@ -7,10 +7,12 @@ panel installation. Applies parametric rules per construction system.
 from __future__ import annotations
 
 import json
+import logging
 import math
-import traceback
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 KB_ROOT = Path(__file__).resolve().parent.parent.parent
 BOM_FILE = KB_ROOT / "bom_rules.json"
@@ -143,14 +145,14 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
             }
         }
     
-    # Validate thickness_mm
-    if not thickness or thickness <= 0:
+    # Validate thickness_mm (contract requires 30..250)
+    if not thickness or thickness < 30 or thickness > 250:
         return {
             "ok": False,
             "contract_version": "v1",
             "error": {
                 "code": "INVALID_THICKNESS",
-                "message": "thickness_mm is required and must be a positive number",
+                "message": "thickness_mm must be between 30 and 250 mm",
                 "details": {"thickness_mm": thickness}
             }
         }
@@ -226,8 +228,8 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
         }
 
     except Exception as e:
-        # Log the full exception for debugging (in production, use proper logging)
-        traceback.print_exc()
+        # Log the full exception for debugging
+        logger.exception("Error processing bom_calculate request")
         
         return {
             "ok": False,

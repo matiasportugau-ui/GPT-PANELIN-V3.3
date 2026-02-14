@@ -7,9 +7,11 @@ or free-text search. All prices are in USD with IVA 22% included.
 from __future__ import annotations
 
 import json
-import traceback
+import logging
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 KB_ROOT = Path(__file__).resolve().parent.parent.parent
 PRICING_FILE = KB_ROOT / "bromyros_pricing_master.json"
@@ -92,17 +94,21 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
     filter_type = arguments.get("filter_type", "search")
     thickness_mm = arguments.get("thickness_mm")
 
-    # Validate query parameter
-    if not query:
+    # Validate query parameter (contract requires minLength=2, strip whitespace)
+    query_stripped = query.strip() if isinstance(query, str) else ""
+    if len(query_stripped) < 2:
         return {
             "ok": False,
             "contract_version": "v1",
             "error": {
-                "code": "SKU_NOT_FOUND",
-                "message": "Query parameter is required",
-                "details": {}
+                "code": "INVALID_FILTER",
+                "message": "Query parameter must be at least 2 characters long",
+                "details": {"query": query}
             }
         }
+    
+    # Use the stripped query for processing
+    query = query_stripped
 
     # Validate filter_type if provided
     valid_filters = ["sku", "family", "type", "search"]
@@ -188,8 +194,8 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
         }
 
     except Exception as e:
-        # Log the full exception for debugging (in production, use proper logging)
-        traceback.print_exc()
+        # Log the full exception for debugging
+        logger.exception("Error processing price_check request")
         
         return {
             "ok": False,
