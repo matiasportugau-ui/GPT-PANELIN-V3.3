@@ -17,6 +17,13 @@ from mcp.handlers.pricing import handle_price_check
 from mcp.handlers.catalog import handle_catalog_search
 from mcp.handlers.bom import handle_bom_calculate
 
+# Import error code registries for validation
+from mcp_tools.contracts import (
+    PRICE_CHECK_ERROR_CODES,
+    CATALOG_SEARCH_ERROR_CODES,
+    BOM_CALCULATE_ERROR_CODES,
+)
+
 
 class TestPriceCheckHandler:
     """Test price_check handler returns v1 contract envelope."""
@@ -53,7 +60,8 @@ class TestPriceCheckHandler:
             assert "error" in result
             assert "code" in result["error"]
             assert "message" in result["error"]
-            assert result["error"]["code"] in ["SKU_NOT_FOUND", "INVALID_FILTER", "INVALID_THICKNESS", "INTERNAL_ERROR"]
+            # Validate error code is in the contract-defined set
+            assert result["error"]["code"] in PRICE_CHECK_ERROR_CODES
 
         asyncio.run(run())
 
@@ -86,6 +94,8 @@ class TestCatalogSearchHandler:
             assert "error" in result
             assert "code" in result["error"]
             assert "message" in result["error"]
+            # Validate error code is in the contract-defined set
+            assert result["error"]["code"] in CATALOG_SEARCH_ERROR_CODES
 
         asyncio.run(run())
 
@@ -129,6 +139,8 @@ class TestBOMCalculateHandler:
             assert "error" in result
             assert "code" in result["error"]
             assert "message" in result["error"]
+            # Validate error code is in the contract-defined set
+            assert result["error"]["code"] in BOM_CALCULATE_ERROR_CODES
 
         asyncio.run(run())
 
