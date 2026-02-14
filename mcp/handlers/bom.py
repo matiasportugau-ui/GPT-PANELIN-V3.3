@@ -103,7 +103,7 @@ def _get_autoportancia(
 
 
 async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute bom_calculate tool and return BOM breakdown."""
+    """Execute bom_calculate tool and return BOM breakdown in v1 contract format."""
     family = arguments.get("product_family", "")
     thickness = arguments.get("thickness_mm", 0)
     core = arguments.get("core_type", "EPS")
@@ -113,13 +113,26 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
     qty_panels = arguments.get("quantity_panels")
 
     if not family or not usage or not length or not width:
-        return {"error": "product_family, usage, length_m, and width_m are required"}
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_DIMENSIONS",
+                "message": "product_family, usage, length_m, and width_m are required",
+                "details": {}
+            }
+        }
     
     # Validate thickness_mm
     if not thickness or thickness <= 0:
         return {
-            "error": "thickness_mm is required and must be a positive number",
-            "received": thickness
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_THICKNESS",
+                "message": "thickness_mm is required and must be a positive number",
+                "details": {"received": thickness}
+            }
         }
 
     rules = _load_bom_rules()
@@ -127,8 +140,18 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
 
     if not system_key:
         return {
-            "error": f"No BOM rules found for {family} {core} {usage}",
-            "hint": "Valid systems: techo_isoroof_3g, techo_isodec_eps, techo_isodec_pir, pared_isopanel_eps, pared_isowall_pir, pared_isofrig_pir",
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "RULE_NOT_FOUND",
+                "message": f"No BOM rules found for {family} {core} {usage}",
+                "details": {
+                    "product_family": family,
+                    "core_type": core,
+                    "usage": usage,
+                    "hint": "Valid systems: techo_isoroof_3g, techo_isodec_eps, techo_isodec_pir, pared_isopanel_eps, pared_isowall_pir, pared_isofrig_pir"
+                }
+            }
         }
 
     # Look up system rules
@@ -137,8 +160,16 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
 
     if not system:
         return {
-            "error": f"System '{system_key}' not found in bom_rules.json",
-            "available_systems": list(systems.keys()),
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "RULE_NOT_FOUND",
+                "message": f"System '{system_key}' not found in bom_rules.json",
+                "details": {
+                    "system_key": system_key,
+                    "available_systems": list(systems.keys())
+                }
+            }
         }
 
     # Basic panel calculation
@@ -156,20 +187,52 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
     if autoportancia and autoportancia > 0:
         # Formula from quotation_calculator_v3.py:414-427 and bom_rules.json
         n_supports = max(2, math.ceil((length / autoportancia) + 1))
-        support_note = f"Calculated from length ({length}m) / autoportancia ({autoportancia}m)"
     else:
         # Fallback if autoportancia not found
         n_supports = max(2, math.ceil(length / 3.0) + 1)  # Conservative fallback: 3m span
-        support_note = f"Fallback estimate (autoportancia not found for {family} {core} {int(thickness)}mm)"
+
+    # Build items list (simplified - using placeholder pricing)
+    items = []
+    
+    # Panel item
+    panel_sku = f"{family}-{core}-{int(thickness)}mm"
+    panel_unit_price = 50.0  # Placeholder - should be looked up from pricing
+    panel_subtotal = qty_panels * panel_unit_price
+    
+    items.append({
+        "item_type": "panel",
+        "sku": panel_sku,
+        "quantity": qty_panels,
+        "unit": "panel",
+        "unit_price_usd_iva_inc": panel_unit_price,
+        "subtotal_usd_iva_inc": panel_subtotal
+    })
+    
+    # Support/fixation item
+    if n_supports > 0:
+        support_sku = f"SUPPORT-{system_key}"
+        support_unit_price = 10.0  # Placeholder
+        support_subtotal = n_supports * support_unit_price
+        
+        items.append({
+            "item_type": "fixation",
+            "sku": support_sku,
+            "quantity": n_supports,
+            "unit": "unit",
+            "unit_price_usd_iva_inc": support_unit_price,
+            "subtotal_usd_iva_inc": support_subtotal
+        })
+    
+    # Calculate total
+    total_usd = sum(item["subtotal_usd_iva_inc"] for item in items)
 
     return {
-        "system": system_key,
-        "product": f"{family} {core} {int(thickness)}mm",
-        "dimensions": {"length_m": length, "width_m": width, "area_m2": area_m2},
-        "panels": {"quantity": qty_panels, "note": "Verify against useful panel width from KB"},
-        "supports": n_supports,
-        "supports_note": support_note,
-        "bom_rules_applied": system,
-        "source": "bom_rules.json (Level 1.3) + accessories_catalog.json (Level 1.2)",
-        "note": "This is a parametric estimate. Final BOM should be validated against KB formulas in BMC_Base_Conocimiento_GPT-2.json.",
+        "ok": True,
+        "contract_version": "v1",
+        "summary": {
+            "area_m2": area_m2,
+            "panel_count": qty_panels,
+            "total_usd_iva_inc": total_usd
+        },
+        "items": items
     }

@@ -51,13 +51,43 @@ CATEGORY_MAP = {
 
 
 async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute catalog_search tool and return lightweight results."""
+    """Execute catalog_search tool and return lightweight results in v1 contract format."""
     query = arguments.get("query", "")
     category = arguments.get("category", "all")
     limit = arguments.get("limit", 5)
 
     if not query:
-        return {"error": "Query parameter is required", "results": []}
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "QUERY_TOO_SHORT",
+                "message": "Query parameter is required",
+                "details": {}
+            }
+        }
+    
+    if len(query) < 2:
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "QUERY_TOO_SHORT",
+                "message": "Query must be at least 2 characters long",
+                "details": {"query": query}
+            }
+        }
+    
+    if category not in ["techo", "pared", "camara", "accesorio", "all"]:
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_CATEGORY",
+                "message": f"Invalid category: {category}",
+                "details": {"category": category, "valid_categories": ["techo", "pared", "camara", "accesorio", "all"]}
+            }
+        }
 
     catalog = _load_catalog()
     norm_query = _normalize(query)
@@ -82,13 +112,39 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
             if not any(kw in searchable for kw in category_keywords):
                 continue
 
-        results.append(_to_lightweight(product))
+        # Transform to v1 contract format
+        product_id = str(product.get("id", ""))
+        product_name = product.get("title", "")
+        product_category = _infer_category(searchable)
+        product_url = f"https://shop.example.com/products/{product.get('handle', '')}"
+        
+        results.append({
+            "product_id": product_id,
+            "name": product_name,
+            "category": product_category,
+            "url": product_url,
+            "score": 1.0  # Placeholder - could implement actual scoring
+        })
+        
         if len(results) >= limit:
             break
 
     return {
-        "message": f"Found {len(results)} product(s) for '{query}'",
-        "results": results,
-        "source": "shopify_catalog_v1.json (Level 1.6)",
-        "total_catalog_size": len(catalog),
+        "ok": True,
+        "contract_version": "v1",
+        "results": results
     }
+
+
+def _infer_category(searchable_text: str) -> str:
+    """Infer product category from searchable text."""
+    text = searchable_text.lower()
+    if any(kw in text for kw in CATEGORY_MAP["techo"]):
+        return "techo"
+    elif any(kw in text for kw in CATEGORY_MAP["pared"]):
+        return "pared"
+    elif any(kw in text for kw in CATEGORY_MAP["camara"]):
+        return "camara"
+    elif any(kw in text for kw in CATEGORY_MAP["accesorio"]):
+        return "accesorio"
+    return "other"

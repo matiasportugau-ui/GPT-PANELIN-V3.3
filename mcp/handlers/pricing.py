@@ -86,27 +86,48 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
 
 
 async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute price_check tool and return results."""
+    """Execute price_check tool and return results in v1 contract format."""
     query = arguments.get("query", "")
     filter_type = arguments.get("filter_type", "search")
     thickness_mm = arguments.get("thickness_mm")
 
     if not query:
-        return {"error": "Query parameter is required", "results": []}
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_FILTER",
+                "message": "Query parameter is required",
+                "details": {}
+            }
+        }
 
     data = _load_pricing()
     results = _search_products(data, query, filter_type, thickness_mm)
 
     if not results:
         return {
-            "message": f"No products found for query '{query}' (filter: {filter_type})",
-            "results": [],
-            "source": "bromyros_pricing_master.json (Level 1)",
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "SKU_NOT_FOUND",
+                "message": f"No products found for query '{query}' (filter: {filter_type})",
+                "details": {"query": query, "filter_type": filter_type}
+            }
         }
 
+    # Transform results to match contract schema
+    matches = []
+    for item in results[:20]:  # Cap at 20 results
+        matches.append({
+            "sku": item.get("sku", ""),
+            "description": item.get("descripcion", item.get("description", "")),
+            "thickness_mm": item.get("espesor_mm", item.get("thickness_mm")),
+            "price_usd_iva_inc": item.get("precio_usd_iva_inc", item.get("price_usd_iva_inc", 0))
+        })
+
     return {
-        "message": f"Found {len(results)} product(s)",
-        "results": results[:20],  # Cap at 20 results
-        "source": "bromyros_pricing_master.json (Level 1)",
-        "note": "Prices in USD, IVA 22% included",
+        "ok": True,
+        "contract_version": "v1",
+        "matches": matches
     }
