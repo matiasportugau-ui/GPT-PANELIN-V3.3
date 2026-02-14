@@ -7,8 +7,11 @@ or free-text search. All prices are in USD with IVA 22% included.
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 KB_ROOT = Path(__file__).resolve().parent.parent.parent
 PRICING_FILE = KB_ROOT / "bromyros_pricing_master.json"
@@ -86,27 +89,120 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
 
 
 async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute price_check tool and return results."""
+    """Execute price_check tool and return v1 contract envelope."""
     query = arguments.get("query", "")
     filter_type = arguments.get("filter_type", "search")
     thickness_mm = arguments.get("thickness_mm")
 
-    if not query:
-        return {"error": "Query parameter is required", "results": []}
-
-    data = _load_pricing()
-    results = _search_products(data, query, filter_type, thickness_mm)
-
-    if not results:
+    # Validate query parameter (contract requires minLength=2, strip whitespace)
+    query_stripped = query.strip() if isinstance(query, str) else ""
+    if len(query_stripped) < 2:
         return {
-            "message": f"No products found for query '{query}' (filter: {filter_type})",
-            "results": [],
-            "source": "bromyros_pricing_master.json (Level 1)",
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_FILTER",
+                "message": "Query parameter must be at least 2 characters long",
+                "details": {"query": query}
+            }
+        }
+    
+    # Use the stripped query for processing
+    query = query_stripped
+
+    # Validate filter_type if provided
+    valid_filters = ["sku", "family", "type", "search"]
+    if filter_type not in valid_filters:
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_FILTER",
+                "message": f"Invalid filter_type '{filter_type}'. Must be one of: {', '.join(valid_filters)}",
+                "details": {"filter_type": filter_type}
+            }
         }
 
-    return {
-        "message": f"Found {len(results)} product(s)",
-        "results": results[:20],  # Cap at 20 results
-        "source": "bromyros_pricing_master.json (Level 1)",
-        "note": "Prices in USD, IVA 22% included",
-    }
+    # Validate thickness_mm if provided
+    if thickness_mm is not None:
+        if not isinstance(thickness_mm, (int, float)) or thickness_mm < 20 or thickness_mm > 250:
+            return {
+                "ok": False,
+                "contract_version": "v1",
+                "error": {
+                    "code": "INVALID_THICKNESS",
+                    "message": f"thickness_mm must be between 20 and 250, got {thickness_mm}",
+                    "details": {"thickness_mm": thickness_mm}
+                }
+            }
+
+    try:
+        data = _load_pricing()
+        results = _search_products(data, query, filter_type, thickness_mm)
+
+        if not results:
+            return {
+                "ok": False,
+                "contract_version": "v1",
+                "error": {
+                    "code": "SKU_NOT_FOUND",
+                    "message": f"No products found for query '{query}' (filter: {filter_type})",
+                    "details": {"query": query, "filter_type": filter_type}
+                }
+            }
+
+        # Transform results to match contract schema
+        matches = []
+        for product in results[:20]:  # Cap at 20 results
+            sku = str(product.get("sku", product.get("SKU", product.get("codigo", ""))))
+            name = str(product.get("nombre", product.get("name", product.get("title", ""))))
+            thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
+            
+            # Extract price - try multiple paths in pricing data
+            price = None
+            pricing_data = product.get("pricing", {})
+            if isinstance(pricing_data, dict):
+                price = pricing_data.get("web_iva_inc") or pricing_data.get("sale_iva_inc")
+            if price is None:
+                price = product.get("precio", product.get("price", 0))
+            
+            # Convert to float, default to 0 if invalid
+            try:
+                price = float(price) if price is not None else 0
+            except (ValueError, TypeError):
+                price = 0
+
+            match = {
+                "sku": sku,
+                "description": name,
+                "price_usd_iva_inc": price
+            }
+            
+            # Add thickness if available
+            if thickness is not None:
+                try:
+                    match["thickness_mm"] = float(thickness)
+                except (ValueError, TypeError):
+                    pass
+            
+            matches.append(match)
+
+        return {
+            "ok": True,
+            "contract_version": "v1",
+            "matches": matches
+        }
+
+    except Exception:
+        # Log the full exception for debugging
+        logger.exception("Error processing price_check request")
+        
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": "Internal error processing price_check request",
+                "details": {}
+            }
+        }
