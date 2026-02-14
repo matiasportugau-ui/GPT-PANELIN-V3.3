@@ -125,13 +125,20 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
             }
         }
     
-    if not length or length <= 0 or not width or width <= 0:
+    if (
+        not length
+        or length <= 0
+        or length > 30
+        or not width
+        or width <= 0
+        or width > 20
+    ):
         return {
             "ok": False,
             "contract_version": "v1",
             "error": {
                 "code": "INVALID_DIMENSIONS",
-                "message": "length_m and width_m must be positive numbers",
+                "message": "length_m must be > 0 and <= 30; width_m must be > 0 and <= 20",
                 "details": {"length_m": length, "width_m": width}
             }
         }
