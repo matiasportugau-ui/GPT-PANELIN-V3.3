@@ -43,3 +43,5 @@ GPT_Upload_Package/
 
 # Test cache
 .pytest_cache/
+.coverage
+htmlcov/
