@@ -255,5 +255,5 @@ class PanelinMCPServer:
                 timeout=5
             )
             return {"healthy": response.status_code == 200}
-        except:
+        except Exception:
             return {"healthy": False}
