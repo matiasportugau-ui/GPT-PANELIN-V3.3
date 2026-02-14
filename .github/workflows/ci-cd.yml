@@ -1,0 +1,207 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r mcp/requirements.txt
+          pip install flake8 black mypy pytest-cov
+      
+      - name: Run linting - flake8
+        run: |
+          # Stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Exit-zero treats all errors as warnings
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      
+      - name: Run linting - black
+        run: |
+          black --check --diff .
+        continue-on-error: true
+      
+      - name: Run linting - mypy
+        run: |
+          mypy mcp/ --ignore-missing-imports
+        continue-on-error: true
+      
+      - name: Validate JSON files in knowledge_base
+        run: |
+          python -c "
+          import json
+          import sys
+          from pathlib import Path
+          
+          json_files = [
+              'bromyros_pricing_master.json',
+              'bromyros_pricing_gpt_optimized.json',
+              'BMC_Base_Conocimiento_GPT-2.json',
+              'bom_rules.json',
+              'accessories_catalog.json',
+              'shopify_catalog_v1.json',
+              'corrections_log.json'
+          ]
+          
+          errors = []
+          for file in json_files:
+              try:
+                  with open(file, 'r', encoding='utf-8') as f:
+                      json.load(f)
+                  print(f'✓ {file} is valid')
+              except Exception as e:
+                  errors.append(f'{file}: {str(e)}')
+          
+          if errors:
+              print('❌ JSON validation errors:')
+              for error in errors:
+                  print(f'  - {error}')
+              sys.exit(1)
+          else:
+              print('✅ All JSON files are valid')
+          "
+      
+      - name: Run tests with coverage
+        run: |
+          pytest test_mcp_handlers_v1.py -v --cov=mcp --cov-report=term-missing --cov-report=xml
+      
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+        continue-on-error: true
+
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+    if: success()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check if Dockerfile exists
+        id: check_dockerfile
+        run: |
+          if [ -f "Dockerfile" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Set up Docker Buildx
+        if: steps.check_dockerfile.outputs.exists == 'true'
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build Docker image
+        if: steps.check_dockerfile.outputs.exists == 'true'
+        run: |
+          docker build -t gpt-panelin:${{ github.sha }} .
+          docker tag gpt-panelin:${{ github.sha }} gpt-panelin:latest
+      
+      - name: Test Docker image
+        if: steps.check_dockerfile.outputs.exists == 'true'
+        run: |
+          # Basic smoke test - ensure container starts
+          docker run --rm gpt-panelin:latest python --version
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && success()
+    environment:
+      name: staging
+      url: https://staging.example.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy to staging
+        run: |
+          echo "🚀 Deploying to staging environment..."
+          # Add your staging deployment commands here
+          # Example: ssh, kubectl, docker-compose, etc.
+          echo "✅ Deployment to staging completed"
+      
+      - name: Run health checks
+        run: |
+          echo "🏥 Running health checks..."
+          if [ -f "scripts/health_check.sh" ]; then
+            chmod +x scripts/health_check.sh
+            ./scripts/health_check.sh staging
+          else
+            echo "⚠️ Health check script not found, skipping..."
+          fi
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/main' && success()
+    environment:
+      name: production
+      url: https://production.example.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run pre-deployment checks
+        run: |
+          echo "🔍 Running pre-deployment checks..."
+          if [ -f "scripts/pre_deploy_check.sh" ]; then
+            chmod +x scripts/pre_deploy_check.sh
+            ./scripts/pre_deploy_check.sh
+          fi
+      
+      - name: Deploy to production
+        run: |
+          echo "🚀 Deploying to production environment..."
+          if [ -f "scripts/deploy.sh" ]; then
+            chmod +x scripts/deploy.sh
+            ./scripts/deploy.sh production
+          else
+            echo "⚠️ Deployment script not found"
+            exit 1
+          fi
+      
+      - name: Run post-deploy validation
+        run: |
+          echo "✅ Running post-deployment validation..."
+          if [ -f "scripts/health_check.sh" ]; then
+            chmod +x scripts/health_check.sh
+            ./scripts/health_check.sh production
+          fi
+      
+      - name: Send deployment notification
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          echo "📢 Deployment to production: $STATUS"
+          # Add notification logic here (Slack, email, etc.)
