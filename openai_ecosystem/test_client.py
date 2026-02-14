@@ -456,6 +456,99 @@ class TestExtractPrimaryOutput:
         }
         assert result["value"]["expected_contract_version"] == "v1"
 
+    def test_parses_tool_call_arguments_empty_or_whitespace_string(self):
+        """Empty or whitespace-only arguments strings are treated as empty dict."""
+        response = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_empty",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": ""
+                        },
+                    }
+                ]
+            }
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["arguments"] == {}
+
+        response_whitespace = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_ws",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": "   \n\t  "
+                        },
+                    }
+                ]
+            }
+        }
+        result_ws = extract_primary_output(response_whitespace)
+        assert result_ws["type"] == "tool_call"
+        assert result_ws["value"]["arguments"] == {}
+
+    def test_parses_tool_call_arguments_none(self):
+        """None arguments are treated as empty dict."""
+        response = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_none",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": None
+                        },
+                    }
+                ]
+            }
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["arguments"] == {}
+
+    def test_parses_tool_call_arguments_pass_through_dict_and_list(self):
+        """Dict and list arguments are passed through without JSON parsing."""
+        dict_args = {"query": "ISODEC-100-1000", "filter_type": "sku"}
+        response_dict = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_dict",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": dict_args,
+                        },
+                    }
+                ]
+            }
+        }
+        result_dict = extract_primary_output(response_dict)
+        assert result_dict["type"] == "tool_call"
+        assert result_dict["value"]["arguments"] == dict_args
+
+        list_args = ["ISODEC-100-1000", "ISODEC-200-1000"]
+        response_list = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_list",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": list_args,
+                        },
+                    }
+                ]
+            }
+        }
+        result_list = extract_primary_output(response_list)
+        assert result_list["type"] == "tool_call"
+        assert result_list["value"]["arguments"] == list_args
+
     def test_extracts_tool_call_from_content_parts(self):
         """Tool-call metadata nested under content[] is detected."""
         response = {
