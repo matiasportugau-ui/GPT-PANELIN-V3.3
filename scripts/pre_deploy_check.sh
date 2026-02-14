@@ -251,9 +251,9 @@ check_git_status() {
 
 # Main function
 main() {
-    log_info "=" * 70
+    log_info "======================================================================"
     log_info "GPT-PANELIN-V3.2 Pre-Deployment Checklist"
-    log_info "=" * 70
+    log_info "======================================================================"
     log_info "Timestamp: $(date)"
     echo ""
     
@@ -286,9 +286,9 @@ main() {
     echo ""
     
     # Summary
-    log_info "=" * 70
+    log_info "======================================================================"
     log_info "Pre-Deployment Checklist Summary"
-    log_info "=" * 70
+    log_info "======================================================================"
     
     if [ $CHECKS_FAILED -eq 0 ]; then
         log_success "All checks passed - ready for deployment"
