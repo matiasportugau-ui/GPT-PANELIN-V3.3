@@ -432,6 +432,266 @@ class TestExtractPrimaryOutput:
         assert result["value"]["name"] == "get_weather"
         assert result["value"]["arguments"] == {"city": "Boston"}
 
+
+    def test_parses_tool_call_arguments_json_string(self):
+        """Tool-call arguments serialized as JSON string are parsed."""
+        response = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_2",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": '{"query": "ISODEC-100-1000", "filter_type": "sku"}'
+                        }
+                    }
+                ]
+            }
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["arguments"] == {
+            "query": "ISODEC-100-1000",
+            "filter_type": "sku"
+        }
+        assert result["value"]["expected_contract_version"] == "v1"
+
+    def test_parses_tool_call_arguments_empty_or_whitespace_string(self):
+        """Empty or whitespace-only arguments strings are treated as empty dict."""
+        response = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_empty",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": ""
+                        },
+                    }
+                ]
+            }
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["arguments"] == {}
+
+        response_whitespace = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_ws",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": "   \n\t  "
+                        },
+                    }
+                ]
+            }
+        }
+        result_ws = extract_primary_output(response_whitespace)
+        assert result_ws["type"] == "tool_call"
+        assert result_ws["value"]["arguments"] == {}
+
+    def test_parses_tool_call_arguments_none(self):
+        """None arguments are treated as empty dict."""
+        response = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_none",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": None
+                        },
+                    }
+                ]
+            }
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["arguments"] == {}
+
+    def test_parses_tool_call_arguments_pass_through_dict_and_list(self):
+        """Dict and list arguments are passed through without JSON parsing."""
+        dict_args = {"query": "ISODEC-100-1000", "filter_type": "sku"}
+        response_dict = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_dict",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": dict_args,
+                        },
+                    }
+                ]
+            }
+        }
+        result_dict = extract_primary_output(response_dict)
+        assert result_dict["type"] == "tool_call"
+        assert result_dict["value"]["arguments"] == dict_args
+
+        list_args = ["ISODEC-100-1000", "ISODEC-200-1000"]
+        response_list = {
+            "message": {
+                "tool_calls": [
+                    {
+                        "id": "call_list",
+                        "function": {
+                            "name": "price_check",
+                            "arguments": list_args,
+                        },
+                    }
+                ]
+            }
+        }
+        result_list = extract_primary_output(response_list)
+        assert result_list["type"] == "tool_call"
+        assert result_list["value"]["arguments"] == list_args
+
+    def test_extracts_tool_call_from_content_parts(self):
+        """Tool-call metadata nested under content[] is detected."""
+        response = {
+            "output": [
+                {
+                    "type": "message",
+                    "content": [
+                        {
+                            "type": "function_call",
+                            "name": "catalog_search",
+                            "arguments": {"query": "isodec"}
+                        }
+                    ]
+                }
+            ]
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["name"] == "catalog_search"
+        assert result["value"]["expected_contract_version"] == "v1"
+
+    def test_prefers_output_tool_call_over_choices_message(self):
+        """When both output[] and choices[].message.tool_calls are present, output[] is preferred."""
+        response = {
+            "output": [
+                {
+                "type": "message",
+                "content": [
+                    {
+                        "type": "function_call",
+                        "name": "catalog_search",
+                        "arguments": {"query": "from_output"}
+                    }
+                ]
+                }
+            ],
+            "choices": [
+                {
+                    "message": {
+                        "tool_calls": [
+                            {
+                                "id": "call_from_choices",
+                                "function": {
+                                    "name": "catalog_search",
+                                    "arguments": '{"query": "from_choices"}',
+                                },
+                                "type": "function",
+                            }
+                        ]
+                    }
+                }
+            ],
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["name"] == "catalog_search"
+        # Asserts precedence: the tool call from output[] wins over choices[].message.tool_calls
+        assert result["value"]["arguments"]["query"] == "from_output"
+        assert result["value"]["expected_contract_version"] == "v1"
+
+    def test_uses_first_tool_call_in_list(self):
+        """When multiple tool calls are present in the same list, the first one is used."""
+        response = {
+            "choices": [
+                {
+                    "message": {
+                        "tool_calls": [
+                            {
+                                "id": "call_1",
+                                "function": {
+                                    "name": "first_tool",
+                                    "arguments": '{"param": "first"}',
+                                },
+                                "type": "function",
+                            },
+                            {
+                                "id": "call_2",
+                                "function": {
+                                    "name": "second_tool",
+                                    "arguments": '{"param": "second"}',
+                                },
+                                "type": "function",
+                            },
+                        ]
+                    }
+                }
+            ]
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        # Asserts stable ordering: the first tool call in the list is selected.
+        assert result["value"]["name"] == "first_tool"
+        assert result["value"]["arguments"]["param"] == "first"
+        assert result["value"]["expected_contract_version"] == "v1"
+
+    def test_extracts_tool_call_from_choices_message(self):
+        """Chat Completions tool calls in choices[].message.tool_calls are supported."""
+        response = {
+            "choices": [
+                {
+                    "message": {
+                        "tool_calls": [
+                            {
+                                "id": "call_3",
+                                "function": {
+                                    "name": "bom_calculate",
+                                    "arguments": {"product_family": "ISODEC"}
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["name"] == "bom_calculate"
+
+    def test_handles_malformed_tool_call_arguments_string(self):
+        """Malformed JSON tool-call arguments are wrapped in a raw field."""
+        malformed_args = "not valid json{"
+        response = {
+            "choices": [
+                {
+                    "message": {
+                        "tool_calls": [
+                            {
+                                "id": "call_4",
+                                "function": {
+                                    "name": "bom_calculate",
+                                    "arguments": malformed_args,
+                                },
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+        result = extract_primary_output(response)
+        assert result["type"] == "tool_call"
+        assert result["value"]["name"] == "bom_calculate"
+        assert result["value"]["arguments"] == {"raw": malformed_args}
+        assert result["value"]["expected_contract_version"] == "v1"
     def test_returns_unknown_with_diagnostic(self):
         """Test that unknown type with diagnostic is returned when no content."""
         response = {"id": "123", "model": "gpt-4"}

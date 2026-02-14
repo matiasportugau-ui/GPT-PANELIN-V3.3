@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "tool_name": "kb_search",
+  "contract_version": "v1",
+  "description": "Semantic/keyword search over Panelin knowledge base sources.",
+  "input_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "query": {"type": "string", "minLength": 2, "maxLength": 240},
+      "source": {
+        "type": "string",
+        "enum": ["pricing", "catalog", "bom", "documentation", "all"],
+        "default": "all"
+      },
+      "max_results": {"type": "integer", "minimum": 1, "maximum": 20, "default": 5},
+      "min_score": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.2}
+    },
+    "required": ["query"]
+  },
+  "output_schema": {
+    "oneOf": [
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {"const": true},
+          "contract_version": {"const": "v1"},
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source": {"type": "string"},
+                "path": {"type": "string"},
+                "snippet": {"type": "string"},
+                "score": {"type": "number", "minimum": 0, "maximum": 1}
+              },
+              "required": ["source", "path", "snippet", "score"]
+            }
+          }
+        },
+        "required": ["ok", "contract_version", "results"]
+      },
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {"const": false},
+          "contract_version": {"const": "v1"},
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {"type": "string", "enum": ["INVALID_QUERY", "SOURCE_NOT_SUPPORTED", "INDEX_UNAVAILABLE", "INTERNAL_ERROR"]},
+              "message": {"type": "string"},
+              "details": {"type": "object"}
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["ok", "contract_version", "error"]
+      }
+    ]
+  },
+  "error_codes": ["INVALID_QUERY", "SOURCE_NOT_SUPPORTED", "INDEX_UNAVAILABLE", "INTERNAL_ERROR"]
+}

@@ -1,0 +1,8 @@
+{
+  "input": {"product_family": "ISODEC", "thickness_mm": 15, "usage": "pared", "length_m": 6, "width_m": 4},
+  "output": {
+    "ok": false,
+    "contract_version": "v1",
+    "error": {"code": "INVALID_THICKNESS", "message": "Supported thickness is 30-250 mm", "details": {"thickness_mm": 15}}
+  }
+}

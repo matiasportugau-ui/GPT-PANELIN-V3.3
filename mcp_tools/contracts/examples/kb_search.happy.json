@@ -1,0 +1,10 @@
+{
+  "input": {"query": "isodec 100 eps", "source": "pricing", "max_results": 2},
+  "output": {
+    "ok": true,
+    "contract_version": "v1",
+    "results": [
+      {"source": "bromyros_pricing_master.json", "path": "items[18]", "snippet": "ISODEC-100 EPS", "score": 0.93}
+    ]
+  }
+}

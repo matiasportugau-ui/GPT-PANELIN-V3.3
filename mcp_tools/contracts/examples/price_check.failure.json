@@ -1,0 +1,8 @@
+{
+  "input": {"query": "NOT-A-SKU", "filter_type": "sku"},
+  "output": {
+    "ok": false,
+    "contract_version": "v1",
+    "error": {"code": "SKU_NOT_FOUND", "message": "No SKU matched query", "details": {"query": "NOT-A-SKU"}}
+  }
+}

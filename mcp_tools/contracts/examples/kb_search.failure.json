@@ -1,0 +1,8 @@
+{
+  "input": {"query": "x", "source": "pricing"},
+  "output": {
+    "ok": false,
+    "contract_version": "v1",
+    "error": {"code": "INVALID_QUERY", "message": "query must have at least 2 chars", "details": {"minLength": 2}}
+  }
+}
