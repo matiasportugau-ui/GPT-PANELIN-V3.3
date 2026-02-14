@@ -35,7 +35,14 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
     norm_query = _normalize(query)
 
     # Navigate the pricing structure — adapt to actual JSON shape
-    products = data if isinstance(data, list) else data.get("products", data.get("items", []))
+    products = data
+    if isinstance(data, dict):
+        # Check for nested structure (e.g., data.products)
+        if "data" in data and isinstance(data["data"], dict):
+            products = data["data"].get("products", [])
+        else:
+            products = data.get("products", data.get("items", []))
+    
     if isinstance(products, dict):
         # Handle dict-keyed structures
         items = []
@@ -54,19 +61,22 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
 
         match = False
         sku = str(product.get("sku", product.get("SKU", product.get("codigo", ""))))
-        family = str(product.get("familia", product.get("family", product.get("_key", ""))))
+        familia = str(product.get("familia", product.get("family", product.get("_key", ""))))
         ptype = str(product.get("tipo", product.get("type", "")))
         name = str(product.get("nombre", product.get("name", product.get("title", ""))))
-        thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
+        
+        # Get thickness from specifications if available
+        specs = product.get("specifications", {})
+        thickness = specs.get("thickness_mm") if isinstance(specs, dict) else product.get("espesor_mm", product.get("thickness", product.get("espesor")))
 
         if filter_type == "sku" and norm_query in _normalize(sku):
             match = True
-        elif filter_type == "family" and norm_query in _normalize(family):
+        elif filter_type == "family" and norm_query in _normalize(familia):
             match = True
         elif filter_type == "type" and norm_query in _normalize(ptype):
             match = True
         elif filter_type == "search":
-            searchable = _normalize(f"{sku} {family} {ptype} {name}")
+            searchable = _normalize(f"{sku} {familia} {ptype} {name}")
             if norm_query in searchable:
                 match = True
 
@@ -86,27 +96,100 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
 
 
 async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute price_check tool and return results."""
+    """Execute price_check tool and return results in v1 contract format."""
     query = arguments.get("query", "")
     filter_type = arguments.get("filter_type", "search")
     thickness_mm = arguments.get("thickness_mm")
 
+    # Validate query parameter
     if not query:
-        return {"error": "Query parameter is required", "results": []}
-
-    data = _load_pricing()
-    results = _search_products(data, query, filter_type, thickness_mm)
-
-    if not results:
         return {
-            "message": f"No products found for query '{query}' (filter: {filter_type})",
-            "results": [],
-            "source": "bromyros_pricing_master.json (Level 1)",
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_FILTER",
+                "message": "Query parameter is required",
+                "details": {"filter_type": filter_type}
+            }
         }
 
-    return {
-        "message": f"Found {len(results)} product(s)",
-        "results": results[:20],  # Cap at 20 results
-        "source": "bromyros_pricing_master.json (Level 1)",
-        "note": "Prices in USD, IVA 22% included",
-    }
+    try:
+        data = _load_pricing()
+        results = _search_products(data, query, filter_type, thickness_mm)
+
+        if not results:
+            return {
+                "ok": False,
+                "contract_version": "v1",
+                "error": {
+                    "code": "SKU_NOT_FOUND",
+                    "message": f"No products found for query '{query}'",
+                    "details": {"query": query, "filter_type": filter_type}
+                }
+            }
+
+        # Transform results to match contract schema
+        matches = []
+        for product in results[:20]:  # Cap at 20 results
+            # Extract fields from product, handling various possible key names
+            sku = str(product.get("sku", product.get("SKU", product.get("codigo", ""))))
+            
+            # Build description from available fields
+            name = product.get("name", product.get("nombre", product.get("title", "")))
+            familia = product.get("familia", product.get("family", ""))
+            description = f"{familia} {name}".strip() if familia else name
+            
+            # Extract thickness from specifications or direct field
+            specs = product.get("specifications", {})
+            thickness = specs.get("thickness_mm") if isinstance(specs, dict) else product.get("espesor_mm", product.get("thickness", product.get("espesor")))
+            
+            # Extract price - check pricing object first, then fallback to direct fields
+            price = None
+            pricing = product.get("pricing", {})
+            if isinstance(pricing, dict):
+                # Prefer web_iva_inc, then sale_iva_inc
+                price = pricing.get("web_iva_inc", pricing.get("sale_iva_inc"))
+            
+            # Fallback to direct price fields if pricing object doesn't have what we need
+            if price is None:
+                price_keys = ["precio_usd_iva_inc", "price_usd_iva_inc", "precio", "price"]
+                for key in price_keys:
+                    if key in product:
+                        try:
+                            price = float(product[key])
+                            break
+                        except (ValueError, TypeError):
+                            pass
+            
+            # Build match object according to contract
+            match = {
+                "sku": sku,
+                "description": description,
+                "price_usd_iva_inc": float(price) if price is not None else 0.0
+            }
+            
+            # Add thickness if available
+            if thickness is not None:
+                try:
+                    match["thickness_mm"] = float(thickness)
+                except (ValueError, TypeError):
+                    pass
+            
+            matches.append(match)
+
+        return {
+            "ok": True,
+            "contract_version": "v1",
+            "matches": matches
+        }
+
+    except Exception as e:
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": f"Internal error during price lookup: {str(e)}",
+                "details": {"exception_type": type(e).__name__}
+            }
+        }

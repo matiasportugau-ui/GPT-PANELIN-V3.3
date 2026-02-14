@@ -51,44 +51,94 @@ CATEGORY_MAP = {
 
 
 async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute catalog_search tool and return lightweight results."""
+    """Execute catalog_search tool and return lightweight results in v1 contract format."""
     query = arguments.get("query", "")
     category = arguments.get("category", "all")
     limit = arguments.get("limit", 5)
 
+    # Validate query parameter
     if not query:
-        return {"error": "Query parameter is required", "results": []}
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "QUERY_TOO_SHORT",
+                "message": "Query parameter is required",
+                "details": {"query": query}
+            }
+        }
 
-    catalog = _load_catalog()
-    norm_query = _normalize(query)
+    # Validate category
+    valid_categories = ["techo", "pared", "camara", "accesorio", "all"]
+    if category not in valid_categories:
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_CATEGORY",
+                "message": f"Invalid category '{category}'",
+                "details": {"category": category, "valid_categories": valid_categories}
+            }
+        }
 
-    # Determine category keywords
-    category_keywords: list[str] = []
-    if category != "all" and category in CATEGORY_MAP:
-        category_keywords = CATEGORY_MAP[category]
+    try:
+        catalog = _load_catalog()
+        norm_query = _normalize(query)
 
-    results: list[dict[str, Any]] = []
-    for product in catalog:
-        title = _normalize(product.get("title", ""))
-        ptype = _normalize(product.get("product_type", ""))
-        tags = _normalize(str(product.get("tags", "")))
-        handle = _normalize(product.get("handle", ""))
-        searchable = f"{title} {ptype} {tags} {handle}"
+        # Determine category keywords
+        category_keywords: list[str] = []
+        if category != "all" and category in CATEGORY_MAP:
+            category_keywords = CATEGORY_MAP[category]
 
-        if norm_query not in searchable:
-            continue
+        results: list[dict[str, Any]] = []
+        for product in catalog:
+            title = _normalize(product.get("title", ""))
+            ptype = _normalize(product.get("product_type", ""))
+            tags = _normalize(str(product.get("tags", "")))
+            handle = _normalize(product.get("handle", ""))
+            searchable = f"{title} {ptype} {tags} {handle}"
 
-        if category_keywords:
-            if not any(kw in searchable for kw in category_keywords):
+            if norm_query not in searchable:
                 continue
 
-        results.append(_to_lightweight(product))
-        if len(results) >= limit:
-            break
+            if category_keywords:
+                if not any(kw in searchable for kw in category_keywords):
+                    continue
 
-    return {
-        "message": f"Found {len(results)} product(s) for '{query}'",
-        "results": results,
-        "source": "shopify_catalog_v1.json (Level 1.6)",
-        "total_catalog_size": len(catalog),
-    }
+            # Transform to contract format
+            result_item = {
+                "product_id": str(product.get("id", "")),
+                "name": product.get("title", ""),
+                "category": product.get("product_type", "")
+            }
+            
+            # Add optional fields if available
+            if "handle" in product and product["handle"]:
+                result_item["url"] = f"https://shop.example.com/products/{product['handle']}"
+            
+            # Calculate a simple relevance score based on match position
+            # Lower position = higher score
+            match_pos = searchable.find(norm_query)
+            score = max(0.5, 1.0 - (match_pos / len(searchable))) if match_pos >= 0 else 0.5
+            result_item["score"] = round(score, 2)
+            
+            results.append(result_item)
+            if len(results) >= limit:
+                break
+
+        return {
+            "ok": True,
+            "contract_version": "v1",
+            "results": results
+        }
+
+    except Exception as e:
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "CATALOG_UNAVAILABLE",
+                "message": f"Error searching catalog: {str(e)}",
+                "details": {"exception_type": type(e).__name__}
+            }
+        }

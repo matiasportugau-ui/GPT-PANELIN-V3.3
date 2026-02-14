@@ -103,7 +103,7 @@ def _get_autoportancia(
 
 
 async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute bom_calculate tool and return BOM breakdown."""
+    """Execute bom_calculate tool and return BOM breakdown in v1 contract format."""
     family = arguments.get("product_family", "")
     thickness = arguments.get("thickness_mm", 0)
     core = arguments.get("core_type", "EPS")
@@ -112,64 +112,123 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
     width = arguments.get("width_m", 0)
     qty_panels = arguments.get("quantity_panels")
 
+    # Validate required parameters
     if not family or not usage or not length or not width:
-        return {"error": "product_family, usage, length_m, and width_m are required"}
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_DIMENSIONS",
+                "message": "product_family, usage, length_m, and width_m are required",
+                "details": {"family": family, "usage": usage, "length": length, "width": width}
+            }
+        }
     
     # Validate thickness_mm
     if not thickness or thickness <= 0:
         return {
-            "error": "thickness_mm is required and must be a positive number",
-            "received": thickness
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_THICKNESS",
+                "message": "thickness_mm is required and must be a positive number",
+                "details": {"thickness_mm": thickness}
+            }
         }
 
-    rules = _load_bom_rules()
-    system_key = _resolve_system_key(family, core, usage)
+    try:
+        rules = _load_bom_rules()
+        system_key = _resolve_system_key(family, core, usage)
 
-    if not system_key:
+        if not system_key:
+            return {
+                "ok": False,
+                "contract_version": "v1",
+                "error": {
+                    "code": "RULE_NOT_FOUND",
+                    "message": f"No BOM rules found for {family} {core} {usage}",
+                    "details": {
+                        "family": family,
+                        "core": core,
+                        "usage": usage,
+                        "hint": "Valid systems: techo_isoroof_3g, techo_isodec_eps, techo_isodec_pir, pared_isopanel_eps, pared_isowall_pir, pared_isofrig_pir"
+                    }
+                }
+            }
+
+        # Look up system rules
+        systems = rules.get("sistemas", rules.get("systems", {}))
+        system = systems.get(system_key)
+
+        if not system:
+            return {
+                "ok": False,
+                "contract_version": "v1",
+                "error": {
+                    "code": "RULE_NOT_FOUND",
+                    "message": f"System '{system_key}' not found in bom_rules.json",
+                    "details": {"system_key": system_key, "available_systems": list(systems.keys())}
+                }
+            }
+
+        # Basic panel calculation
+        panel_width_m = 1.0  # Default useful width in meters (most panels are ~1m useful)
+        if qty_panels is None:
+            qty_panels = max(1, int(length / panel_width_m + 0.5))
+
+        area_m2 = length * width
+        
+        # Calculate supports using correct formula: ROUNDUP((length_m / autoportancia) + 1)
+        # Use producto_ref from system to avoid duplicating mapping logic
+        producto_ref = system.get("producto_ref")
+        autoportancia = _get_autoportancia(family, core, thickness, producto_ref=producto_ref)
+        
+        if autoportancia and autoportancia > 0:
+            # Formula from quotation_calculator_v3.py:414-427 and bom_rules.json
+            n_supports = max(2, math.ceil((length / autoportancia) + 1))
+        else:
+            # Fallback if autoportancia not found
+            n_supports = max(2, math.ceil(length / 3.0) + 1)  # Conservative fallback: 3m span
+
+        # Build items list - for now, return basic panel and support items
+        # This is a simplified version; full implementation would include accessories
+        items = [
+            {
+                "item_type": "panel",
+                "sku": f"{family}-{int(thickness)}-{int(length*1000)}",
+                "quantity": qty_panels,
+                "unit": "unit",
+                "unit_price_usd_iva_inc": 0.0,  # Would need pricing lookup
+                "subtotal_usd_iva_inc": 0.0
+            },
+            {
+                "item_type": "fixation",
+                "sku": "SUPPORT-STD",
+                "quantity": n_supports,
+                "unit": "unit",
+                "unit_price_usd_iva_inc": 0.0,  # Would need pricing lookup
+                "subtotal_usd_iva_inc": 0.0
+            }
+        ]
+
         return {
-            "error": f"No BOM rules found for {family} {core} {usage}",
-            "hint": "Valid systems: techo_isoroof_3g, techo_isodec_eps, techo_isodec_pir, pared_isopanel_eps, pared_isowall_pir, pared_isofrig_pir",
+            "ok": True,
+            "contract_version": "v1",
+            "summary": {
+                "area_m2": area_m2,
+                "panel_count": qty_panels,
+                "total_usd_iva_inc": 0.0  # Would need pricing lookup to calculate
+            },
+            "items": items
         }
 
-    # Look up system rules
-    systems = rules.get("sistemas", rules.get("systems", {}))
-    system = systems.get(system_key)
-
-    if not system:
+    except Exception as e:
         return {
-            "error": f"System '{system_key}' not found in bom_rules.json",
-            "available_systems": list(systems.keys()),
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": f"Internal error during BOM calculation: {str(e)}",
+                "details": {"exception_type": type(e).__name__}
+            }
         }
-
-    # Basic panel calculation
-    panel_width_m = 1.0  # Default useful width in meters (most panels are ~1m useful)
-    if qty_panels is None:
-        qty_panels = max(1, int(length / panel_width_m + 0.5))
-
-    area_m2 = length * width
-    
-    # Calculate supports using correct formula: ROUNDUP((length_m / autoportancia) + 1)
-    # Use producto_ref from system to avoid duplicating mapping logic
-    producto_ref = system.get("producto_ref")
-    autoportancia = _get_autoportancia(family, core, thickness, producto_ref=producto_ref)
-    
-    if autoportancia and autoportancia > 0:
-        # Formula from quotation_calculator_v3.py:414-427 and bom_rules.json
-        n_supports = max(2, math.ceil((length / autoportancia) + 1))
-        support_note = f"Calculated from length ({length}m) / autoportancia ({autoportancia}m)"
-    else:
-        # Fallback if autoportancia not found
-        n_supports = max(2, math.ceil(length / 3.0) + 1)  # Conservative fallback: 3m span
-        support_note = f"Fallback estimate (autoportancia not found for {family} {core} {int(thickness)}mm)"
-
-    return {
-        "system": system_key,
-        "product": f"{family} {core} {int(thickness)}mm",
-        "dimensions": {"length_m": length, "width_m": width, "area_m2": area_m2},
-        "panels": {"quantity": qty_panels, "note": "Verify against useful panel width from KB"},
-        "supports": n_supports,
-        "supports_note": support_note,
-        "bom_rules_applied": system,
-        "source": "bom_rules.json (Level 1.3) + accessories_catalog.json (Level 1.2)",
-        "note": "This is a parametric estimate. Final BOM should be validated against KB formulas in BMC_Base_Conocimiento_GPT-2.json.",
-    }
