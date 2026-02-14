@@ -1298,7 +1298,99 @@ python .evolucionador/tests/test_validator.py
 python .evolucionador/tests/test_optimizer.py
 ```
 
-### Deployment Steps
+### Docker Deployment (Production)
+
+**For production deployments, use Docker for containerized deployment:**
+
+#### Prerequisites
+- Docker 20.10+ and Docker Compose v2+
+- 2+ CPU cores, 2GB+ RAM, 5GB+ disk space
+- OpenAI API key
+
+#### Quick Start with Docker
+
+```bash
+# 1. Clone repository
+git clone https://github.com/matiasportugau-ui/GPT-PANELIN-V3.2.git
+cd GPT-PANELIN-V3.2
+
+# 2. Create environment file
+cp .env.example .env
+# Edit .env and set OPENAI_API_KEY and other variables
+
+# 3. Build and start services
+docker-compose up -d --build
+
+# 4. View logs
+docker-compose logs -f panelin-bot
+
+# 5. Check health
+./scripts/health_check.sh production
+```
+
+#### Production Deployment Script
+
+```bash
+# Run pre-deployment checks
+./scripts/pre_deploy_check.sh
+
+# Deploy to production
+./scripts/deploy.sh production
+
+# Verify deployment
+./scripts/health_check.sh production
+```
+
+**See [DEPLOYMENT.md](DEPLOYMENT.md) for comprehensive deployment guide including:**
+- Architecture overview
+- Environment setup
+- Health checks and monitoring
+- Troubleshooting
+- Rollback procedures
+- Security considerations
+
+### CI/CD Pipeline
+
+This project includes automated CI/CD workflows using GitHub Actions:
+
+#### Workflows
+
+- **CI/CD Pipeline** (`.github/workflows/ci-cd.yml`)
+  - Runs tests, linting, and knowledge base validation
+  - Builds Docker image
+  - Auto-deploys to staging on main branch
+  - Manual approval required for production
+
+- **Test Suite** (`.github/workflows/test.yml`)
+  - Matrix testing: Python 3.10, 3.11, 3.12
+  - Unit tests, integration tests
+  - Knowledge base validation
+
+- **Health Checks** (`.github/workflows/health-check.yml`)
+  - Runs every 6 hours
+  - Validates system health
+  - Manual trigger available
+
+#### Required GitHub Secrets
+
+Configure in repository Settings → Secrets:
+
+```
+OPENAI_API_KEY           # Required for OpenAI integration
+DOCKER_USERNAME          # Optional: Docker Hub username
+DOCKER_PASSWORD          # Optional: Docker Hub password
+SENTRY_DSN               # Optional: Error tracking
+```
+
+#### Monitoring
+
+- **Health endpoint**: `http://localhost:8000/health`
+- **Metrics endpoint**: `http://localhost:9090/metrics` (Prometheus format)
+- **Logs**: `logs/panelin.log` (rotated, max 10MB × 5 backups)
+
+### GPT Builder Deployment
+
+For deploying to OpenAI's GPT Builder platform:
 
 #### 1. Prepare Knowledge Base Files
 

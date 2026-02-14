@@ -1,0 +1,76 @@
+# ==============================================================================
+# GPT-PANELIN-V3.2 Production Requirements
+# ==============================================================================
+# This file includes all dependencies from requirements.txt plus production-specific packages
+
+# ------------------------------------------------------------------------------
+# Base Dependencies (from requirements.txt)
+# ------------------------------------------------------------------------------
+reportlab>=4.0.0
+pillow>=9.0.0
+pytest-asyncio>=0.21.0
+pytest>=7.0.0
+
+# ------------------------------------------------------------------------------
+# MCP Server Dependencies (from mcp/requirements.txt)
+# ------------------------------------------------------------------------------
+mcp>=1.0.0
+uvicorn>=0.30.0
+starlette>=0.40.0
+httpx>=0.27.0
+pydantic>=2.0.0
+
+# ------------------------------------------------------------------------------
+# Production-specific Dependencies
+# ------------------------------------------------------------------------------
+
+# ASGI Server for production
+gunicorn>=21.2.0
+uvicorn[standard]>=0.30.0
+
+# Error tracking and monitoring
+sentry-sdk>=1.40.0
+
+# Structured logging
+python-json-logger>=2.0.7
+
+# Environment variable management
+python-dotenv>=1.0.0
+
+# HTTP requests with retries
+requests>=2.31.0
+
+# Async support
+aiofiles>=23.2.0
+asyncio>=3.4.3
+
+# Data validation
+jsonschema>=4.20.0
+
+# Performance monitoring
+prometheus-client>=0.19.0
+
+# Security
+cryptography>=41.0.0
+
+# Rate limiting (optional)
+# slowapi>=0.1.9
+
+# Database drivers (uncomment if needed)
+# psycopg2-binary>=2.9.9  # PostgreSQL
+# redis>=5.0.1  # Redis
+
+# Additional utilities
+click>=8.1.7
+colorama>=0.4.6
+python-dateutil>=2.8.2
+
+# Testing (keep for validation in production deployments)
+pytest-cov>=4.1.0
+pytest-timeout>=2.2.0
+pytest-mock>=3.12.0
+
+# Linting and code quality (for CI/CD)
+flake8>=7.0.0
+black>=24.1.0
+mypy>=1.8.0

@@ -1,0 +1,258 @@
+# ==============================================================================
+# GPT-PANELIN-V3.2 Production Configuration
+# ==============================================================================
+
+app:
+  name: "GPT-PANELIN-V3.2"
+  version: "3.2.0"
+  environment: "production"
+  description: "GPT-PANELIN MCP Server for OpenAI integration"
+
+# ------------------------------------------------------------------------------
+# Server Configuration
+# ------------------------------------------------------------------------------
+server:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  timeout: 300
+  keepalive: 5
+  transport: "stdio"  # Options: stdio, sse
+  
+  # ASGI server settings (if using uvicorn/gunicorn)
+  uvicorn:
+    log_level: "info"
+    access_log: true
+    use_colors: false
+    server_header: false
+
+# ------------------------------------------------------------------------------
+# Security Settings
+# ------------------------------------------------------------------------------
+security:
+  api_key_required: true
+  rate_limiting: true
+  rate_limit_per_minute: 60
+  cors_enabled: false
+  cors_origins: []
+  
+  # Security headers
+  headers:
+    x_frame_options: "DENY"
+    x_content_type_options: "nosniff"
+    x_xss_protection: "1; mode=block"
+    strict_transport_security: "max-age=31536000; includeSubDomains"
+
+# ------------------------------------------------------------------------------
+# Knowledge Base Configuration
+# ------------------------------------------------------------------------------
+knowledge_base:
+  pricing_master: "bromyros_pricing_master.json"
+  pricing_optimized: "bromyros_pricing_gpt_optimized.json"
+  accessories: "accessories_catalog.json"
+  bom_rules: "bom_rules.json"
+  shopify_catalog: "shopify_catalog_v1.json"
+  core_kb: "BMC_Base_Conocimiento_GPT-2.json"
+  corrections_log: "corrections_log.json"
+  
+  # Cache settings
+  cache_enabled: true
+  cache_ttl_seconds: 3600
+  cache_max_size: 1000
+
+# ------------------------------------------------------------------------------
+# Monitoring & Observability
+# ------------------------------------------------------------------------------
+monitoring:
+  enabled: true
+  metrics_endpoint: "/metrics"
+  health_endpoint: "/health"
+  
+  # Metrics collection
+  prometheus:
+    enabled: true
+    port: 9090
+    
+  # Error tracking
+  sentry:
+    enabled: false
+    dsn: ""
+    environment: "production"
+    traces_sample_rate: 0.1
+    profiles_sample_rate: 0.1
+
+# ------------------------------------------------------------------------------
+# Logging Configuration
+# ------------------------------------------------------------------------------
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "json"  # json, standard, detailed
+  file: "logs/panelin.log"
+  max_bytes: 10485760  # 10MB
+  backup_count: 5
+  
+  # Log specific components
+  components:
+    mcp_server: "INFO"
+    handlers: "INFO"
+    background_tasks: "INFO"
+    pdf_reports: "INFO"
+
+# ------------------------------------------------------------------------------
+# Background Tasks Configuration
+# ------------------------------------------------------------------------------
+background_tasks:
+  enabled: true
+  max_workers: 4
+  task_timeout_seconds: 300
+  queue_size: 1000
+  
+  # Task-specific settings
+  batch_operations:
+    enabled: true
+    max_batch_size: 100
+    
+  full_quotation:
+    enabled: true
+    timeout_seconds: 600
+
+# ------------------------------------------------------------------------------
+# PDF Generation Configuration
+# ------------------------------------------------------------------------------
+pdf_generation:
+  output_dir: "panelin_reports/output"
+  logo_path: "bmc_logo.png"
+  template_version: "2.0"
+  
+  # PDF settings
+  page_size: "A4"
+  margins:
+    top: 20
+    right: 20
+    bottom: 20
+    left: 20
+  
+  # Fonts
+  font_family: "Helvetica"
+  font_size: 10
+
+# ------------------------------------------------------------------------------
+# OpenAI Integration
+# ------------------------------------------------------------------------------
+openai:
+  model: "gpt-4-turbo-preview"
+  max_tokens: 4000
+  temperature: 0.7
+  timeout: 30
+  
+  # Retry configuration
+  max_retries: 3
+  retry_delay: 1
+
+# ------------------------------------------------------------------------------
+# MCP Tools Configuration
+# ------------------------------------------------------------------------------
+mcp_tools:
+  # Tool-specific settings
+  price_check:
+    enabled: true
+    max_results: 100
+    
+  catalog_search:
+    enabled: true
+    default_limit: 10
+    max_limit: 30
+    
+  bom_calculate:
+    enabled: true
+    
+  batch_bom_calculate:
+    enabled: true
+    max_batch_size: 50
+    
+  bulk_price_check:
+    enabled: true
+    max_batch_size: 100
+    
+  full_quotation:
+    enabled: true
+    
+  task_management:
+    enabled: true
+    
+  quotation_store:
+    enabled: true
+    
+  report_error:
+    enabled: true
+
+# ------------------------------------------------------------------------------
+# Business Logic Configuration
+# ------------------------------------------------------------------------------
+business:
+  # IVA (Tax) configuration
+  iva_rate: 0.22  # 22% for Uruguay
+  
+  # Price calculation
+  currency: "USD"
+  decimal_places: 2
+  
+  # Validation ranges
+  thickness_range:
+    min: 20
+    max: 250
+    
+  dimensions:
+    length_max: 30  # meters
+    width_max: 20   # meters
+    
+  quantity:
+    min: 1
+    max: 2000
+
+# ------------------------------------------------------------------------------
+# Performance & Optimization
+# ------------------------------------------------------------------------------
+performance:
+  # Connection pooling
+  connection_pool_size: 10
+  connection_max_overflow: 20
+  
+  # Request timeouts
+  request_timeout: 30
+  slow_request_threshold: 5
+  
+  # Memory limits
+  max_memory_mb: 2048
+
+# ------------------------------------------------------------------------------
+# Feature Flags
+# ------------------------------------------------------------------------------
+features:
+  enable_batch_operations: true
+  enable_full_quotation: true
+  enable_error_reporting: true
+  enable_quotation_store: true
+  enable_background_tasks: true
+  enable_pdf_generation: true
+  enable_caching: true
+  enable_metrics: true
+
+# ------------------------------------------------------------------------------
+# Deployment Configuration
+# ------------------------------------------------------------------------------
+deployment:
+  environment: "production"
+  region: "us-east-1"
+  
+  # Deployment strategy
+  strategy: "rolling"
+  max_unavailable: 1
+  max_surge: 1
+  
+  # Health checks
+  health_check:
+    interval_seconds: 30
+    timeout_seconds: 10
+    retries: 3
+    start_period_seconds: 40

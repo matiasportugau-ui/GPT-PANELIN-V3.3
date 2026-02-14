@@ -44,3 +44,22 @@ GPT_Upload_Package/
 
 # Test cache
 .pytest_cache/
+
+# Environment files (contain secrets)
+.env
+.env.staging
+.env.production
+.env.local
+
+# Logs directory
+logs/
+*.log
+
+# Coverage reports
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Docker volumes
+docker-volumes/
