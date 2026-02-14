@@ -6,21 +6,12 @@ A minimal MCP server that exposes BMC quotation tools:
 - bom_calculate: Bill of Materials calculator
 - report_error: KB error correction logger
 
-Background task processing tools (async, long-running operations):
-- batch_bom_calculate: Submit batch BOM calculations
-- bulk_price_check: Submit bulk pricing lookups
-- full_quotation: Submit combined BOM + pricing + catalog quotation
-- task_status: Check background task progress
-- task_result: Retrieve completed task output
-- task_list: List recent background tasks
-- task_cancel: Cancel a pending/running task
-
 Usage:
     # stdio transport (for OpenAI Custom GPT Actions / local testing)
-    python -m mcp.server
+    python -m panelin_mcp_server.server
 
     # SSE transport (for remote hosting)
-    python -m mcp.server --transport sse --port 8000
+    python -m panelin_mcp_server.server --transport sse --port 8000
 
 Requires: mcp>=1.0.0 (pip install mcp)
 """
@@ -46,23 +37,6 @@ from .handlers.pricing import handle_price_check
 from .handlers.catalog import handle_catalog_search
 from .handlers.bom import handle_bom_calculate
 from .handlers.errors import handle_report_error
-from .handlers.quotation import configure_quotation_store, handle_quotation_store
-from .storage.factory import initialize_memory_store
-from .observability import (
-    get_invocation_context,
-    log_tool_invocation_error,
-    log_tool_invocation_start,
-    log_tool_invocation_success,
-)
-from .handlers.tasks import (
-    handle_batch_bom_calculate,
-    handle_bulk_price_check,
-    handle_full_quotation,
-    handle_task_status,
-    handle_task_result,
-    handle_task_list,
-    handle_task_cancel,
-)
 
 TOOLS_DIR = Path(__file__).parent / "tools"
 
@@ -74,51 +48,15 @@ def _load_tool_schema(name: str) -> dict[str, Any]:
         return json.load(f)
 
 
-# Tool handler dispatch — core tools + background task tools
+# Tool handler dispatch
 TOOL_HANDLERS = {
-    # Core tools (synchronous)
     "price_check": handle_price_check,
     "catalog_search": handle_catalog_search,
     "bom_calculate": handle_bom_calculate,
     "report_error": handle_report_error,
-    "quotation_store": handle_quotation_store,
-    # Background task tools (async)
-    "batch_bom_calculate": handle_batch_bom_calculate,
-    "bulk_price_check": handle_bulk_price_check,
-    "full_quotation": handle_full_quotation,
-    "task_status": handle_task_status,
-    "task_result": handle_task_result,
-    "task_list": handle_task_list,
-    "task_cancel": handle_task_cancel,
 }
 
 TOOL_NAMES = list(TOOL_HANDLERS.keys())
-
-
-def _estimate_token_count(payload: Any) -> int:
-    """Estimate token count using a conservative character heuristic."""
-    serialized = json.dumps(payload, ensure_ascii=False, default=str)
-    return max(1, round(len(serialized) / 4))
-
-
-def _init_task_workers() -> None:
-    """Register background task workers with the task manager.
-
-    Called once during server creation to wire up the worker functions
-    for each supported background task type.
-    """
-    from .tasks.manager import get_task_manager
-    from .tasks.models import TaskType
-    from .tasks.workers import (
-        batch_bom_worker,
-        bulk_pricing_worker,
-        full_quotation_worker,
-    )
-
-    manager = get_task_manager()
-    manager.register_worker(TaskType.BATCH_BOM, batch_bom_worker)
-    manager.register_worker(TaskType.BULK_PRICING, bulk_pricing_worker)
-    manager.register_worker(TaskType.FULL_QUOTATION, full_quotation_worker)
 
 
 def create_server() -> Any:
@@ -130,16 +68,7 @@ def create_server() -> Any:
         )
         sys.exit(1)
 
-    # Initialize background task workers
-    _init_task_workers()
-
     server = Server("panelin-mcp-server")
-    memory_store, store_metadata = initialize_memory_store()
-    configure_quotation_store(
-        memory_store,
-        enable_vector_retrieval=bool(store_metadata.get("enable_vector_retrieval", False)),
-        backend_metadata=store_metadata,
-    )
 
     @server.list_tools()
     async def list_tools() -> list[Tool]:
@@ -157,24 +86,11 @@ def create_server() -> Any:
 
     @server.call_tool()
     async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
-        context = get_invocation_context(name, arguments)
-        token_input = _estimate_token_count(arguments)
-        started_at = log_tool_invocation_start(context, token_input)
-
         handler = TOOL_HANDLERS.get(name)
         if not handler:
-            log_tool_invocation_error(context, started_at, "UNKNOWN_TOOL", token_input)
             return [TextContent(type="text", text=json.dumps({"error": f"Unknown tool: {name}"}))]
 
-        try:
-            result = await handler(arguments)
-        except Exception as exc:  # noqa: BLE001
-            error_code = getattr(exc, "code", exc.__class__.__name__.upper())
-            log_tool_invocation_error(context, started_at, str(error_code), token_input)
-            raise
-
-        token_output = _estimate_token_count(result)
-        log_tool_invocation_success(context, started_at, token_input, token_output)
+        result = await handler(arguments)
         return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, default=str))]
 
     return server

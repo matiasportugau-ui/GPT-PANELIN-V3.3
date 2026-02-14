@@ -205,7 +205,7 @@ GPT-PANELIN-V3.3/
 │   └── test_panelin_api_connection.sh           # API smoke test script
 │
 ├── MCP SERVER (Model Context Protocol)
-│   └── mcp/                                     # MCP server implementation
+│   └── panelin_mcp_server/                                     # MCP server implementation
 │       ├── server.py                            # Main MCP server (stdio & SSE transports)
 │       ├── requirements.txt                     # MCP dependencies (mcp>=1.0.0, uvicorn, starlette)
 │       ├── config/                              # Configuration files
@@ -213,29 +213,12 @@ GPT-PANELIN-V3.3/
 │       │   ├── pricing.py                       # price_check tool handler
 │       │   ├── catalog.py                       # catalog_search tool handler
 │       │   ├── bom.py                           # bom_calculate tool handler
-│       │   ├── errors.py                        # report_error tool handler
-│       │   └── tasks.py                         # Background task tool handlers (7 tools)
-│       ├── tasks/                               # Background task processing engine
-│       │   ├── models.py                        # Task lifecycle models and data classes
-│       │   ├── manager.py                       # Async task manager with concurrency control
-│       │   ├── workers.py                       # Worker functions for batch/bulk operations
-│       │   └── tests/                           # 55 comprehensive tests
-│       │       ├── test_models.py
-│       │       ├── test_manager.py
-│       │       ├── test_workers.py
-│       │       └── test_handlers.py
+│       │   └── errors.py                        # report_error tool handler
 │       └── tools/                               # JSON tool schemas
 │           ├── price_check.json                 # Pricing lookup schema
 │           ├── catalog_search.json              # Catalog search schema
 │           ├── bom_calculate.json               # BOM calculator schema
 │           ├── report_error.json                # Error reporting schema
-│           ├── batch_bom_calculate.json         # Batch BOM background task schema
-│           ├── bulk_price_check.json            # Bulk pricing background task schema
-│           ├── full_quotation.json              # Full quotation background task schema
-│           ├── task_status.json                 # Task status query schema
-│           ├── task_result.json                 # Task result retrieval schema
-│           ├── task_list.json                   # Task listing schema
-│           └── task_cancel.json                 # Task cancellation schema
 │
 ├── CALCULATION ENGINE
 │   ├── quotation_calculator_v3.py               # Python calculation engine v3.1
@@ -294,7 +277,7 @@ GPT-PANELIN-V3.3/
 │       ├── test_validator.py
 │       └── test_optimizer.py
 │
-├── mcp/                                         # 🔌 MCP SERVER IMPLEMENTATION
+├── panelin_mcp_server/                                         # 🔌 MCP SERVER IMPLEMENTATION
 │   ├── server.py                                # Main MCP server with stdio/SSE transport
 │   ├── requirements.txt                         # MCP SDK dependencies
 │   │
@@ -476,7 +459,7 @@ The MCP (Model Context Protocol) Server is a new architectural component that ex
 
 The implementation consists of three main components:
 
-#### 1. Core MCP Server (`mcp/`)
+#### 1. Core MCP Server (`panelin_mcp_server/`)
 
 A minimal MCP server built on the MCP SDK that provides four core tools:
 
@@ -491,7 +474,7 @@ A minimal MCP server built on the MCP SDK that provides four core tools:
 - Dual transport support: `stdio` (local/OpenAI Custom GPT Actions) and `sse` (remote hosting)
 - JSON tool schemas in `tools/` directory
 - Direct KB file access (no duplication in GPT context)
-- Handlers use Python stdlib only; MCP server requires MCP SDK + transport deps (see `mcp/requirements.txt`)
+- Handlers use Python stdlib only; MCP server requires MCP SDK + transport deps (see `panelin_mcp_server/requirements.txt`)
 
 **Usage:**
 ```bash
@@ -538,8 +521,8 @@ tools = server.tools_registry()
 #### 3. Configuration & Documentation
 
 **Configuration:**
-- `mcp/config/mcp_server_config.json` - Server config with KB paths, OpenAI integration settings, and GitHub MCP capabilities
-- Tool schemas in `mcp/tools/*.json` - MCP-compliant tool definitions
+- `panelin_mcp_server/config/mcp_server_config.json` - Server config with KB paths, OpenAI integration settings, and GitHub MCP capabilities
+- Tool schemas in `panelin_mcp_server/tools/*.json` - MCP-compliant tool definitions
 
 **Research & Analysis:**
 - [MCP_SERVER_COMPARATIVE_ANALYSIS.md](MCP_SERVER_COMPARATIVE_ANALYSIS.md) - Top 10 MCP server comparison with cost analysis
@@ -882,13 +865,6 @@ The Model Context Protocol (MCP) is an open standard for connecting AI assistant
 
 | Tool | Description | Use Case |
 |------|-------------|----------|
-| 📦 **batch_bom_calculate** | Batch BOM for multiple panels | Multi-zone projects needing BOMs for several panel types |
-| 💰 **bulk_price_check** | Bulk pricing for multiple products | Compare prices across families, build multi-product quotes |
-| 📄 **full_quotation** | Combined BOM + pricing + catalog | Complete quotation in one pass (BOM, pricing, accessories) |
-| 📊 **task_status** | Check background task progress | Poll running tasks for completion percentage |
-| 📥 **task_result** | Retrieve completed task output | Get the full result data when a task finishes |
-| 📋 **task_list** | List recent background tasks | Monitor and review task history with optional filters |
-| ❌ **task_cancel** | Cancel a pending/running task | Stop tasks that are no longer needed |
 
 ### Quick Start
 
@@ -896,7 +872,7 @@ The Model Context Protocol (MCP) is an open standard for connecting AI assistant
 
 ```bash
 # Install MCP server dependencies from the repository root
-pip install -r mcp/requirements.txt
+pip install -r panelin_mcp_server/requirements.txt
 ```
 
 **Required packages:**
@@ -1055,96 +1031,6 @@ python -m mcp.server --transport sse --port 8000
 
 **Response:** Persists error to `corrections_log.json` for tracking and potential future automation (e.g., generating GitHub PRs via external tools; not implemented in this repository).
 
-#### 5. batch_bom_calculate (Background Task)
-
-**Purpose:** Submit multiple BOM calculations as a single background task. Ideal for multi-zone projects.
-
-**Input Schema:**
-```json
-{
-  "items": [
-    {
-      "product_family": "ISODEC",
-      "thickness_mm": 100,
-      "core_type": "EPS",
-      "usage": "techo",
-      "length_m": 12.0,
-      "width_m": 6.0
-    },
-    {
-      "product_family": "ISOPANEL",
-      "thickness_mm": 50,
-      "core_type": "EPS",
-      "usage": "pared",
-      "length_m": 8.0,
-      "width_m": 4.0
-    }
-  ]
-}
-```
-
-**Response:** Returns a `task_id` for polling with `task_status` and retrieval with `task_result`.
-
-#### 6. bulk_price_check (Background Task)
-
-**Purpose:** Look up pricing for multiple products at once.
-
-**Input Schema:**
-```json
-{
-  "queries": [
-    {"query": "ISODEC", "filter_type": "family"},
-    {"query": "ISOROOF", "filter_type": "family"},
-    {"query": "panel techo 100mm", "filter_type": "search"}
-  ]
-}
-```
-
-**Response:** Returns a `task_id` for status polling and result retrieval.
-
-#### 7. full_quotation (Background Task)
-
-**Purpose:** Generate a complete quotation combining BOM + pricing + catalog in one pass.
-
-**Input Schema:**
-```json
-{
-  "product_family": "ISODEC",
-  "thickness_mm": 100,
-  "core_type": "EPS",
-  "usage": "techo",
-  "length_m": 12.0,
-  "width_m": 6.0,
-  "client_name": "Empresa Constructora ABC",
-  "project_name": "Galpon Industrial",
-  "discount_percent": 5
-}
-```
-
-**Response:** Returns a `task_id`. The completed result includes BOM, pricing, catalog matches, and a quotation summary.
-
-#### 8. task_status / task_result / task_list / task_cancel
-
-**Purpose:** Manage background tasks.
-
-```json
-// Check status
-{"task_id": "TASK-A1B2C3D4"}
-
-// Retrieve result (only for completed tasks)
-{"task_id": "TASK-A1B2C3D4"}
-
-// List tasks (all filters optional)
-{"status": "running", "task_type": "batch_bom_calculate", "limit": 10}
-
-// Cancel a task
-{"task_id": "TASK-A1B2C3D4"}
-```
-
-**Task States:** `pending` -> `running` -> `completed` | `failed` | `cancelled`
-
-**Progress Tracking:** Running tasks include progress data (percentage, current item, items completed/total).
-
 ### Integration Paths
 
 There are two distinct integration paths in this project:
@@ -1164,17 +1050,10 @@ There are two distinct integration paths in this project:
 - Tools will be available via the MCP protocol over HTTP
 
 **MCP tool schemas are available at:**
-- `mcp/tools/price_check.json`
-- `mcp/tools/catalog_search.json`
-- `mcp/tools/bom_calculate.json`
-- `mcp/tools/report_error.json`
-- `mcp/tools/batch_bom_calculate.json`
-- `mcp/tools/bulk_price_check.json`
-- `mcp/tools/full_quotation.json`
-- `mcp/tools/task_status.json`
-- `mcp/tools/task_result.json`
-- `mcp/tools/task_list.json`
-- `mcp/tools/task_cancel.json`
+- `panelin_mcp_server/tools/price_check.json`
+- `panelin_mcp_server/tools/catalog_search.json`
+- `panelin_mcp_server/tools/bom_calculate.json`
+- `panelin_mcp_server/tools/report_error.json`
 
 These JSON files describe MCP tools and are consumed by MCP-aware clients, not directly by OpenAI Custom GPT Actions.
 
@@ -1195,7 +1074,7 @@ The MCP server's stdio transport cannot be used directly with OpenAI Custom GPT 
 ### Architecture
 
 ```
-mcp/
+panelin_mcp_server/
 ├── server.py              # Main MCP server implementation
 ├── requirements.txt       # Python dependencies
 ├── config/                # Configuration files
@@ -1203,29 +1082,12 @@ mcp/
 │   ├── pricing.py        # price_check handler
 │   ├── catalog.py        # catalog_search handler
 │   ├── bom.py            # bom_calculate handler
-│   ├── errors.py         # report_error handler
-│   └── tasks.py          # Background task tool handlers (7 tools)
-├── tasks/                 # Background task processing engine
-│   ├── models.py         # Task, TaskProgress, TaskStatus, TaskType
-│   ├── manager.py        # Async task manager (submit, cancel, query)
-│   ├── workers.py        # Worker functions (batch BOM, bulk pricing, quotation)
-│   └── tests/            # 55 comprehensive tests
-│       ├── test_models.py
-│       ├── test_manager.py
-│       ├── test_workers.py
-│       └── test_handlers.py
+│   └── errors.py         # report_error handler
 └── tools/                 # JSON tool schemas
     ├── price_check.json
     ├── catalog_search.json
     ├── bom_calculate.json
-    ├── report_error.json
-    ├── batch_bom_calculate.json
-    ├── bulk_price_check.json
-    ├── full_quotation.json
-    ├── task_status.json
-    ├── task_result.json
-    ├── task_list.json
-    └── task_cancel.json
+    └── report_error.json
 ```
 
 ### Additional Resources
@@ -1674,7 +1536,7 @@ See [PANELIN_TRAINING_GUIDE.md](PANELIN_TRAINING_GUIDE.md) for details.
 | [panelin_reports/test_pdf_generation.py](panelin_reports/test_pdf_generation.py) | PDF generation test suite | panelin_reports |
 | [.evolucionador/README.md](.evolucionador/README.md) | EVOLUCIONADOR system guide | .evolucionador |
 | [docs/README.md](docs/README.md) | Complete documentation hub and index | docs |
-| [mcp/config/mcp_server_config.json](mcp/config/mcp_server_config.json) | MCP server configuration | mcp |
+| [panelin_mcp_server/config/mcp_server_config.json](panelin_mcp_server/config/mcp_server_config.json) | MCP server configuration | mcp |
 
 ### Python Modules Documentation
 
@@ -1684,7 +1546,7 @@ See [PANELIN_TRAINING_GUIDE.md](PANELIN_TRAINING_GUIDE.md) for details.
 | `panelin_reports/` | Professional PDF generation with BMC branding, ReportLab-based | 2.0 |
 | `openai_ecosystem/` | OpenAI API response extraction and normalization utilities | 1.0 |
 | `.evolucionador/` | Autonomous evolution agent with 7 validators, 6 optimizers, report generator | 1.0.0 |
-| `mcp/` | MCP server with 4 tools (price_check, catalog_search, bom_calculate, report_error) | 0.1.0 |
+| `panelin_mcp_server/` | MCP server with 4 tools (price_check, catalog_search, bom_calculate, report_error) | 0.1.0 |
 | `panelin_mcp_integration/` | MCP integration clients for OpenAI Responses API and Wolf API wrapper | 0.1.0 |
 
 #### OpenAI Ecosystem Module

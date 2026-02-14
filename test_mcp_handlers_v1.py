@@ -3,9 +3,9 @@
 import asyncio
 import pytest
 
-from mcp.handlers.pricing import handle_price_check
-from mcp.handlers.catalog import handle_catalog_search
-from mcp.handlers.bom import handle_bom_calculate
+from panelin_mcp_server.handlers.pricing import handle_price_check
+from panelin_mcp_server.handlers.catalog import handle_catalog_search
+from panelin_mcp_server.handlers.bom import handle_bom_calculate
 
 
 class TestPriceCheckV1Contract:
