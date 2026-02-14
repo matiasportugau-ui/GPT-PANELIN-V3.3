@@ -88,7 +88,7 @@ def _parse_tool_arguments(arguments: Any) -> Any:
         try:
             parsed = json.loads(candidate)
             return _to_plain(parsed)
-        except Exception:
+        except json.JSONDecodeError:
             return {"raw": candidate}
     if arguments is None:
         return {}

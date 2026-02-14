@@ -82,11 +82,13 @@ Market research and comparative analysis for MCP server integration:
 
 | Tool | Contract Version | Contract File |
 |------|------------------|---------------|
-| `kb_search` | `v1` | `mcp_tools/contracts/kb_search.v1.json` |
+| `kb_search`* | `v1` | `mcp_tools/contracts/kb_search.v1.json` |
 | `price_check` | `v1` | `mcp_tools/contracts/price_check.v1.json` |
 | `bom_calculate` | `v1` | `mcp_tools/contracts/bom_calculate.v1.json` |
 | `catalog_search` | `v1` | `mcp_tools/contracts/catalog_search.v1.json` |
-| `quotation_store` | `v1` | `mcp_tools/contracts/quotation_store.v1.json` |
+| `quotation_store`* | `v1` | `mcp_tools/contracts/quotation_store.v1.json` |
+
+\* `kb_search` and `quotation_store` are defined as v1 contract schemas but are **not yet registered/exposed** as tools in the MCP server (`mcp/server.py`). They are planned for future implementation.
 
 ### 📦 Archived Documents
 
