@@ -7,8 +7,23 @@
     "tools/price_check.json",
     "tools/catalog_search.json",
     "tools/bom_calculate.json",
-    "tools/report_error.json"
+    "tools/report_error.json",
+    "tools/quotation_store.json"
   ],
+  "feature_flags": {
+    "ENABLE_QDRANT_MEMORY": false,
+    "ENABLE_VECTOR_RETRIEVAL": false
+  },
+  "memory": {
+    "default_backend": "file",
+    "file_store_path": "../quotation_memory.json",
+    "qdrant": {
+      "url": "http://localhost:6333",
+      "api_key_env": "QDRANT_API_KEY",
+      "collection": "panelin_quotations",
+      "timeout_seconds": 2
+    }
+  },
   "kb_paths": {
     "pricing_master": "../bromyros_pricing_master.json",
     "pricing_optimized": "../bromyros_pricing_gpt_optimized.json",

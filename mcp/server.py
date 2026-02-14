@@ -37,6 +37,8 @@ from .handlers.pricing import handle_price_check
 from .handlers.catalog import handle_catalog_search
 from .handlers.bom import handle_bom_calculate
 from .handlers.errors import handle_report_error
+from .handlers.quotation import configure_quotation_store, handle_quotation_store
+from .storage.factory import initialize_memory_store
 
 TOOLS_DIR = Path(__file__).parent / "tools"
 
@@ -54,6 +56,7 @@ TOOL_HANDLERS = {
     "catalog_search": handle_catalog_search,
     "bom_calculate": handle_bom_calculate,
     "report_error": handle_report_error,
+    "quotation_store": handle_quotation_store,
 }
 
 TOOL_NAMES = list(TOOL_HANDLERS.keys())
@@ -69,6 +72,11 @@ def create_server() -> Any:
         sys.exit(1)
 
     server = Server("panelin-mcp-server")
+    memory_store, store_metadata = initialize_memory_store()
+    configure_quotation_store(
+        memory_store,
+        enable_vector_retrieval=bool(store_metadata.get("enable_vector_retrieval", False)),
+    )
 
     @server.list_tools()
     async def list_tools() -> list[Tool]:
