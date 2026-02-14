@@ -619,8 +619,8 @@ class TestExtractPrimaryOutput:
                             {
                                 "id": "call_1",
                                 "function": {
-                                    "name": "first_tool",
-                                    "arguments": '{"param": "first"}',
+                                    "name": "price_check",  # Use a tool in TOOL_CONTRACT_VERSIONS
+                                    "arguments": '{"query": "test"}',
                                 },
                                 "type": "function",
                             },
@@ -640,8 +640,8 @@ class TestExtractPrimaryOutput:
         result = extract_primary_output(response)
         assert result["type"] == "tool_call"
         # Asserts stable ordering: the first tool call in the list is selected.
-        assert result["value"]["name"] == "first_tool"
-        assert result["value"]["arguments"]["param"] == "first"
+        assert result["value"]["name"] == "price_check"
+        assert result["value"]["arguments"]["query"] == "test"
         assert result["value"]["expected_contract_version"] == "v1"
 
     def test_extracts_tool_call_from_choices_message(self):
