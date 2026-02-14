@@ -125,6 +125,8 @@ async def handle_catalog_search(arguments: dict[str, Any], legacy_format: bool =
     Returns:
         v1 contract envelope: {ok, contract_version, results} or {ok, contract_version, error}
     """
+async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
+    """Execute catalog_search tool and return lightweight results in v1 contract format."""
     query = arguments.get("query", "")
     category = arguments.get("category", "all")
     limit = arguments.get("limit", 5)
@@ -173,6 +175,40 @@ async def handle_catalog_search(arguments: dict[str, Any], legacy_format: bool =
         logger.debug("Wrapped catalog_search error response in v1 envelope")
         return error_response
     
+    if not query:
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "QUERY_TOO_SHORT",
+                "message": "Query parameter is required",
+                "details": {}
+            }
+        }
+    
+    if len(query) < 2:
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "QUERY_TOO_SHORT",
+                "message": "Query must be at least 2 characters long",
+                "details": {"query": query}
+            }
+        }
+    
+    if category not in ["techo", "pared", "camara", "accesorio", "all"]:
+        return {
+            "ok": False,
+            "contract_version": "v1",
+            "error": {
+                "code": "INVALID_CATEGORY",
+                "message": f"Invalid category: {category}",
+                "details": {"category": category, "valid_categories": ["techo", "pared", "camara", "accesorio", "all"]}
+            }
+        }
+
+    catalog = _load_catalog()
     norm_query = _normalize(query)
 
     # Determine category keywords
@@ -248,3 +284,39 @@ async def handle_catalog_search(arguments: dict[str, Any], legacy_format: bool =
             return {"error": f"Internal error: {str(e)}", "results": []}
         logger.exception("Internal error during catalog search")
         return error_response
+        # Transform to v1 contract format
+        product_id = str(product.get("id", ""))
+        product_name = product.get("title", "")
+        product_category = _infer_category(searchable)
+        product_url = f"https://shop.example.com/products/{product.get('handle', '')}"
+        
+        results.append({
+            "product_id": product_id,
+            "name": product_name,
+            "category": product_category,
+            "url": product_url,
+            "score": 1.0  # TODO: Implement actual relevance scoring based on query match quality
+        })
+        
+        if len(results) >= limit:
+            break
+
+    return {
+        "ok": True,
+        "contract_version": "v1",
+        "results": results
+    }
+
+
+def _infer_category(searchable_text: str) -> str:
+    """Infer product category from searchable text."""
+    text = searchable_text.lower()
+    if any(kw in text for kw in CATEGORY_MAP["techo"]):
+        return "techo"
+    elif any(kw in text for kw in CATEGORY_MAP["pared"]):
+        return "pared"
+    elif any(kw in text for kw in CATEGORY_MAP["camara"]):
+        return "camara"
+    elif any(kw in text for kw in CATEGORY_MAP["accesorio"]):
+        return "accesorio"
+    return "other"
