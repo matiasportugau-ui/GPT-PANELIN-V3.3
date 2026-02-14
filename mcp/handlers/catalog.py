@@ -142,12 +142,16 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
         }
 
     except Exception as e:
+        # Log the full exception for debugging (in production, use proper logging)
+        import traceback
+        traceback.print_exc()
+        
         return {
             "ok": False,
             "contract_version": "v1",
             "error": {
                 "code": "CATALOG_UNAVAILABLE",
-                "message": f"Internal error processing catalog_search: {str(e)}",
+                "message": "Internal error processing catalog_search request",
                 "details": {}
             }
         }

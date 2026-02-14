@@ -97,7 +97,7 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
             "ok": False,
             "contract_version": "v1",
             "error": {
-                "code": "INVALID_FILTER",
+                "code": "SKU_NOT_FOUND",
                 "message": "Query parameter is required",
                 "details": {}
             }
@@ -187,12 +187,16 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
         }
 
     except Exception as e:
+        # Log the full exception for debugging (in production, use proper logging)
+        import traceback
+        traceback.print_exc()
+        
         return {
             "ok": False,
             "contract_version": "v1",
             "error": {
                 "code": "INTERNAL_ERROR",
-                "message": f"Internal error processing price_check: {str(e)}",
+                "message": "Internal error processing price_check request",
                 "details": {}
             }
         }
