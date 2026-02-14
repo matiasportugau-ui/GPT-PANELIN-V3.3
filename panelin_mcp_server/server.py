@@ -8,10 +8,10 @@ A minimal MCP server that exposes BMC quotation tools:
 
 Usage:
     # stdio transport (for OpenAI Custom GPT Actions / local testing)
-    python -m mcp.server
+    python -m panelin_mcp_server.server
 
     # SSE transport (for remote hosting)
-    python -m mcp.server --transport sse --port 8000
+    python -m panelin_mcp_server.server --transport sse --port 8000
 
 Requires: mcp>=1.0.0 (pip install mcp)
 """
