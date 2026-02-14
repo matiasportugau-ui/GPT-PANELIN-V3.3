@@ -191,15 +191,17 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
             n_supports = max(2, math.ceil(length / 3.0) + 1)  # Conservative fallback: 3m span
 
         # Build items list - basic structure without pricing
-        # Note: Pricing lookup would require integration with handle_price_check
-        # For now, we return the BOM structure with placeholder prices
+        # Note: Pricing integration is pending. Once integrated, these placeholder
+        # values should be replaced with actual prices from handle_price_check.
+        # The synthetic SKU format (family-thickness-length_in_mm) is used here
+        # because the actual SKU may vary based on specific product variants.
         items = [
             {
                 "item_type": "panel",
-                "sku": f"{family}-{int(thickness)}-{int(length*1000)}",  # Synthetic SKU format
+                "sku": f"{family}-{int(thickness)}-{int(length*1000)}",  # Format: FAMILY-THICKNESS-LENGTH_MM
                 "quantity": qty_panels,
                 "unit": "unit",
-                "unit_price_usd_iva_inc": 0.0,  # Pricing not integrated yet
+                "unit_price_usd_iva_inc": 0.0,  # TODO: Integrate with pricing handler
                 "subtotal_usd_iva_inc": 0.0
             },
             {
@@ -207,7 +209,7 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
                 "sku": "SUPPORT-STD",  # Generic support SKU
                 "quantity": n_supports,
                 "unit": "unit",
-                "unit_price_usd_iva_inc": 0.0,  # Pricing not integrated yet
+                "unit_price_usd_iva_inc": 0.0,  # TODO: Integrate with pricing handler
                 "subtotal_usd_iva_inc": 0.0
             }
         ]
@@ -218,7 +220,7 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
             "summary": {
                 "area_m2": area_m2,
                 "panel_count": qty_panels,
-                "total_usd_iva_inc": 0.0  # Sum of item subtotals (currently 0 without pricing)
+                "total_usd_iva_inc": 0.0  # Sum of item subtotals (currently 0 pending pricing integration)
             },
             "items": items
         }

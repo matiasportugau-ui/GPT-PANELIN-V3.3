@@ -115,7 +115,8 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
             # Add optional URL field if handle is available
             handle = product.get("handle", "")
             if handle:
-                # TODO: Replace with actual shop URL or make configurable
+                # TODO: Make shop domain configurable via environment variable
+                # Current value is the production BMC Uruguay shop
                 result_item["url"] = f"https://bmcuruguay.com/products/{handle}"
             
             # Calculate a simple relevance score based on match position
