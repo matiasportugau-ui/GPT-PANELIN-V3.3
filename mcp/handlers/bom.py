@@ -195,6 +195,7 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
     items = []
     
     # Panel item
+    # TODO: Replace placeholder pricing with actual lookup from bromyros_pricing_master.json
     panel_sku = f"{family}-{core}-{int(thickness)}mm"
     panel_unit_price = 50.0  # Placeholder - should be looked up from pricing
     panel_subtotal = qty_panels * panel_unit_price
@@ -210,8 +211,9 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
     
     # Support/fixation item
     if n_supports > 0:
+        # TODO: Replace placeholder pricing with actual lookup from accessories_catalog.json
         support_sku = f"SUPPORT-{system_key}"
-        support_unit_price = 10.0  # Placeholder
+        support_unit_price = 10.0  # Placeholder - should be looked up from accessories catalog
         support_subtotal = n_supports * support_unit_price
         
         items.append({

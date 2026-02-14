@@ -123,7 +123,7 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
             "name": product_name,
             "category": product_category,
             "url": product_url,
-            "score": 1.0  # Placeholder - could implement actual scoring
+            "score": 1.0  # TODO: Implement actual relevance scoring based on query match quality
         })
         
         if len(results) >= limit:
