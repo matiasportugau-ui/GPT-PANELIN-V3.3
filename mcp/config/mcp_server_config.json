@@ -15,7 +15,6 @@
     "ENABLE_VECTOR_RETRIEVAL": false
   },
   "memory": {
-    "default_backend": "file",
     "file_store_path": "../quotation_memory.json",
     "qdrant": {
       "url": "http://localhost:6333",
