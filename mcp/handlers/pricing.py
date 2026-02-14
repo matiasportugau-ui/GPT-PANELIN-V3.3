@@ -32,7 +32,15 @@ def _normalize(text: str) -> str:
 
 
 def _extract_thickness(product: dict[str, Any]) -> float | None:
-    """Extract thickness value from product, checking multiple possible locations."""
+    """Extract thickness value from product, checking multiple possible locations.
+    
+    Checks for thickness in this order:
+    1. Product-level fields: espesor_mm, thickness, espesor
+    2. Nested specifications: specifications.thickness_mm, specifications.espesor_mm
+    
+    Returns:
+        The thickness value as a float, or None if not found or invalid.
+    """
     thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
     if thickness is None and "specifications" in product:
         specs = product["specifications"]
