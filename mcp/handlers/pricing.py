@@ -31,6 +31,24 @@ def _normalize(text: str) -> str:
     return text.lower().strip().replace("-", "").replace("_", "").replace(" ", "")
 
 
+def _extract_thickness(product: dict[str, Any]) -> float | None:
+    """Extract thickness value from product, checking multiple possible locations.
+    
+    Checks for thickness in this order:
+    1. Product-level fields: espesor_mm, thickness, espesor
+    2. Nested specifications: specifications.thickness_mm, specifications.espesor_mm
+    
+    Returns:
+        The thickness value as a float, or None if not found or invalid.
+    """
+    thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
+    if thickness is None and "specifications" in product:
+        specs = product["specifications"]
+        if isinstance(specs, dict):
+            thickness = specs.get("thickness_mm", specs.get("espesor_mm"))
+    return thickness
+
+
 def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: str = "search",
                      thickness_mm: float | None = None) -> list[dict[str, Any]]:
     """Search pricing data for matching products."""
@@ -38,7 +56,21 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
     norm_query = _normalize(query)
 
     # Navigate the pricing structure — adapt to actual JSON shape
-    products = data if isinstance(data, list) else data.get("products", data.get("items", []))
+    if isinstance(data, list):
+        products = data
+    elif isinstance(data, dict):
+        # First try the expected nested structure
+        if "data" in data and isinstance(data["data"], dict) and "products" in data["data"]:
+            products = data["data"]["products"]
+        # Fall back to flat structure for backwards compatibility
+        elif "products" in data:
+            products = data["products"]
+        elif "items" in data:
+            products = data["items"]
+        else:
+            products = []
+    else:
+        products = []
     if isinstance(products, dict):
         # Handle dict-keyed structures
         items = []
@@ -60,7 +92,7 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
         family = str(product.get("familia", product.get("family", product.get("_key", ""))))
         ptype = str(product.get("tipo", product.get("type", "")))
         name = str(product.get("nombre", product.get("name", product.get("title", ""))))
-        thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
+        thickness = _extract_thickness(product)
 
         if filter_type == "sku" and norm_query in _normalize(sku):
             match = True
@@ -88,54 +120,12 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
     return results
 
 
-def _to_contract_match(product: dict[str, Any]) -> dict[str, Any]:
-    """Transform a product record to the v1 contract match format."""
-    sku = str(product.get("sku", product.get("SKU", product.get("codigo", ""))))
-    name = str(product.get("nombre", product.get("name", product.get("title", ""))))
-    family = str(product.get("familia", product.get("family", "")))
-    ptype = str(product.get("tipo", product.get("type", "")))
-    
-    # Build description from available fields
-    desc_parts = [p for p in [family, ptype, name] if p]
-    description = " - ".join(desc_parts) if desc_parts else sku
-    
-    # Extract price
-    price = product.get("precio_usd_iva_inc", product.get("price_usd_iva_inc", 0))
-    try:
-        price = float(price)
-    except (ValueError, TypeError):
-        price = 0.0
-    
-    # Extract thickness
-    thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
-    thickness_value = None
-    if thickness is not None:
-        try:
-            thickness_value = float(thickness)
-        except (ValueError, TypeError):
-            pass
-    
-    match = {
-        "sku": sku,
-        "description": description,
-        "price_usd_iva_inc": price
-    }
-    
-    if thickness_value is not None:
-        match["thickness_mm"] = thickness_value
-    
-    return match
-
-
 async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute price_check tool and return results in v1 contract format."""
     """Execute price_check tool and return v1 contract envelope."""
     query = arguments.get("query", "")
     filter_type = arguments.get("filter_type", "search")
     thickness_mm = arguments.get("thickness_mm")
 
-    # Validate required parameters
-    if not query:
     # Validate query parameter (contract requires minLength=2, strip whitespace)
     query_stripped = query.strip() if isinstance(query, str) else ""
     if len(query_stripped) < 2:
@@ -144,73 +134,6 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
             "contract_version": "v1",
             "error": {
                 "code": "INVALID_FILTER",
-                "message": "Query parameter is required"
-            }
-        }
-
-    # Validate filter_type
-    valid_filters = ["sku", "family", "type", "search"]
-    if filter_type not in valid_filters:
-        return {
-            "ok": False,
-            "contract_version": "v1",
-            "error": {
-                "code": "INVALID_FILTER",
-                "message": f"Invalid filter_type '{filter_type}'. Must be one of: {', '.join(valid_filters)}",
-                "details": {"received": filter_type, "valid_options": valid_filters}
-            }
-        }
-
-    # Validate thickness_mm
-    if thickness_mm is not None:
-        try:
-            thickness_val = float(thickness_mm)
-            if thickness_val < 20 or thickness_val > 250:
-                return {
-                    "ok": False,
-                    "contract_version": "v1",
-                    "error": {
-                        "code": "INVALID_THICKNESS",
-                        "message": f"Thickness {thickness_val}mm is out of valid range (20-250mm)",
-                        "details": {"received": thickness_val, "min": 20, "max": 250}
-                    }
-                }
-        except (ValueError, TypeError):
-            return {
-                "ok": False,
-                "contract_version": "v1",
-                "error": {
-                    "code": "INVALID_THICKNESS",
-                    "message": f"Invalid thickness value: {thickness_mm}",
-                    "details": {"received": thickness_mm}
-                }
-            }
-
-    try:
-        data = _load_pricing()
-        results = _search_products(data, query, filter_type, thickness_mm)
-
-        if not results:
-            return {
-                "ok": False,
-                "contract_version": "v1",
-                "error": {
-                    "code": "SKU_NOT_FOUND",
-                    "message": f"No products found for query '{query}' with filter '{filter_type}'",
-                    "details": {"query": query, "filter_type": filter_type}
-                }
-            }
-
-        # Transform results to contract format and cap at 20
-        matches = [_to_contract_match(p) for p in results[:20]]
-
-        return {
-            "ok": True,
-            "contract_version": "v1",
-            "matches": matches
-        }
-    
-    except Exception as e:
                 "message": "Query parameter must be at least 2 characters long",
                 "details": {"query": query}
             }
@@ -265,7 +188,7 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
         for product in results[:20]:  # Cap at 20 results
             sku = str(product.get("sku", product.get("SKU", product.get("codigo", ""))))
             name = str(product.get("nombre", product.get("name", product.get("title", ""))))
-            thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
+            thickness = _extract_thickness(product)
             
             # Extract price - try multiple paths in pricing data
             price = None
@@ -311,8 +234,6 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
             "contract_version": "v1",
             "error": {
                 "code": "INTERNAL_ERROR",
-                "message": f"Internal error during price lookup: {str(e)}",
-                "details": {"exception_type": type(e).__name__}
                 "message": "Internal error processing price_check request",
                 "details": {}
             }
