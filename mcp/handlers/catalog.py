@@ -112,9 +112,11 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
                 "category": product.get("product_type", "")
             }
             
-            # Add optional fields if available
-            if "handle" in product and product["handle"]:
-                result_item["url"] = f"https://shop.example.com/products/{product['handle']}"
+            # Add optional URL field if handle is available
+            handle = product.get("handle", "")
+            if handle:
+                # TODO: Replace with actual shop URL or make configurable
+                result_item["url"] = f"https://bmcuruguay.com/products/{handle}"
             
             # Calculate a simple relevance score based on match position
             # Lower position = higher score

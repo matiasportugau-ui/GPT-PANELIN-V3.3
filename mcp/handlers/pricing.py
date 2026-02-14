@@ -61,22 +61,25 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
 
         match = False
         sku = str(product.get("sku", product.get("SKU", product.get("codigo", ""))))
-        familia = str(product.get("familia", product.get("family", product.get("_key", ""))))
+        family = str(product.get("familia", product.get("family", product.get("_key", ""))))
         ptype = str(product.get("tipo", product.get("type", "")))
         name = str(product.get("nombre", product.get("name", product.get("title", ""))))
         
         # Get thickness from specifications if available
         specs = product.get("specifications", {})
-        thickness = specs.get("thickness_mm") if isinstance(specs, dict) else product.get("espesor_mm", product.get("thickness", product.get("espesor")))
+        if isinstance(specs, dict) and "thickness_mm" in specs:
+            thickness = specs["thickness_mm"]
+        else:
+            thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
 
         if filter_type == "sku" and norm_query in _normalize(sku):
             match = True
-        elif filter_type == "family" and norm_query in _normalize(familia):
+        elif filter_type == "family" and norm_query in _normalize(family):
             match = True
         elif filter_type == "type" and norm_query in _normalize(ptype):
             match = True
         elif filter_type == "search":
-            searchable = _normalize(f"{sku} {familia} {ptype} {name}")
+            searchable = _normalize(f"{sku} {family} {ptype} {name}")
             if norm_query in searchable:
                 match = True
 
@@ -136,12 +139,15 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
             
             # Build description from available fields
             name = product.get("name", product.get("nombre", product.get("title", "")))
-            familia = product.get("familia", product.get("family", ""))
-            description = f"{familia} {name}".strip() if familia else name
+            family = product.get("familia", product.get("family", ""))
+            description = f"{family} {name}".strip() if family else name
             
             # Extract thickness from specifications or direct field
             specs = product.get("specifications", {})
-            thickness = specs.get("thickness_mm") if isinstance(specs, dict) else product.get("espesor_mm", product.get("thickness", product.get("espesor")))
+            if isinstance(specs, dict) and "thickness_mm" in specs:
+                thickness = specs["thickness_mm"]
+            else:
+                thickness = product.get("espesor_mm", product.get("thickness", product.get("espesor")))
             
             # Extract price - check pricing object first, then fallback to direct fields
             price = None
@@ -161,11 +167,15 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
                         except (ValueError, TypeError):
                             pass
             
+            # Skip products without valid price information
+            if price is None or price <= 0:
+                continue
+            
             # Build match object according to contract
             match = {
                 "sku": sku,
                 "description": description,
-                "price_usd_iva_inc": float(price) if price is not None else 0.0
+                "price_usd_iva_inc": float(price)
             }
             
             # Add thickness if available
