@@ -1,4 +1,4 @@
-"""MCP tool contract registry for first-wave tools."""
+"""MCP tool contract registry for first-wave and v3.4 Wolf API KB Write tools."""
 
 from __future__ import annotations
 
@@ -10,6 +10,11 @@ TOOL_CONTRACT_VERSIONS = {
     "bom_calculate": CONTRACT_VERSION,
     "catalog_search": CONTRACT_VERSION,
     "quotation_store": CONTRACT_VERSION,
+    # Wolf API KB Write tools (v3.4)
+    "persist_conversation": CONTRACT_VERSION,
+    "register_correction": CONTRACT_VERSION,
+    "save_customer": CONTRACT_VERSION,
+    "lookup_customer": CONTRACT_VERSION,
 }
 
 # Error codes for price_check
@@ -54,5 +59,25 @@ CATALOG_SEARCH_ERROR_CODES = {
     "INVALID_CATEGORY": INVALID_CATEGORY,
     "QUERY_TOO_SHORT": QUERY_TOO_SHORT,
     "CATALOG_UNAVAILABLE": CATALOG_UNAVAILABLE,
+    "INTERNAL_ERROR": INTERNAL_ERROR,
+}
+
+# Error codes for Wolf API KB Write tools (v3.4)
+PASSWORD_REQUIRED = "PASSWORD_REQUIRED"
+INVALID_PASSWORD = "INVALID_PASSWORD"
+INVALID_PHONE = "INVALID_PHONE"
+WOLF_API_ERROR = "WOLF_API_ERROR"
+
+WOLF_KB_WRITE_ERROR_CODES = {
+    "PASSWORD_REQUIRED": PASSWORD_REQUIRED,
+    "INVALID_PASSWORD": INVALID_PASSWORD,
+    "INVALID_PHONE": INVALID_PHONE,
+    "WOLF_API_ERROR": WOLF_API_ERROR,
+    "INTERNAL_ERROR": INTERNAL_ERROR,
+}
+
+LOOKUP_CUSTOMER_ERROR_CODES = {
+    "QUERY_TOO_SHORT": QUERY_TOO_SHORT,
+    "WOLF_API_ERROR": WOLF_API_ERROR,
     "INTERNAL_ERROR": INTERNAL_ERROR,
 }

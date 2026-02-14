@@ -1,0 +1,14 @@
+{
+  "name": "lookup_customer",
+  "description": "Retrieve existing customer data from KB via Wolf API. No password required. Search by name, phone, or address.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "search_query": {
+        "type": "string",
+        "description": "Search by name, phone, or address (minimum 2 characters)"
+      }
+    },
+    "required": ["search_query"]
+  }
+}
