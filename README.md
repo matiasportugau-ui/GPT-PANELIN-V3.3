@@ -205,7 +205,7 @@ GPT-PANELIN-V3.3/
 │   └── test_panelin_api_connection.sh           # API smoke test script
 │
 ├── MCP SERVER (Model Context Protocol)
-│   └── mcp/                                     # MCP server implementation
+│   └── panelin_mcp_server/                                     # MCP server implementation
 │       ├── server.py                            # Main MCP server (stdio & SSE transports)
 │       ├── requirements.txt                     # MCP dependencies (mcp>=1.0.0, uvicorn, starlette)
 │       ├── config/                              # Configuration files
@@ -294,7 +294,7 @@ GPT-PANELIN-V3.3/
 │       ├── test_validator.py
 │       └── test_optimizer.py
 │
-├── mcp/                                         # 🔌 MCP SERVER IMPLEMENTATION
+├── panelin_mcp_server/                                         # 🔌 MCP SERVER IMPLEMENTATION
 │   ├── server.py                                # Main MCP server with stdio/SSE transport
 │   ├── requirements.txt                         # MCP SDK dependencies
 │   │
@@ -476,7 +476,7 @@ The MCP (Model Context Protocol) Server is a new architectural component that ex
 
 The implementation consists of three main components:
 
-#### 1. Core MCP Server (`mcp/`)
+#### 1. Core MCP Server (`panelin_mcp_server/`)
 
 A minimal MCP server built on the MCP SDK that provides four core tools:
 
@@ -491,7 +491,7 @@ A minimal MCP server built on the MCP SDK that provides four core tools:
 - Dual transport support: `stdio` (local/OpenAI Custom GPT Actions) and `sse` (remote hosting)
 - JSON tool schemas in `tools/` directory
 - Direct KB file access (no duplication in GPT context)
-- Handlers use Python stdlib only; MCP server requires MCP SDK + transport deps (see `mcp/requirements.txt`)
+- Handlers use Python stdlib only; MCP server requires MCP SDK + transport deps (see `panelin_mcp_server/requirements.txt`)
 
 **Usage:**
 ```bash
@@ -538,8 +538,8 @@ tools = server.tools_registry()
 #### 3. Configuration & Documentation
 
 **Configuration:**
-- `mcp/config/mcp_server_config.json` - Server config with KB paths, OpenAI integration settings, and GitHub MCP capabilities
-- Tool schemas in `mcp/tools/*.json` - MCP-compliant tool definitions
+- `panelin_mcp_server/config/mcp_server_config.json` - Server config with KB paths, OpenAI integration settings, and GitHub MCP capabilities
+- Tool schemas in `panelin_mcp_server/tools/*.json` - MCP-compliant tool definitions
 
 **Research & Analysis:**
 - [MCP_SERVER_COMPARATIVE_ANALYSIS.md](MCP_SERVER_COMPARATIVE_ANALYSIS.md) - Top 10 MCP server comparison with cost analysis
@@ -896,7 +896,7 @@ The Model Context Protocol (MCP) is an open standard for connecting AI assistant
 
 ```bash
 # Install MCP server dependencies from the repository root
-pip install -r mcp/requirements.txt
+pip install -r panelin_mcp_server/requirements.txt
 ```
 
 **Required packages:**
@@ -1164,17 +1164,17 @@ There are two distinct integration paths in this project:
 - Tools will be available via the MCP protocol over HTTP
 
 **MCP tool schemas are available at:**
-- `mcp/tools/price_check.json`
-- `mcp/tools/catalog_search.json`
-- `mcp/tools/bom_calculate.json`
-- `mcp/tools/report_error.json`
-- `mcp/tools/batch_bom_calculate.json`
-- `mcp/tools/bulk_price_check.json`
-- `mcp/tools/full_quotation.json`
-- `mcp/tools/task_status.json`
-- `mcp/tools/task_result.json`
-- `mcp/tools/task_list.json`
-- `mcp/tools/task_cancel.json`
+- `panelin_mcp_server/tools/price_check.json`
+- `panelin_mcp_server/tools/catalog_search.json`
+- `panelin_mcp_server/tools/bom_calculate.json`
+- `panelin_mcp_server/tools/report_error.json`
+- `panelin_mcp_server/tools/batch_bom_calculate.json`
+- `panelin_mcp_server/tools/bulk_price_check.json`
+- `panelin_mcp_server/tools/full_quotation.json`
+- `panelin_mcp_server/tools/task_status.json`
+- `panelin_mcp_server/tools/task_result.json`
+- `panelin_mcp_server/tools/task_list.json`
+- `panelin_mcp_server/tools/task_cancel.json`
 
 These JSON files describe MCP tools and are consumed by MCP-aware clients, not directly by OpenAI Custom GPT Actions.
 
@@ -1195,7 +1195,7 @@ The MCP server's stdio transport cannot be used directly with OpenAI Custom GPT 
 ### Architecture
 
 ```
-mcp/
+panelin_mcp_server/
 ├── server.py              # Main MCP server implementation
 ├── requirements.txt       # Python dependencies
 ├── config/                # Configuration files
@@ -1674,7 +1674,7 @@ See [PANELIN_TRAINING_GUIDE.md](PANELIN_TRAINING_GUIDE.md) for details.
 | [panelin_reports/test_pdf_generation.py](panelin_reports/test_pdf_generation.py) | PDF generation test suite | panelin_reports |
 | [.evolucionador/README.md](.evolucionador/README.md) | EVOLUCIONADOR system guide | .evolucionador |
 | [docs/README.md](docs/README.md) | Complete documentation hub and index | docs |
-| [mcp/config/mcp_server_config.json](mcp/config/mcp_server_config.json) | MCP server configuration | mcp |
+| [panelin_mcp_server/config/mcp_server_config.json](panelin_mcp_server/config/mcp_server_config.json) | MCP server configuration | mcp |
 
 ### Python Modules Documentation
 
@@ -1684,7 +1684,7 @@ See [PANELIN_TRAINING_GUIDE.md](PANELIN_TRAINING_GUIDE.md) for details.
 | `panelin_reports/` | Professional PDF generation with BMC branding, ReportLab-based | 2.0 |
 | `openai_ecosystem/` | OpenAI API response extraction and normalization utilities | 1.0 |
 | `.evolucionador/` | Autonomous evolution agent with 7 validators, 6 optimizers, report generator | 1.0.0 |
-| `mcp/` | MCP server with 4 tools (price_check, catalog_search, bom_calculate, report_error) | 0.1.0 |
+| `panelin_mcp_server/` | MCP server with 4 tools (price_check, catalog_search, bom_calculate, report_error) | 0.1.0 |
 | `panelin_mcp_integration/` | MCP integration clients for OpenAI Responses API and Wolf API wrapper | 0.1.0 |
 
 #### OpenAI Ecosystem Module
