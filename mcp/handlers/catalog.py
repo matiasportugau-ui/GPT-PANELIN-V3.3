@@ -125,8 +125,6 @@ async def handle_catalog_search(arguments: dict[str, Any], legacy_format: bool =
     Returns:
         v1 contract envelope: {ok, contract_version, results} or {ok, contract_version, error}
     """
-async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute catalog_search tool and return lightweight results in v1 contract format."""
     query = arguments.get("query", "")
     category = arguments.get("category", "all")
     limit = arguments.get("limit", 5)
@@ -284,28 +282,6 @@ async def handle_catalog_search(arguments: dict[str, Any]) -> dict[str, Any]:
             return {"error": f"Internal error: {str(e)}", "results": []}
         logger.exception("Internal error during catalog search")
         return error_response
-        # Transform to v1 contract format
-        product_id = str(product.get("id", ""))
-        product_name = product.get("title", "")
-        product_category = _infer_category(searchable)
-        product_url = f"https://shop.example.com/products/{product.get('handle', '')}"
-        
-        results.append({
-            "product_id": product_id,
-            "name": product_name,
-            "category": product_category,
-            "url": product_url,
-            "score": 1.0  # TODO: Implement actual relevance scoring based on query match quality
-        })
-        
-        if len(results) >= limit:
-            break
-
-    return {
-        "ok": True,
-        "contract_version": "v1",
-        "results": results
-    }
 
 
 def _infer_category(searchable_text: str) -> str:
