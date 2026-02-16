@@ -108,8 +108,16 @@ def _get_autoportancia(
     return entry.get("luz_max_m")
 
 
-async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute bom_calculate tool and return BOM breakdown in v1 contract format."""
+async def handle_bom_calculate(arguments: dict[str, Any], legacy_format: bool = False) -> dict[str, Any]:
+    """Execute bom_calculate tool and return BOM breakdown in v1 contract format.
+    
+    Args:
+        arguments: Tool arguments containing product_family, thickness_mm, core_type, usage, length_m, width_m
+        legacy_format: If True, return legacy format for backwards compatibility
+    
+    Returns:
+        v1 contract envelope: {ok, contract_version, items, summary} or {ok, contract_version, error}
+    """
     family = arguments.get("product_family", "")
     thickness = arguments.get("thickness_mm", 0)
     core = arguments.get("core_type", "EPS")
@@ -258,14 +266,6 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
                 "message": "width_m must be a valid number",
                 "details": {"received": width}
             }
-        return {
-            "ok": False,
-            "contract_version": "v1",
-            "error": {
-                "code": "INVALID_THICKNESS",
-                "message": "thickness_mm is required and must be a positive number",
-                "details": {"received": thickness}
-            }
         }
         if legacy_format:
             return {"error": "width_m must be a valid number"}
@@ -329,21 +329,6 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
                 }
             logger.debug("Wrapped bom_calculate error response in v1 envelope")
             return error_response
-    if not system_key:
-        return {
-            "ok": False,
-            "contract_version": "v1",
-            "error": {
-                "code": "RULE_NOT_FOUND",
-                "message": f"No BOM rules found for {family} {core} {usage}",
-                "details": {
-                    "product_family": family,
-                    "core_type": core,
-                    "usage": usage,
-                    "hint": "Valid systems: techo_isoroof_3g, techo_isodec_eps, techo_isodec_pir, pared_isopanel_eps, pared_isowall_pir, pared_isofrig_pir"
-                }
-            }
-        }
 
         # Look up system rules
         systems = rules.get("sistemas", rules.get("systems", {}))
@@ -366,19 +351,6 @@ async def handle_bom_calculate(arguments: dict[str, Any]) -> dict[str, Any]:
                 }
             logger.debug("Wrapped bom_calculate error response in v1 envelope")
             return error_response
-    if not system:
-        return {
-            "ok": False,
-            "contract_version": "v1",
-            "error": {
-                "code": "RULE_NOT_FOUND",
-                "message": f"System '{system_key}' not found in bom_rules.json",
-                "details": {
-                    "system_key": system_key,
-                    "available_systems": list(systems.keys())
-                }
-            }
-        }
 
         # Basic panel calculation
         panel_width_m = 1.0  # Default useful width in meters (most panels are ~1m useful)
