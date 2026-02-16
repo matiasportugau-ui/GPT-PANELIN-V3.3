@@ -1,0 +1,54 @@
+{
+  "name": "full_quotation",
+  "description": "Submit a background task to generate a complete quotation combining BOM calculation, pricing lookup, and catalog search in one pass. Returns a task_id for tracking. The result includes bill of materials, pricing data, matching catalog products, and a unified quotation summary.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "product_family": {
+        "type": "string",
+        "description": "Panel family (e.g., 'ISODEC', 'ISOROOF', 'ISOPANEL', 'ISOWALL', 'ISOFRIG')"
+      },
+      "thickness_mm": {
+        "type": "number",
+        "description": "Panel thickness in mm"
+      },
+      "core_type": {
+        "type": "string",
+        "enum": ["EPS", "PIR"],
+        "description": "Insulation core type. Default: 'EPS'"
+      },
+      "usage": {
+        "type": "string",
+        "enum": ["techo", "pared", "camara"],
+        "description": "Installation type"
+      },
+      "length_m": {
+        "type": "number",
+        "description": "Panel/roof length in meters"
+      },
+      "width_m": {
+        "type": "number",
+        "description": "Panel/roof width (span/luz) in meters"
+      },
+      "quantity_panels": {
+        "type": "integer",
+        "description": "Number of panels (if known; otherwise calculated from area)"
+      },
+      "client_name": {
+        "type": "string",
+        "description": "Client company or person name for the quotation"
+      },
+      "project_name": {
+        "type": "string",
+        "description": "Project name or description"
+      },
+      "discount_percent": {
+        "type": "number",
+        "description": "Discount percentage to apply (0-100). Default: 0",
+        "minimum": 0,
+        "maximum": 100
+      }
+    },
+    "required": ["product_family", "thickness_mm", "usage", "length_m", "width_m"]
+  }
+}

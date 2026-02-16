@@ -1,0 +1,27 @@
+{
+  "name": "task_list",
+  "description": "List recent background tasks with optional filtering by status or task type. Returns summaries (no full result data) sorted by most recent first. Useful for monitoring and reviewing task history.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["pending", "running", "completed", "failed", "cancelled"],
+        "description": "Optional: filter tasks by status"
+      },
+      "task_type": {
+        "type": "string",
+        "enum": ["batch_bom_calculate", "bulk_price_check", "full_quotation"],
+        "description": "Optional: filter tasks by type"
+      },
+      "limit": {
+        "type": "integer",
+        "description": "Maximum number of tasks to return. Default: 20",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 20
+      }
+    },
+    "required": []
+  }
+}

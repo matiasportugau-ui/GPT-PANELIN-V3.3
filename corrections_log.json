@@ -18,7 +18,7 @@
     "date": "2026-02-11",
     "kb_file": "accessories_catalog.json",
     "field": "items[32].price_usd",
-    "wrong_value": 15.50,
+    "wrong_value": 15.5,
     "correct_value": 18.75,
     "source": "User correction in quotation session",
     "status": "pending",

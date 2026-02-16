@@ -1,0 +1,16 @@
+{
+  "input": {
+    "quote_id": "Q-2026-0001",
+    "customer": {"name": "Acme SRL", "email": "compras@acme.com"},
+    "total_amount": 3120,
+    "line_items": [{"sku": "ISODEC-100-6000", "quantity": 10, "unit_price": 312}]
+  },
+  "output": {
+    "ok": true,
+    "contract_version": "v1",
+    "stored": true,
+    "quote_id": "Q-2026-0001",
+    "storage_ref": "quotes/2026/Q-2026-0001.json",
+    "stored_at": "2026-02-10T12:40:00Z"
+  }
+}

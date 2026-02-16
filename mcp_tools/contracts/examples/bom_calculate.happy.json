@@ -1,0 +1,11 @@
+{
+  "input": {"product_family": "ISODEC", "thickness_mm": 100, "usage": "pared", "length_m": 6, "width_m": 4},
+  "output": {
+    "ok": true,
+    "contract_version": "v1",
+    "summary": {"area_m2": 24, "panel_count": 4, "total_usd_iva_inc": 1210.5},
+    "items": [
+      {"item_type": "panel", "sku": "ISODEC-100-6000", "quantity": 4, "unit": "unit", "unit_price_usd_iva_inc": 240, "subtotal_usd_iva_inc": 960}
+    ]
+  }
+}

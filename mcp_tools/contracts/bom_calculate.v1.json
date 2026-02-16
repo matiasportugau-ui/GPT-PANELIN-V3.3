@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "tool_name": "bom_calculate",
+  "contract_version": "v1",
+  "description": "Calculate a Bill of Materials for panel installation scenarios.",
+  "input_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "product_family": {"type": "string", "enum": ["ISODEC", "ISOROOF", "ISOPANEL", "ISOWALL", "ISOFRIG"]},
+      "thickness_mm": {"type": "number", "minimum": 30, "maximum": 250},
+      "core_type": {"type": "string", "enum": ["EPS", "PIR"]},
+      "usage": {"type": "string", "enum": ["techo", "pared", "camara"]},
+      "length_m": {"type": "number", "exclusiveMinimum": 0, "maximum": 30},
+      "width_m": {"type": "number", "exclusiveMinimum": 0, "maximum": 20},
+      "quantity_panels": {"type": "integer", "minimum": 1, "maximum": 2000}
+    },
+    "required": ["product_family", "thickness_mm", "usage", "length_m", "width_m"]
+  },
+  "output_schema": {
+    "oneOf": [
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {"const": true},
+          "contract_version": {"const": "v1"},
+          "summary": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "area_m2": {"type": "number", "minimum": 0},
+              "panel_count": {"type": "integer", "minimum": 1},
+              "total_usd_iva_inc": {"type": "number", "minimum": 0}
+            },
+            "required": ["area_m2", "panel_count", "total_usd_iva_inc"]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "item_type": {"type": "string", "enum": ["panel", "fixation", "accessory"]},
+                "sku": {"type": "string"},
+                "quantity": {"type": "number", "minimum": 0},
+                "unit": {"type": "string"},
+                "unit_price_usd_iva_inc": {"type": "number", "minimum": 0},
+                "subtotal_usd_iva_inc": {"type": "number", "minimum": 0}
+              },
+              "required": ["item_type", "sku", "quantity", "unit", "subtotal_usd_iva_inc"]
+            }
+          }
+        },
+        "required": ["ok", "contract_version", "summary", "items"]
+      },
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {"const": false},
+          "contract_version": {"const": "v1"},
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {"type": "string", "enum": ["INVALID_DIMENSIONS", "INVALID_THICKNESS", "RULE_NOT_FOUND", "INTERNAL_ERROR"]},
+              "message": {"type": "string"},
+              "details": {"type": "object"}
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["ok", "contract_version", "error"]
+      }
+    ]
+  },
+  "error_codes": ["INVALID_DIMENSIONS", "INVALID_THICKNESS", "RULE_NOT_FOUND", "INTERNAL_ERROR"]
+}

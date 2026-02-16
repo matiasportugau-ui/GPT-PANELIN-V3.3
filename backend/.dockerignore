@@ -1,0 +1,102 @@
+# ==============================================================================
+# Backend Service Docker Ignore File
+# ==============================================================================
+# Files and directories to exclude from Docker build context
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyc
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.hypothesis/
+*.cover
+coverage.xml
+test_*.py
+*_test.py
+tests/
+test/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.vscode-test/
+*.code-workspace
+
+# OS specific
+.DS_Store
+Thumbs.db
+*.log
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Environment files (contain secrets)
+.env
+.env.*
+!.env.example
+
+# Documentation (not needed in container)
+*.md
+!README.md
+docs/
+*.rtf
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Temporary files
+*.tmp
+*.bak
+*~
+tmp/
+temp/
+
+# Logs
+logs/
+*.log
+
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+
+# Docker files (don't include in build context recursively)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Development files
+*.draft
+*.scratch
+*.backup

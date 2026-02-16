@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "description": "Background Task Processing Configuration for Panelin GPT",
+  "queue": {
+    "storage_path": "task_queue_state.json",
+    "auto_cleanup_enabled": true,
+    "auto_cleanup_interval_hours": 24,
+    "max_queue_size": 10000
+  },
+  "worker": {
+    "worker_id": "panelin-worker-1",
+    "max_concurrent_tasks": 5,
+    "enable_on_startup": true
+  },
+  "scheduler": {
+    "enable_on_startup": true,
+    "scheduled_tasks": {
+      "cleanup_old_tasks": {
+        "enabled": true,
+        "interval_seconds": 3600,
+        "description": "Clean up completed tasks older than 24 hours"
+      },
+      "daily_stats_report": {
+        "enabled": true,
+        "daily_at": [0, 0],
+        "description": "Generate daily task statistics report"
+      },
+      "validate_kb_files": {
+        "enabled": true,
+        "interval_seconds": 300,
+        "description": "Validate knowledge base file integrity every 5 minutes"
+      }
+    }
+  },
+  "tasks": {
+    "pdf_generation": {
+      "priority": "high",
+      "max_retries": 2,
+      "timeout_seconds": 60
+    },
+    "bom_calculation": {
+      "priority": "normal",
+      "max_retries": 3,
+      "timeout_seconds": 30
+    },
+    "data_sync": {
+      "priority": "low",
+      "max_retries": 5,
+      "timeout_seconds": 120
+    }
+  },
+  "api": {
+    "enabled": false,
+    "host": "0.0.0.0",
+    "port": 8001,
+    "cors_enabled": true,
+    "cors_origins": ["*"]
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file": "background_tasks.log",
+    "max_bytes": 10485760,
+    "backup_count": 5
+  }
+}

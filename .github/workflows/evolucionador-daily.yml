@@ -33,10 +33,13 @@ jobs:
           python .evolucionador/core/analyzer.py
         env:
           REPO_PATH: ${{ github.workspace }}
+          WOLF_API_KEY: ${{ secrets.WOLF_API_KEY }}
       
       - name: 📊 Generate Evolution Report
         run: |
           python .evolucionador/reports/generator.py
+        env:
+          WOLF_API_KEY: ${{ secrets.WOLF_API_KEY }}
       
       - name: �� Save Report
         run: |

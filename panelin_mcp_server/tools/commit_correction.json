@@ -1,0 +1,18 @@
+{
+  "name": "commit_correction",
+  "description": "Commit a validated KB correction to the corrections log. Requires a change_id from a prior validate_correction call and explicit confirmation. The correction is persisted to corrections_log.json with full impact analysis metadata.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "change_id": {
+        "type": "string",
+        "description": "The change_id returned by validate_correction"
+      },
+      "confirm": {
+        "type": "boolean",
+        "description": "Must be true to apply the correction. Acts as a safety gate."
+      }
+    },
+    "required": ["change_id", "confirm"]
+  }
+}

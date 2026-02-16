@@ -1,0 +1,14 @@
+{
+  "name": "task_cancel",
+  "description": "Cancel a pending or running background task. Tasks that have already completed, failed, or been cancelled cannot be cancelled again. Returns whether the cancellation was successful.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "task_id": {
+        "type": "string",
+        "description": "The task identifier to cancel (e.g., 'TASK-A1B2C3D4')"
+      }
+    },
+    "required": ["task_id"]
+  }
+}
