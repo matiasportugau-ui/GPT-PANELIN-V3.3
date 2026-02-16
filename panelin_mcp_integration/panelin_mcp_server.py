@@ -125,75 +125,6 @@ class PanelinMCPServer:
                     "required": ["product_id", "length_m", "width_m", "installation_type"]
                 },
                 "approval_required": True
-            },
-            # Wolf API KB Write tools (v3.4)
-            "persist_conversation": {
-                "type": "object",
-                "name": "persist_conversation",
-                "description": "Save conversation summary to KB (REQUIRES APPROVAL)",
-                "input_schema": {
-                    "type": "object",
-                    "properties": {
-                        "client_id": {"type": "string"},
-                        "summary": {"type": "string"},
-                        "quotation_ref": {"type": "string"},
-                        "products_discussed": {"type": "array", "items": {"type": "string"}},
-                        "password": {"type": "string"}
-                    },
-                    "required": ["client_id", "summary", "password"]
-                },
-                "approval_required": True
-            },
-            "register_correction": {
-                "type": "object",
-                "name": "register_correction",
-                "description": "Register KB correction (REQUIRES APPROVAL)",
-                "input_schema": {
-                    "type": "object",
-                    "properties": {
-                        "source_file": {"type": "string"},
-                        "field_path": {"type": "string"},
-                        "old_value": {"type": "string"},
-                        "new_value": {"type": "string"},
-                        "reason": {"type": "string"},
-                        "reported_by": {"type": "string"},
-                        "password": {"type": "string"}
-                    },
-                    "required": ["source_file", "field_path", "old_value", "new_value", "reason", "password"]
-                },
-                "approval_required": True
-            },
-            "save_customer": {
-                "type": "object",
-                "name": "save_customer",
-                "description": "Store customer data for future quotations (REQUIRES APPROVAL)",
-                "input_schema": {
-                    "type": "object",
-                    "properties": {
-                        "name": {"type": "string"},
-                        "phone": {"type": "string"},
-                        "address": {"type": "string"},
-                        "city": {"type": "string"},
-                        "department": {"type": "string"},
-                        "notes": {"type": "string"},
-                        "password": {"type": "string"}
-                    },
-                    "required": ["name", "phone", "password"]
-                },
-                "approval_required": True
-            },
-            "lookup_customer": {
-                "type": "object",
-                "name": "lookup_customer",
-                "description": "Retrieve existing customer data from KB",
-                "input_schema": {
-                    "type": "object",
-                    "properties": {
-                        "search_query": {"type": "string"}
-                    },
-                    "required": ["search_query"]
-                },
-                "approval_required": False
             }
         }
 
@@ -433,5 +364,5 @@ class PanelinMCPServer:
                 timeout=5
             )
             return {"healthy": response.status_code == 200}
-        except Exception:
+        except:
             return {"healthy": False}

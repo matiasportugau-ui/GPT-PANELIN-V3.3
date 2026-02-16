@@ -142,7 +142,6 @@ class PanelinMCPResponsesAPI:
                 - Include accessories: true
                 - Include tax (IVA 22%): true
                 
-
                 Use the calculate_quote function to get the final pricing.
                 Present the quotation details clearly.
             """
