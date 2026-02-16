@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,7 @@ PRICING_FILE = KB_ROOT / "bromyros_pricing_master.json"
 
 _pricing_data: dict[str, Any] | list[Any] | None = None
 _pricing_index: dict[str, Any] | None = None
+_pricing_index_lock = threading.Lock()
 
 
 def _normalize(text: str) -> str:
@@ -122,9 +124,14 @@ def _search_products(data: dict[str, Any] | list[Any], query: str, filter_type: 
                 items.extend(value)
         products = items
     
-    # Build index on first call
+    # Build index on first call with thread safety
+    # Fast path: check if already initialized (no lock needed for read)
     if _pricing_index is None:
-        _pricing_index = _build_pricing_index(products)
+        # Slow path: need to build index with lock
+        with _pricing_index_lock:
+            # Double-check inside lock (another thread may have built it)
+            if _pricing_index is None:
+                _pricing_index = _build_pricing_index(products)
     
     results: list[dict[str, Any]] = []
     

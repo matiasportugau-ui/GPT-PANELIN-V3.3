@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -29,6 +30,8 @@ CATEGORY_MAP = {
 _catalog_data: list[dict[str, Any]] | None = None
 _catalog_index: dict[str, Any] | None = None
 _normalized_category_keywords: dict[str, list[str]] | None = None
+_catalog_index_lock = threading.Lock()
+_category_keywords_lock = threading.Lock()
 
 
 def _normalize(text: str) -> str:
@@ -39,15 +42,22 @@ def _get_normalized_category_keywords(category: str) -> list[str]:
     """Get pre-normalized category keywords from cache.
     
     Caches normalized keywords to avoid repeated normalization.
+    Thread-safe using double-checked locking pattern.
     """
     global _normalized_category_keywords
     
-    # Initialize cache on first call
-    if _normalized_category_keywords is None:
-        _normalized_category_keywords = {
-            cat: [_normalize(kw) for kw in keywords]
-            for cat, keywords in CATEGORY_MAP.items()
-        }
+    # Fast path: check if already initialized (no lock needed for read)
+    if _normalized_category_keywords is not None:
+        return _normalized_category_keywords.get(category, [])
+    
+    # Slow path: need to initialize cache with lock
+    with _category_keywords_lock:
+        # Double-check inside lock (another thread may have initialized it)
+        if _normalized_category_keywords is None:
+            _normalized_category_keywords = {
+                cat: [_normalize(kw) for kw in keywords]
+                for cat, keywords in CATEGORY_MAP.items()
+            }
     
     return _normalized_category_keywords.get(category, [])
 
@@ -261,9 +271,14 @@ async def handle_catalog_search(arguments: dict[str, Any], legacy_format: bool =
     try:
         global _catalog_index
         
-        # Build index on first call
+        # Build index on first call with thread safety
+        # Fast path: check if already initialized (no lock needed for read)
         if _catalog_index is None:
-            _catalog_index = _build_catalog_index(catalog)
+            # Slow path: need to build index with lock
+            with _catalog_index_lock:
+                # Double-check inside lock (another thread may have built it)
+                if _catalog_index is None:
+                    _catalog_index = _build_catalog_index(catalog)
         
         results: list[dict[str, Any]] = []
         

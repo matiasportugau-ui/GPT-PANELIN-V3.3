@@ -31,6 +31,7 @@ from typing import TypedDict, Optional, List, Literal
 from pathlib import Path
 import json
 import math
+import threading
 
 # Optimization constants
 OPTIMIZATION_STEP_M = 0.05  # 5cm steps for length optimization
@@ -131,25 +132,36 @@ class QuotationResult(TypedDict):
 
 
 def _load_knowledge_base() -> dict:
-    """Load the single source of truth knowledge base with caching"""
+    """Load the single source of truth knowledge base with caching.
+    
+    Thread-safe using double-checked locking pattern.
+    """
     global _KNOWLEDGE_BASE_CACHE
+    
+    # Fast path: check if already initialized (no lock needed for read)
     if _KNOWLEDGE_BASE_CACHE is not None:
         return _KNOWLEDGE_BASE_CACHE
     
-    # Try config directory first
-    kb_path = Path(__file__).parent.parent / "config" / "panelin_truth_bmcuruguay.json"
-    
-    if not kb_path.exists():
-        # Try root directory with version suffix
-        kb_path = Path(__file__).parent / "panelin_truth_bmcuruguay_web_only_v2.json"
-    
-    if not kb_path.exists():
-        raise FileNotFoundError(f"Knowledge base not found at {kb_path}")
-    
-    with open(kb_path, 'r', encoding='utf-8') as f:
-        _KNOWLEDGE_BASE_CACHE = json.load(f)
-    
-    return _KNOWLEDGE_BASE_CACHE
+    # Slow path: need to load KB with lock
+    with _kb_cache_lock:
+        # Double-check inside lock (another thread may have loaded it)
+        if _KNOWLEDGE_BASE_CACHE is not None:
+            return _KNOWLEDGE_BASE_CACHE
+        
+        # Try config directory first
+        kb_path = Path(__file__).parent.parent / "config" / "panelin_truth_bmcuruguay.json"
+        
+        if not kb_path.exists():
+            # Try root directory with version suffix
+            kb_path = Path(__file__).parent / "panelin_truth_bmcuruguay_web_only_v2.json"
+        
+        if not kb_path.exists():
+            raise FileNotFoundError(f"Knowledge base not found at {kb_path}")
+        
+        with open(kb_path, 'r', encoding='utf-8') as f:
+            _KNOWLEDGE_BASE_CACHE = json.load(f)
+        
+        return _KNOWLEDGE_BASE_CACHE
 
 
 # V3 ENHANCEMENT: Catalog caching
@@ -157,6 +169,8 @@ _ACCESSORIES_CATALOG_CACHE = None
 _BOM_RULES_CACHE = None
 _KNOWLEDGE_BASE_CACHE = None
 _PRODUCT_INDEX_CACHE = None  # Index for fast product lookups
+_kb_cache_lock = threading.Lock()
+_product_index_lock = threading.Lock()
 
 
 def _build_product_index(products: dict) -> dict:
@@ -385,7 +399,32 @@ def _product_to_specs(product_id: str, p: dict) -> ProductSpecs:
     """Convert product dict to ProductSpecs TypedDict.
     
     Helper function to avoid code duplication in lookup_product_specs.
+    Includes defensive error handling for missing fields.
+    
+    Args:
+        product_id: The product identifier
+        p: Product dictionary from knowledge base
+        
+    Returns:
+        ProductSpecs with all required fields
+        
+    Raises:
+        KeyError: If required fields are missing from product dict
+        ValueError: If product data is malformed
     """
+    required_fields = [
+        "name", "family", "sub_family", "thickness_mm", "price_per_m2",
+        "currency", "ancho_util_m", "largo_min_m", "largo_max_m",
+        "autoportancia_m", "stock_status"
+    ]
+    
+    # Check for missing required fields
+    missing = [field for field in required_fields if field not in p]
+    if missing:
+        raise KeyError(
+            f"Product {product_id} is missing required fields: {', '.join(missing)}"
+        )
+    
     return ProductSpecs(
         product_id=product_id,
         name=p["name"],
@@ -426,9 +465,14 @@ def lookup_product_specs(
     kb = _load_knowledge_base()
     products = kb.get("products", {})
     
-    # Build index on first call
+    # Build index on first call with thread safety
+    # Fast path: check if already initialized (no lock needed for read)
     if _PRODUCT_INDEX_CACHE is None:
-        _PRODUCT_INDEX_CACHE = _build_product_index(products)
+        # Slow path: need to build index with lock
+        with _product_index_lock:
+            # Double-check inside lock (another thread may have built it)
+            if _PRODUCT_INDEX_CACHE is None:
+                _PRODUCT_INDEX_CACHE = _build_product_index(products)
     
     # Direct lookup by product_id - if specified, must match exactly
     if product_id:
@@ -983,6 +1027,8 @@ def suggest_optimization(
     # Use binary search if the range is large enough to benefit (at least 10 steps)
     if (max_length - min_length) > BINARY_SEARCH_MIN_RANGE_M:
         # Binary search to find the point where waste crosses threshold
+        prev_mid_length = None  # Track previous mid_length to detect convergence
+        
         while (max_length - min_length) >= step_m:
             mid_length = (min_length + max_length) / 2.0
             # Round to nearest 5cm step
@@ -994,9 +1040,14 @@ def suggest_optimization(
             elif mid_length >= max_length:
                 mid_length = max_length - step_m
             
-            # Break if we can't make progress
+            # Break if we can't make progress or if mid_length hasn't changed
             if mid_length <= min_length or mid_length >= max_length:
                 break
+            if prev_mid_length is not None and abs(mid_length - prev_mid_length) < step_m / 2:
+                # Converged - mid_length isn't changing meaningfully
+                break
+            
+            prev_mid_length = mid_length
             
             # Calculate waste at this length
             test_total_area = mid_length * panels_needed * quantity * product["ancho_util_m"]
@@ -1011,10 +1062,10 @@ def suggest_optimization(
             if test_waste_pct <= waste_threshold_pct:
                 # Waste is acceptable, try shorter length
                 best_length = mid_length
-                max_length = mid_length
+                max_length = mid_length - step_m  # Move boundary away from mid
             else:
                 # Waste too high, need longer panel
-                min_length = mid_length
+                min_length = mid_length + step_m  # Move boundary away from mid
         
         suggested_length_m = best_length
     else:

@@ -399,6 +399,10 @@ async def handle_bom_calculate(arguments: dict[str, Any], legacy_format: bool = 
         # communication while maintaining backwards compatibility at the API boundary.
         
         # Parallelize SKU candidate price checks using asyncio.gather()
+        # NOTE: sku_candidates is a small, fixed list of format variants (currently 3).
+        # If this list is ever expanded to many dynamically generated candidates, add
+        # explicit concurrency limiting (e.g., using an asyncio.Semaphore around
+        # handle_price_check) to avoid creating too many parallel requests.
         async def fetch_price(sku: str) -> tuple[str, dict | None]:
             """Fetch price for a single SKU candidate."""
             try:
