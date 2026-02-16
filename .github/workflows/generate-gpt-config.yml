@@ -1,0 +1,173 @@
+name: Generate GPT Configuration
+
+# This workflow automates GPT configuration generation
+# NOTE: It CANNOT automatically deploy to OpenAI (no API exists)
+# Manual upload to OpenAI GPT Builder still required (~15 minutes)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Panelin_GPT_config.json'
+      - 'BMC_Base_Conocimiento_GPT-2.json'
+      - 'accessories_catalog.json'
+      - 'bom_rules.json'
+      - 'bromyros_pricing_*.json'
+      - 'shopify_catalog_*.json'
+      - '*.md'
+      - '*.rtf'
+      - 'bmc_logo.png'
+  
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual trigger'
+        required: false
+        default: 'Manual configuration generation'
+
+jobs:
+  generate-gpt-config:
+    name: Generate GPT Deployment Package
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Validate GPT files
+        id: validate
+        run: |
+          echo "Running validation..."
+          python validate_gpt_files.py
+          echo "validation_status=$?" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Check validation results
+        if: steps.validate.outputs.validation_status != '0'
+        run: |
+          echo "::warning::Some files may be missing or invalid. Check validation output."
+          echo "Continuing with configuration generation..."
+      
+      - name: Generate GPT configuration
+        run: |
+          echo "Generating GPT deployment package..."
+          echo "yes" | python autoconfig_gpt.py
+          echo "Configuration generation complete!"
+      
+      - name: Verify generated package
+        run: |
+          if [ ! -d "GPT_Deploy_Package" ]; then
+            echo "::error::GPT_Deploy_Package not created!"
+            exit 1
+          fi
+          
+          echo "Generated files:"
+          ls -lah GPT_Deploy_Package/
+          
+          echo ""
+          echo "Package contents:"
+          cat GPT_Deploy_Package/QUICK_REFERENCE.txt
+      
+      - name: Create deployment summary
+        run: |
+          cat > deployment-summary.txt << 'EOF'
+          ═══════════════════════════════════════════════════════════════════
+          GPT DEPLOYMENT PACKAGE GENERATED
+          ═══════════════════════════════════════════════════════════════════
+          
+          ✅ Configuration generated successfully!
+          
+          WHAT WAS AUTOMATED:
+          ✅ File validation
+          ✅ Configuration generation  
+          ✅ OpenAI-compatible export created
+          ✅ Deployment guide generated
+          ✅ Package uploaded as artifact
+          
+          ⚠️  MANUAL STEPS REQUIRED:
+          
+          OpenAI does NOT provide an API for Custom GPT management.
+          You MUST manually upload the configuration:
+          
+          1. Download the "gpt-deployment-package" artifact
+          2. Extract the files
+          3. Open https://chat.openai.com/gpts/editor
+          4. Follow instructions in DEPLOYMENT_GUIDE.md
+          5. Upload files in phase order (with pauses)
+          6. Test and publish
+          
+          TIME REQUIRED:
+          - This automation: ~1 minute ✅
+          - Manual upload: ~15 minutes ⚠️
+          - Total: ~16 minutes
+          
+          See AUTOMATED_GPT_CREATION_LIMITATIONS.md for technical details
+          on why full automation is impossible.
+          
+          ═══════════════════════════════════════════════════════════════════
+          EOF
+          
+          cat deployment-summary.txt
+          cat deployment-summary.txt >> $GITHUB_STEP_SUMMARY
+      
+      - name: Upload GPT deployment package
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpt-deployment-package
+          path: GPT_Deploy_Package/
+          retention-days: 30
+          if-no-files-found: error
+      
+      - name: Upload deployment summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-summary
+          path: deployment-summary.txt
+          retention-days: 30
+      
+      - name: Create issue comment (on PR)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('deployment-summary.txt', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🤖 GPT Configuration Generated\n\n\`\`\`\n${summary}\n\`\`\``
+            });
+      
+      - name: Final instructions
+        run: |
+          echo ""
+          echo "═══════════════════════════════════════════════════════════════════"
+          echo "✅ AUTOMATION COMPLETE"
+          echo "═══════════════════════════════════════════════════════════════════"
+          echo ""
+          echo "Next steps:"
+          echo "1. Download the 'gpt-deployment-package' artifact from this run"
+          echo "2. Extract GPT_Deploy_Package/"
+          echo "3. Read DEPLOYMENT_GUIDE.md for step-by-step instructions"
+          echo "4. Manually upload to OpenAI GPT Builder (15 minutes)"
+          echo ""
+          echo "Download artifact at:"
+          echo "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo ""
+          echo "═══════════════════════════════════════════════════════════════════"

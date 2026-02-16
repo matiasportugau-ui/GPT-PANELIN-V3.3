@@ -1521,7 +1521,32 @@ configure_quotation_store(
 
 **🚀 For fast deployment, we provide automated helper tools:**
 
-#### Option 1: Autoconfiguration (Recommended)
+#### Option 1: GitHub Actions Automation (Fully Automated Config Generation)
+
+**Automates configuration generation via GitHub Actions:**
+
+**⚠️ Note:** This automates config generation but NOT deployment to OpenAI (no API exists). Manual upload to OpenAI GPT Builder still required (~15 minutes).
+
+**Automatic Triggers:**
+- Runs on push to main when GPT files change
+- Validates files automatically
+- Generates config package automatically
+- Uploads artifacts for download
+
+**Manual Trigger:**
+```
+1. Go to Actions tab → Generate GPT Configuration
+2. Click "Run workflow"
+3. Wait ~1 minute for completion
+4. Download "gpt-deployment-package" artifact
+5. Follow DEPLOYMENT_GUIDE.md to upload to OpenAI
+```
+
+**Time:** 1 min automated + 15 min manual upload = 16 min total
+
+See [GITHUB_ACTIONS_GPT_CONFIG.md](GITHUB_ACTIONS_GPT_CONFIG.md) for details or [AUTOMATED_GPT_CREATION_LIMITATIONS.md](AUTOMATED_GPT_CREATION_LIMITATIONS.md) for why full automation is impossible.
+
+#### Option 2: Local Autoconfiguration (Recommended for Testing)
 
 **Generate complete deployment-ready configuration with approval workflow:**
 
@@ -1551,7 +1576,7 @@ The autoconfiguration tool:
 
 See [AUTOCONFIG_QUICK_START.md](AUTOCONFIG_QUICK_START.md) for details, [GPT_AUTOCONFIG_GUIDE.md](GPT_AUTOCONFIG_GUIDE.md) for comprehensive documentation, or [GPT_AUTOCONFIG_FAQ.md](GPT_AUTOCONFIG_FAQ.md) for common questions.
 
-#### Option 2: Manual Packaging
+#### Option 3: Manual Packaging
 
 **For traditional file organization and manual upload:**
 
