@@ -154,8 +154,6 @@ async def handle_price_check(arguments: dict[str, Any], legacy_format: bool = Fa
     Returns:
         v1 contract envelope: {ok, contract_version, matches} or {ok, contract_version, error}
     """
-async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
-    """Execute price_check tool and return results in v1 contract format."""
     query = arguments.get("query", "")
     filter_type = arguments.get("filter_type", "search")
     thickness_mm = arguments.get("thickness_mm")
@@ -171,28 +169,7 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
             "error": {
                 "code": PRICE_CHECK_ERROR_CODES["INVALID_FILTER"],
                 "message": "Query parameter is required and must be at least 2 characters long",
-    if not query:
-        return {
-            "ok": False,
-            "contract_version": "v1",
-            "error": {
-                "code": "INVALID_FILTER",
-                "message": "Query parameter is required",
                 "details": {}
-            }
-        }
-
-    data = _load_pricing()
-    results = _search_products(data, query, filter_type, thickness_mm)
-
-    if not results:
-        return {
-            "ok": False,
-            "contract_version": "v1",
-            "error": {
-                "code": "SKU_NOT_FOUND",
-                "message": f"No products found for query '{query}' (filter: {filter_type})",
-                "details": {"query": query, "filter_type": filter_type}
             }
         }
         if legacy_format:
@@ -305,18 +282,3 @@ async def handle_price_check(arguments: dict[str, Any]) -> dict[str, Any]:
             return {"error": f"Internal error: {str(e)}", "results": []}
         logger.exception("Internal error during price lookup")
         return error_response
-    # Transform results to match contract schema
-    matches = []
-    for item in results[:20]:  # Cap at 20 results
-        matches.append({
-            "sku": item.get("sku", ""),
-            "description": item.get("descripcion", item.get("description", "")),
-            "thickness_mm": item.get("espesor_mm", item.get("thickness_mm")),
-            "price_usd_iva_inc": item.get("precio_usd_iva_inc", item.get("price_usd_iva_inc", 0))
-        })
-
-    return {
-        "ok": True,
-        "contract_version": "v1",
-        "matches": matches
-    }
