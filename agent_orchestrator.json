@@ -1,0 +1,76 @@
+{
+  "project": "GPT-PANELIN-V3.3",
+  "version": "3.4-Orchestrator",
+  "description": "Manifiesto de agentes autónomos y workflows para orquestación del sistema GPT-PANELIN",
+  "agents": {
+    "qa_auditor": {
+      "name": "El Evolucionador",
+      "role": "Quality Assurance & Self-Correction",
+      "source_path": ".evolucionador/core/analyzer.py",
+      "capabilities": [
+        "validate_json_schema",
+        "check_formula_integrity",
+        "optimize_pricing_structure"
+      ],
+      "execution_command": "python .evolucionador/core/analyzer.py && python .evolucionador/reports/generator.py",
+      "output_artifact": ".evolucionador/reports/latest.json"
+    },
+    "deploy_manager": {
+      "name": "Gatekeeper de Despliegue",
+      "role": "Release Management",
+      "source_path": "validate_gpt_files.py",
+      "capabilities": [
+        "pre_flight_check",
+        "package_generation"
+      ],
+      "execution_command": "python validate_gpt_files.py && python package_gpt_files.py",
+      "output_artifact": "GPT_Upload_Package/INSTRUCTIONS.txt"
+    },
+    "mcp_operator": {
+      "name": "Wolf API Bridge",
+      "role": "Live Data Interaction",
+      "source_path": "mcp/server.py",
+      "config_path": "mcp/config/mcp_server_config.json",
+      "active_tools": [
+        "price_check",
+        "catalog_search",
+        "bom_calculate",
+        "report_error",
+        "quotation_store",
+        "persist_conversation",
+        "register_correction",
+        "save_customer",
+        "lookup_customer",
+        "batch_bom_calculate",
+        "bulk_price_check",
+        "full_quotation",
+        "task_status",
+        "task_result",
+        "task_list",
+        "task_cancel"
+      ],
+      "transport": "sse"
+    }
+  },
+  "workflows": {
+    "daily_health_check": {
+      "description": "Ejecutar auditoría diaria de la Knowledge Base",
+      "agents": ["qa_auditor"]
+    },
+    "release_cycle": {
+      "description": "Ciclo completo de validación y empaquetado para despliegue",
+      "agents": ["qa_auditor", "deploy_manager"]
+    },
+    "fix_pricing_error": {
+      "description": "Reportar y corregir error de precio detectado",
+      "steps": [
+        "mcp_operator.report_error",
+        "qa_auditor"
+      ]
+    },
+    "optimize_structure": {
+      "description": "Analizar y optimizar estructura de precios",
+      "agents": ["qa_auditor"]
+    }
+  }
+}
