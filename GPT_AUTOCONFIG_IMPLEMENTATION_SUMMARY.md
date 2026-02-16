@@ -2,7 +2,9 @@
 
 ## Overview
 
-Successfully implemented a comprehensive GPT autoconfiguration feature that automates the generation, validation, and packaging of complete GPT configurations for deployment to OpenAI.
+Successfully implemented a comprehensive GPT autoconfiguration feature that automates the generation, validation, and packaging of complete GPT configurations for **manual deployment** to OpenAI.
+
+**Important:** This tool does NOT automatically deploy to OpenAI. It generates deployment-ready configuration files that must be manually uploaded through OpenAI GPT Builder, as OpenAI provides no public API for Custom GPT management.
 
 ## Implemented Components
 

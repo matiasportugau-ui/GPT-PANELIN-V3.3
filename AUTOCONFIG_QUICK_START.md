@@ -2,6 +2,12 @@
 
 Generate a complete, deployment-ready GPT configuration in 3 steps.
 
+## ⚠️ Important: Manual Deployment Required
+
+**This tool does NOT automatically deploy to OpenAI.** It generates configuration files that you must manually upload to OpenAI GPT Builder.
+
+**Why?** OpenAI has no public API for Custom GPT management. File uploads must be done through the web interface.
+
 ## What This Does
 
 The GPT Autoconfiguration Tool:
@@ -10,6 +16,11 @@ The GPT Autoconfiguration Tool:
 - ✅ Creates OpenAI-compatible export
 - ✅ Provides step-by-step deployment guide
 - ✅ Includes approval workflow
+
+**What it does NOT do:**
+- ❌ Automatically upload files to OpenAI
+- ❌ Create the GPT in OpenAI for you
+- ❌ Configure GPT Builder settings automatically
 
 ## Usage
 
@@ -29,14 +40,23 @@ The tool will show:
 
 Type `yes` to approve.
 
-### Step 3: Deploy
+### Step 3: Manual Deployment
 
 ```bash
 cd GPT_Deploy_Package
 cat DEPLOYMENT_GUIDE.md
 ```
 
-Then deploy at: https://chat.openai.com/gpts/editor
+**You must manually deploy to OpenAI:**
+1. Open https://chat.openai.com/gpts/editor
+2. Click "Create" to start a new GPT
+3. Copy name, description, and instructions from `openai_gpt_config.json`
+4. Enable all capabilities (Web Browsing, Code Interpreter, Image Generation, Canvas)
+5. Upload files in phase order (see DEPLOYMENT_GUIDE.md)
+6. Add conversation starters
+7. Test and publish
+
+**Estimated time:** 10-15 minutes for manual steps
 
 ## Generated Files
 

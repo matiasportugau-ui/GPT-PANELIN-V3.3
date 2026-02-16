@@ -1,8 +1,23 @@
 # GPT Autoconfiguration Guide
 
+## ⚠️ Important Notice
+
+**This tool does NOT automatically deploy to OpenAI.** It generates configuration files and deployment guides, but you must **manually upload files** to OpenAI GPT Builder.
+
+**Why?** OpenAI does not provide a public API for Custom GPT management. All file uploads and configuration must be done through the web interface at https://chat.openai.com/gpts/editor.
+
+**What this means:**
+- The tool prepares everything (1 minute)
+- You manually deploy to OpenAI (10-15 minutes)
+- Total time: ~15-20 minutes
+
+See [GPT_AUTOCONFIG_FAQ.md](GPT_AUTOCONFIG_FAQ.md) for detailed Q&A.
+
+---
+
 ## Overview
 
-The GPT Autoconfiguration Tool is a comprehensive solution for generating, validating, and deploying complete GPT configurations to OpenAI. It automates the process of creating a deployable GPT package with all necessary files, instructions, and validation.
+The GPT Autoconfiguration Tool is a comprehensive solution for generating, validating, and preparing complete GPT configurations for manual deployment to OpenAI. It automates the preparation process but not the deployment itself.
 
 ## Features
 

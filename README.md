@@ -1525,6 +1525,8 @@ configure_quotation_store(
 
 **Generate complete deployment-ready configuration with approval workflow:**
 
+**⚠️ Note:** This tool generates configuration files but does NOT automatically upload to OpenAI. Manual deployment through OpenAI GPT Builder is still required (no public API available).
+
 ```bash
 # Run autoconfiguration tool
 python autoconfig_gpt.py
@@ -1535,7 +1537,7 @@ python autoconfig_gpt.py
 # Navigate to generated package
 cd GPT_Deploy_Package
 
-# Follow deployment guide
+# Follow deployment guide for manual upload
 cat DEPLOYMENT_GUIDE.md
 ```
 
@@ -1545,8 +1547,9 @@ The autoconfiguration tool:
 - ✅ Creates OpenAI-compatible export
 - ✅ Provides step-by-step deployment guide
 - ✅ Includes interactive approval workflow
+- ⚠️ Manual upload to OpenAI still required (10-15 min)
 
-See [AUTOCONFIG_QUICK_START.md](AUTOCONFIG_QUICK_START.md) for details or [GPT_AUTOCONFIG_GUIDE.md](GPT_AUTOCONFIG_GUIDE.md) for comprehensive documentation.
+See [AUTOCONFIG_QUICK_START.md](AUTOCONFIG_QUICK_START.md) for details, [GPT_AUTOCONFIG_GUIDE.md](GPT_AUTOCONFIG_GUIDE.md) for comprehensive documentation, or [GPT_AUTOCONFIG_FAQ.md](GPT_AUTOCONFIG_FAQ.md) for common questions.
 
 #### Option 2: Manual Packaging
 
