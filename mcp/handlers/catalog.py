@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -18,7 +19,90 @@ logger = logging.getLogger(__name__)
 KB_ROOT = Path(__file__).resolve().parent.parent.parent
 CATALOG_FILE = KB_ROOT / "shopify_catalog_v1.json"
 
+# Category keyword mappings for filtering
+CATEGORY_MAP = {
+    "techo": ["techo", "roof", "isoroof", "isodec", "cubierta"],
+    "pared": ["pared", "wall", "isowall", "isopanel"],
+    "camara": ["camara", "frio", "isofrig", "frigorifico"],
+    "accesorio": ["accesorio", "accessory", "fijacion", "tornillo", "cumbrera", "babeta"],
+}
+
 _catalog_data: list[dict[str, Any]] | None = None
+_catalog_index: dict[str, Any] | None = None
+_normalized_category_keywords: dict[str, list[str]] | None = None
+_catalog_index_lock = threading.Lock()
+_category_keywords_lock = threading.Lock()
+
+
+def _normalize(text: str) -> str:
+    return text.lower().strip()
+
+
+def _get_normalized_category_keywords(category: str) -> list[str]:
+    """Get pre-normalized category keywords from cache.
+    
+    Caches normalized keywords to avoid repeated normalization.
+    Thread-safe using double-checked locking pattern.
+    """
+    global _normalized_category_keywords
+    
+    # Fast path: check if already initialized (no lock needed for read)
+    if _normalized_category_keywords is not None:
+        return _normalized_category_keywords.get(category, [])
+    
+    # Slow path: need to initialize cache with lock
+    with _category_keywords_lock:
+        # Double-check inside lock (another thread may have initialized it)
+        if _normalized_category_keywords is None:
+            _normalized_category_keywords = {
+                cat: [_normalize(kw) for kw in keywords]
+                for cat, keywords in CATEGORY_MAP.items()
+            }
+    
+    return _normalized_category_keywords.get(category, [])
+
+
+def _build_catalog_index(catalog: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build search index for fast catalog lookups.
+    
+    Returns dict with:
+        - normalized_fields: {index: {title, type, tags, handle, searchable}} - pre-normalized
+        - by_type: {normalized_type: [indices]}
+    """
+    normalized_fields = {}
+    by_type = {}
+    
+    for idx, product in enumerate(catalog):
+        if not isinstance(product, dict):
+            continue
+        
+        title = _normalize(product.get("title", ""))
+        ptype = _normalize(product.get("product_type", ""))
+        tags = _normalize(str(product.get("tags", "")))
+        handle = _normalize(product.get("handle", ""))
+        
+        # Pre-build searchable string
+        searchable = f"{title} {ptype} {tags} {handle}"
+        
+        normalized_fields[idx] = {
+            "title": title,
+            "type": ptype,
+            "tags": tags,
+            "handle": handle,
+            "searchable": searchable
+        }
+        
+        # Index by product type
+        if ptype:
+            if ptype not in by_type:
+                by_type[ptype] = []
+            by_type[ptype].append(idx)
+    
+    return {
+        "normalized_fields": normalized_fields,
+        "by_type": by_type,
+        "products": catalog  # Keep reference to original list
+    }
 
 
 def _load_catalog() -> list[dict[str, Any]]:
@@ -28,10 +112,6 @@ def _load_catalog() -> list[dict[str, Any]]:
             raw = json.load(f)
         _catalog_data = raw if isinstance(raw, list) else raw.get("products", [])
     return _catalog_data
-
-
-def _normalize(text: str) -> str:
-    return text.lower().strip()
 
 
 def _to_lightweight(product: dict[str, Any]) -> dict[str, Any]:
@@ -107,14 +187,6 @@ def _map_to_v1_result(product: dict[str, Any], query: str, norm_query: str) -> d
     return result
 
 
-CATEGORY_MAP = {
-    "techo": ["techo", "roof", "isoroof", "isodec", "cubierta"],
-    "pared": ["pared", "wall", "isowall", "isopanel"],
-    "camara": ["camara", "frio", "isofrig", "frigorifico"],
-    "accesorio": ["accesorio", "accessory", "fijacion", "tornillo", "cumbrera", "babeta"],
-}
-
-
 async def handle_catalog_search(arguments: dict[str, Any], legacy_format: bool = False) -> dict[str, Any]:
     """Execute catalog_search tool and return lightweight results in v1 contract format.
     
@@ -172,14 +244,15 @@ async def handle_catalog_search(arguments: dict[str, Any], legacy_format: bool =
             return {"error": f"Failed to load catalog: {str(e)}", "results": []}
         logger.debug("Wrapped catalog_search error response in v1 envelope")
         return error_response
-    
+
+    catalog = _load_catalog()
     norm_query = _normalize(query)
 
-    # Determine category keywords
-    category_keywords: list[str] = []
+    # Get pre-normalized category keywords (cached)
+    norm_category_keywords: list[str] = []
     if category != "all":
         if category in CATEGORY_MAP:
-            category_keywords = CATEGORY_MAP[category]
+            norm_category_keywords = _get_normalized_category_keywords(category)
         else:
             error_response = {
                 "ok": False,
@@ -196,22 +269,29 @@ async def handle_catalog_search(arguments: dict[str, Any], legacy_format: bool =
             return error_response
 
     try:
+        global _catalog_index
+        
+        # Build index on first call with thread safety
+        # Fast path: check if already initialized (no lock needed for read)
+        if _catalog_index is None:
+            # Slow path: need to build index with lock
+            with _catalog_index_lock:
+                # Double-check inside lock (another thread may have built it)
+                if _catalog_index is None:
+                    _catalog_index = _build_catalog_index(catalog)
+        
         results: list[dict[str, Any]] = []
-        for product in catalog:
-            title = _normalize(product.get("title", ""))
-            ptype = _normalize(product.get("product_type", ""))
-            tags = _normalize(str(product.get("tags", "")))
-            handle = _normalize(product.get("handle", ""))
-            searchable = f"{title} {ptype} {tags} {handle}"
-
-            if norm_query not in searchable:
+        
+        # Use pre-normalized searchable strings from index
+        for idx, fields in _catalog_index["normalized_fields"].items():
+            if norm_query not in fields["searchable"]:
                 continue
-
-            if category_keywords:
-                if not any(kw in searchable for kw in category_keywords):
+            
+            if norm_category_keywords:
+                if not any(kw in fields["searchable"] for kw in norm_category_keywords):
                     continue
-
-            results.append(product)
+            
+            results.append(_catalog_index["products"][idx])
             if len(results) >= limit:
                 break
 
@@ -248,3 +328,17 @@ async def handle_catalog_search(arguments: dict[str, Any], legacy_format: bool =
             return {"error": f"Internal error: {str(e)}", "results": []}
         logger.exception("Internal error during catalog search")
         return error_response
+
+
+def _infer_category(searchable_text: str) -> str:
+    """Infer product category from searchable text."""
+    text = searchable_text.lower()
+    if any(kw in text for kw in CATEGORY_MAP["techo"]):
+        return "techo"
+    elif any(kw in text for kw in CATEGORY_MAP["pared"]):
+        return "pared"
+    elif any(kw in text for kw in CATEGORY_MAP["camara"]):
+        return "camara"
+    elif any(kw in text for kw in CATEGORY_MAP["accesorio"]):
+        return "accesorio"
+    return "other"

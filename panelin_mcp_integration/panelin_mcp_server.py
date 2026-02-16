@@ -247,6 +247,115 @@ class PanelinMCPServer:
                 "timestamp": datetime.utcnow().isoformat()
             }
 
+    # --- Wolf API KB Write methods (v3.4) ---
+
+    def persist_conversation(
+        self,
+        client_id: str,
+        summary: str,
+        quotation_ref: Optional[str] = None,
+        products_discussed: Optional[list] = None,
+    ) -> Dict[str, Any]:
+        """Save conversation summary to KB via POST /kb/conversations"""
+        try:
+            payload = {
+                "client_id": client_id,
+                "summary": summary,
+                "quotation_ref": quotation_ref,
+                "products_discussed": products_discussed or [],
+                "date": datetime.utcnow().isoformat(),
+            }
+            response = self.session.post(
+                f"{self.base_url}/kb/conversations",
+                json=payload,
+                timeout=10,
+            )
+            response.raise_for_status()
+            logger.info(f"Conversation persisted for client: {client_id}")
+            return {"success": True, "data": response.json(), "timestamp": datetime.utcnow().isoformat()}
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Persist conversation failed: {str(e)}")
+            return {"success": False, "error": str(e), "timestamp": datetime.utcnow().isoformat()}
+
+    def register_correction(
+        self,
+        source_file: str,
+        field_path: str,
+        old_value: str,
+        new_value: str,
+        reason: str,
+        reported_by: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Register KB correction via POST /kb/corrections"""
+        try:
+            payload = {
+                "source_file": source_file,
+                "field_path": field_path,
+                "old_value": old_value,
+                "new_value": new_value,
+                "reason": reason,
+                "reported_by": reported_by or "panelin_gpt",
+                "date": datetime.utcnow().isoformat(),
+            }
+            response = self.session.post(
+                f"{self.base_url}/kb/corrections",
+                json=payload,
+                timeout=10,
+            )
+            response.raise_for_status()
+            logger.info(f"Correction registered for {source_file}:{field_path}")
+            return {"success": True, "data": response.json(), "timestamp": datetime.utcnow().isoformat()}
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Register correction failed: {str(e)}")
+            return {"success": False, "error": str(e), "timestamp": datetime.utcnow().isoformat()}
+
+    def save_customer(
+        self,
+        name: str,
+        phone: str,
+        address: Optional[str] = None,
+        city: Optional[str] = None,
+        department: Optional[str] = None,
+        notes: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Store customer data via POST /kb/customers"""
+        try:
+            payload = {
+                "name": name,
+                "phone": phone,
+                "address": address,
+                "city": city,
+                "department": department,
+                "notes": notes,
+                "last_interaction": datetime.utcnow().isoformat(),
+            }
+            response = self.session.post(
+                f"{self.base_url}/kb/customers",
+                json=payload,
+                timeout=10,
+            )
+            response.raise_for_status()
+            logger.info(f"Customer saved: {name}")
+            return {"success": True, "data": response.json(), "timestamp": datetime.utcnow().isoformat()}
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Save customer failed: {str(e)}")
+            return {"success": False, "error": str(e), "timestamp": datetime.utcnow().isoformat()}
+
+    def lookup_customer(self, search_query: str) -> Dict[str, Any]:
+        """Retrieve customer data via GET /kb/customers"""
+        try:
+            response = self.session.get(
+                f"{self.base_url}/kb/customers",
+                params={"search": search_query},
+                timeout=10,
+            )
+            response.raise_for_status()
+            logger.info(f"Customer lookup successful: {search_query}")
+            return {"success": True, "data": response.json(), "timestamp": datetime.utcnow().isoformat()}
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Customer lookup failed: {str(e)}")
+            return {"success": False, "error": str(e), "timestamp": datetime.utcnow().isoformat()}
+
     def health_check(self) -> Dict[str, bool]:
         """Check API health"""
         try:

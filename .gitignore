@@ -11,6 +11,7 @@ __pycache__/
 *.so
 .Python
 *.pyc
+*.cpython-*.pyc
 
 # Virtual environments
 venv/
@@ -19,6 +20,9 @@ ENV/
 
 # PDF output files (test artifacts)
 panelin_reports/output/*.pdf
+
+# MCP memory store files (generated at runtime)
+mcp/quotation_memory.json
 
 # IDE
 .vscode/
@@ -59,3 +63,5 @@ coverage.xml
 
 # Docker volumes
 docker-volumes/
+.coverage
+htmlcov/

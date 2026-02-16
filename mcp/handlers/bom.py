@@ -6,6 +6,7 @@ panel installation. Applies parametric rules per construction system.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import math
@@ -113,6 +114,11 @@ async def handle_bom_calculate(arguments: dict[str, Any], legacy_format: bool = 
     
     Args:
         arguments: Tool arguments containing product_family, thickness_mm, core_type, usage, length_m, width_m
+        legacy_format: If True, return legacy format for backwards compatibility
+    
+    Returns:
+        v1 contract envelope: {ok, contract_version, items, summary} or {ok, contract_version, error}
+        arguments: Tool arguments containing product_family, thickness_mm, core_type, usage, dimensions
         legacy_format: If True, return legacy format for backwards compatibility
     
     Returns:
@@ -392,19 +398,34 @@ async def handle_bom_calculate(arguments: dict[str, Any], legacy_format: bool = 
         # regardless of the format requested by external callers. This ensures consistent internal
         # communication while maintaining backwards compatibility at the API boundary.
         
-        # Try each SKU candidate
-        for sku_candidate in sku_candidates:
+        # Parallelize SKU candidate price checks using asyncio.gather()
+        # NOTE: sku_candidates is a small, fixed list of format variants (currently 3).
+        # If this list is ever expanded to many dynamically generated candidates, add
+        # explicit concurrency limiting (e.g., using an asyncio.Semaphore around
+        # handle_price_check) to avoid creating too many parallel requests.
+        async def fetch_price(sku: str) -> tuple[str, dict | None]:
+            """Fetch price for a single SKU candidate."""
             try:
-                price_result = await handle_price_check({"query": sku_candidate, "filter_type": "sku"})
-                if price_result.get("ok") and price_result.get("matches"):
-                    match = price_result["matches"][0]
-                    panel_unit_price = match.get("price_usd_iva_inc", 0.0)
-                    panel_sku = match.get("sku", sku_candidate)
-                    break
+                result = await handle_price_check({"query": sku, "filter_type": "sku"})
+                if result.get("ok") and result.get("matches"):
+                    return (sku, result["matches"][0])
             except Exception as e:
-                # Log the exception but continue trying other SKU candidates
-                logger.debug(f"Failed to fetch price for SKU candidate '{sku_candidate}': {e}")
-                continue
+                logger.debug(f"Failed to fetch price for SKU candidate '{sku}': {e}")
+            return (sku, None)
+        
+        # NOTE: sku_candidates is a small, fixed list of format variants (currently 3).
+        # If this list is ever expanded to many dynamically generated candidates, add
+        # explicit concurrency limiting (e.g., using an asyncio.Semaphore around
+        # handle_price_check) to avoid creating too many parallel requests.
+        # Fetch all SKU candidates in parallel
+        price_results = await asyncio.gather(*[fetch_price(sku) for sku in sku_candidates])
+        
+        # Use the first successful result
+        for sku_candidate, match in price_results:
+            if match:
+                panel_unit_price = match.get("price_usd_iva_inc", 0.0)
+                panel_sku = match.get("sku", sku_candidate)
+                break
         
         # Add panel item
         panel_subtotal = panel_unit_price * qty_panels

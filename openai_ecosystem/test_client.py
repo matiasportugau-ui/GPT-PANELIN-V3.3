@@ -694,6 +694,7 @@ class TestExtractPrimaryOutput:
         assert result["value"]["arguments"] == {"raw": malformed_args}
         assert result["value"]["expected_contract_version"] == "v1"
 
+        assert result["value"]["arguments"] == {"product_family": "ISODEC"}
     def test_returns_unknown_with_diagnostic(self):
         """Test that unknown type with diagnostic is returned when no content."""
         response = {"id": "123", "model": "gpt-4"}

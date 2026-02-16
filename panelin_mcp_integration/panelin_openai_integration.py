@@ -38,6 +38,10 @@ class PanelinMCPResponsesAPI:
             "require_approval": {
                 "never": {
                     "tool_names": ["find_products", "get_product_price", "check_availability"]
+                    "tool_names": ["find_products", "get_product_price", "check_availability", "lookup_customer"]
+                },
+                "always": {
+                    "tool_names": ["persist_conversation", "register_correction", "save_customer"]
                 }
             }
         }]
@@ -53,6 +57,7 @@ class PanelinMCPResponsesAPI:
                 Search for construction panels matching this query: {query}
                 Use the find_products function to search. Max results: {max_results}
                 """
+            """
         )
 
         return {
@@ -90,6 +95,7 @@ class PanelinMCPResponsesAPI:
                 - Quantity needed: {quantity_m2} m²
                 Use check_availability function
                 """
+            """
         )
 
         return {

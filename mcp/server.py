@@ -6,6 +6,12 @@ A minimal MCP server that exposes BMC quotation tools:
 - bom_calculate: Bill of Materials calculator
 - report_error: KB error correction logger
 
+Wolf API KB Write tools (v3.4):
+- persist_conversation: Save conversation summaries to KB
+- register_correction: Register KB corrections via Wolf API
+- save_customer: Store customer data for future quotations
+- lookup_customer: Retrieve existing customer data
+
 Background task processing tools (async, long-running operations):
 - batch_bom_calculate: Submit batch BOM calculations
 - bulk_price_check: Submit bulk pricing lookups
@@ -29,6 +35,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -46,7 +53,15 @@ from .handlers.pricing import handle_price_check
 from .handlers.catalog import handle_catalog_search
 from .handlers.bom import handle_bom_calculate
 from .handlers.errors import handle_report_error
+from .handlers.governance import handle_validate_correction, handle_commit_correction
 from .handlers.quotation import configure_quotation_store, handle_quotation_store
+from .handlers.wolf_kb_write import (
+    configure_wolf_kb_client,
+    handle_persist_conversation,
+    handle_register_correction,
+    handle_save_customer,
+    handle_lookup_customer,
+)
 from .storage.factory import initialize_memory_store
 from .observability import (
     get_invocation_context,
@@ -81,7 +96,14 @@ TOOL_HANDLERS = {
     "catalog_search": handle_catalog_search,
     "bom_calculate": handle_bom_calculate,
     "report_error": handle_report_error,
+    "validate_correction": handle_validate_correction,
+    "commit_correction": handle_commit_correction,
     "quotation_store": handle_quotation_store,
+    # Wolf API KB Write tools (v3.4)
+    "persist_conversation": handle_persist_conversation,
+    "register_correction": handle_register_correction,
+    "save_customer": handle_save_customer,
+    "lookup_customer": handle_lookup_customer,
     # Background task tools (async)
     "batch_bom_calculate": handle_batch_bom_calculate,
     "bulk_price_check": handle_bulk_price_check,
@@ -138,7 +160,16 @@ def create_server() -> Any:
     configure_quotation_store(
         memory_store,
         enable_vector_retrieval=bool(store_metadata.get("enable_vector_retrieval", False)),
+        backend_metadata=store_metadata,
     )
+
+    # Initialize Wolf API KB Write client (v3.4)
+    wolf_api_key = os.environ.get("WOLF_API_KEY", "")
+    wolf_api_url = os.environ.get("WOLF_API_URL", "https://panelin-api-642127786762.us-central1.run.app")
+    if wolf_api_key:
+        from panelin_mcp_integration.panelin_mcp_server import PanelinMCPServer as WolfClient
+        wolf_client = WolfClient(api_key=wolf_api_key, base_url=wolf_api_url)
+        configure_wolf_kb_client(wolf_client)
 
     @server.list_tools()
     async def list_tools() -> list[Tool]:

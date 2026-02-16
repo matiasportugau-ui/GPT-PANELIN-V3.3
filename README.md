@@ -1,10 +1,10 @@
-# Panelin 3.3 - BMC Assistant Pro GPT Configuration
+# Panelin 3.4 - BMC Assistant Pro GPT Configuration
 
-![Version](https://img.shields.io/badge/version-3.3-blue) ![GPT](https://img.shields.io/badge/platform-OpenAI%20GPT-green) ![KB](https://img.shields.io/badge/KB%20version-7.0-orange) ![Status](https://img.shields.io/badge/status-production-success) ![MCP](https://img.shields.io/badge/MCP-enabled-purple)
+![Version](https://img.shields.io/badge/version-3.4-blue) ![GPT](https://img.shields.io/badge/platform-OpenAI%20GPT-green) ![KB](https://img.shields.io/badge/KB%20version-7.0-orange) ![Status](https://img.shields.io/badge/status-production-success) ![MCP](https://img.shields.io/badge/MCP-v0.3.0-purple)
 
 **Complete configuration files and knowledge base for Panelin GPT - Professional quotation assistant for BMC Uruguay panel systems**
 
-**New in v3.3+:** MCP Server architecture for persistent tool access and GitHub integration
+**New in v3.4:** Wolf API KB Write — persist conversations, corrections, and customer data directly through chat
 
 ---
 
@@ -357,7 +357,7 @@ EVOLUCIONADOR is an autonomous AI agent system that continuously analyzes, valid
 
 ### Core Components
 
-#### 1. Analyzer Engine (`core/analyzer.py`)
+#### 1. Analyzer Engine (`.evolucionador/core/analyzer.py`)
 **850+ lines** - Main analysis engine that:
 - Scans entire workspace (22+ files detected)
 - Validates README compliance (100/100 score)
@@ -366,7 +366,7 @@ EVOLUCIONADOR is an autonomous AI agent system that continuously analyzes, valid
 - Generates performance data
 - Calculates multi-dimensional efficiency scores
 
-#### 2. Validator Engine (`core/validator.py`)
+#### 2. Validator Engine (`.evolucionador/core/validator.py`)
 **1,246 lines** - Seven specialized validators:
 1. **JSONValidator** - Schema validation for all KB files
 2. **FormulaValidator** - Quotation calculation correctness
@@ -385,7 +385,7 @@ Six optimization algorithms for:
 - Memory usage optimization
 - Cost reduction strategies
 
-#### 4. Report Generator (`reports/generator.py`)
+#### 4. Report Generator (`.evolucionador/reports/generator.py`)
 Generates comprehensive markdown reports with:
 - Executive summaries with efficiency scores
 - Detailed validation results
@@ -408,14 +408,14 @@ Generates comprehensive markdown reports with:
 ### Self-Learning Knowledge Base
 
 EVOLUCIONADOR maintains three knowledge files:
-- **`patterns.json`** - Discovered patterns and best practices
-- **`benchmarks.json`** - Performance benchmarks across versions
-- **`improvements.json`** - Tracked improvements and their impact
+- **`.evolucionador/knowledge/patterns.json`** - Discovered patterns and best practices
+- **`.evolucionador/knowledge/benchmarks.json`** - Performance benchmarks across versions
+- **`.evolucionador/knowledge/improvements.json`** - Tracked improvements and their impact
 
 ### Output & Reports
 
 **Latest Report**: `.evolucionador/reports/latest.md`  
-**Historical Reports**: `.evolucionador/reports/history/YYYY-MM-DD.md`  
+**Historical Reports**: `.evolucionador/reports/history/` (daily Markdown files named by date)  
 **Analysis Data**: `.evolucionador/reports/analysis_results.json`
 
 Each report includes:
@@ -429,25 +429,24 @@ Each report includes:
 ### Testing Infrastructure
 
 Comprehensive test suites ensure reliability:
-- `test_analyzer.py` - Analysis engine tests
-- `test_validator.py` - All 7 validators
-- `test_optimizer.py` - Optimization algorithms
-- `examples_validator.py` - Usage examples
+- `.evolucionador/tests/test_analyzer.py` - Analysis engine tests
+- `.evolucionador/tests/test_validator.py` - All 7 validators
+- `.evolucionador/tests/test_optimizer.py` - Optimization algorithms
+- `.evolucionador/examples_validator.py` - Usage examples
 
 ### Usage
 
 ```bash
 # Install dependencies (none required - uses Python stdlib only)
-cd .evolucionador
 
 # Run complete analysis
-python core/analyzer.py
+python .evolucionador/core/analyzer.py
 
 # Generate evolution report
-python reports/generator.py
+python .evolucionador/reports/generator.py
 
 # View latest report
-cat reports/latest.md
+cat .evolucionador/reports/latest.md
 ```
 
 ### Documentation
@@ -1258,7 +1257,8 @@ mcp/
 
 ```bash
 # Step 1: Validate all required files exist
-python validate_gpt_files.py
+python \
+  validate_gpt_files.py
 
 # Step 2: Package files for easy upload
 python package_gpt_files.py
@@ -1400,7 +1400,8 @@ The repository includes two Python scripts to streamline deployment:
 
 **1. Validation Script (`validate_gpt_files.py`)**
 ```bash
-python validate_gpt_files.py
+python \
+  validate_gpt_files.py
 ```
 - ✅ Validates all 21 required files exist
 - ✅ Checks JSON syntax for all knowledge base files
@@ -1463,7 +1464,7 @@ Ensure all required files are ready for upload:
 - [ ] `GPT_PDF_INSTRUCTIONS.md`
 
 **Validation:**
-Run `python validate_gpt_files.py` to verify all files exist and are valid before upload.
+Run `validate_gpt_files.py` with Python to verify all files exist and are valid before upload.
 
 #### 2. Configure GPT in OpenAI
 
@@ -1860,7 +1861,8 @@ python .evolucionador/tests/test_optimizer.py
 
 ```bash
 # Validate all GPT upload files
-python validate_gpt_files.py
+python \
+  validate_gpt_files.py
 ```
 
 **Validation Checks:**
@@ -1974,7 +1976,23 @@ When reporting issues with the GPT or KB:
 
 ## 📜 Version History
 
-### v3.3 / KB v7.0 / PDF Template v2.0 (2026-02-10, Updated 2026-02-11) - Current
+### v3.4 / KB v7.0 / MCP v0.3.0 (2026-02-14) - Current
+
+**Wolf API KB Write Capabilities:**
+- **persist_conversation**: Save conversation summaries and quotation history to KB via Wolf API
+- **register_correction**: Register KB corrections detected during conversations for continuous improvement
+- **save_customer**: Store customer data (name, phone, address) for seamless repeat quotations
+- **lookup_customer**: Auto-retrieve returning customer info without re-asking
+- Password protection on all write operations (configurable via environment variable)
+- Uruguayan phone format validation (09XXXXXXX or +598XXXXXXXX)
+- 4 new MCP tool contracts (v1 envelope format with error codes)
+- OpenAI approval workflow for write operations
+- MCP server bumped to v0.3.0 with Wolf API config section
+- See `IMPLEMENTATION_SUMMARY_V3.4.md` for full details
+
+---
+
+### v3.3 / KB v7.0 / PDF Template v2.0 (2026-02-10, Updated 2026-02-11)
 
 **Major Features:**
 
@@ -2013,18 +2031,18 @@ When reporting issues with the GPT or KB:
 
 **New Modules & Files:**
 - `openai_ecosystem/` - OpenAI API integration utilities
-  - `client.py` - Response extraction and normalization (349 lines)
-  - `test_client.py` - Comprehensive test suite (449 lines, 33 tests)
-  - `README.md` - Module documentation with examples
+  - `openai_ecosystem/client.py` - Response extraction and normalization (349 lines)
+  - `openai_ecosystem/test_client.py` - Comprehensive test suite (449 lines, 33 tests)
+  - `openai_ecosystem/README.md` - Module documentation with examples
 - `panelin_reports/` - Complete PDF generation package
-  - `pdf_generator.py` - Enhanced PDF generator v2.0
-  - `pdf_styles.py` - BMC branding and style definitions
-  - `test_pdf_generation.py` - Comprehensive testing suite
+  - `panelin_reports/pdf_generator.py` - Enhanced PDF generator v2.0
+  - `panelin_reports/pdf_styles.py` - BMC branding and style definitions
+  - `panelin_reports/test_pdf_generation.py` - Comprehensive testing suite
 - `.evolucionador/` - Complete autonomous evolution system
-  - `core/analyzer.py` - Analysis engine (850+ lines)
-  - `core/validator.py` - 7 validators (1,246 lines)
-  - `core/optimizer.py` - Optimization algorithms
-  - `reports/generator.py` - Report generator (50+ variables)
+  - `.evolucionador/core/analyzer.py` - Analysis engine (850+ lines)
+  - `.evolucionador/core/validator.py` - 7 validators (1,246 lines)
+  - `.evolucionador/core/optimizer.py` - Optimization algorithms
+  - `.evolucionador/reports/generator.py` - Report generator (50+ variables)
 - `test_panelin_api_connection.sh` - Secure API connectivity smoke test
 - `.github/workflows/evolucionador-daily.yml` - Daily automation
 - `requirements.txt` - Python dependencies (reportlab, pillow)

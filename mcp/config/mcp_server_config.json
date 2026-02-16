@@ -1,7 +1,7 @@
 {
   "name": "panelin-mcp-server",
-  "version": "0.2.0",
-  "description": "MCP server for GPT-PANELIN v3.3 — BMC Assistant Pro. Provides pricing lookup, catalog search, BOM calculation, error reporting, and background task processing for batch operations and full quotation generation.",
+  "version": "0.3.0",
+  "description": "MCP server for GPT-PANELIN v3.4 — BMC Assistant Pro. Provides pricing lookup, catalog search, BOM calculation, error reporting, Wolf API KB Write (conversations, corrections, customers), and background task processing for batch operations and full quotation generation.",
   "transport": ["stdio", "sse"],
   "tools": [
     "tools/price_check.json",
@@ -9,6 +9,10 @@
     "tools/bom_calculate.json",
     "tools/report_error.json",
     "tools/quotation_store.json",
+    "tools/persist_conversation.json",
+    "tools/register_correction.json",
+    "tools/save_customer.json",
+    "tools/lookup_customer.json",
     "tools/batch_bom_calculate.json",
     "tools/bulk_price_check.json",
     "tools/full_quotation.json",
@@ -39,6 +43,13 @@
     "shopify_index": "../shopify_catalog_index_v1.csv",
     "core_kb": "../BMC_Base_Conocimiento_GPT-2.json",
     "corrections_log": "../corrections_log.json"
+  },
+  "wolf_api": {
+    "base_url_env": "WOLF_API_URL",
+    "api_key_env": "WOLF_API_KEY",
+    "default_base_url": "https://panelin-api-642127786762.us-central1.run.app",
+    "kb_write_password_env": "WOLF_KB_WRITE_PASSWORD",
+    "timeout_seconds": 10
   },
   "openai_integration": {
     "registration_method": "custom_gpt_actions",

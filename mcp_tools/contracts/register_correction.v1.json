@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "tool_name": "register_correction",
+  "contract_version": "v1",
+  "description": "Register a KB correction detected during conversation via Wolf API. Requires KB write password.",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "source_file": {
+        "type": "string",
+        "description": "KB file where the error was found",
+        "minLength": 1
+      },
+      "field_path": {
+        "type": "string",
+        "description": "JSON path to the incorrect field",
+        "minLength": 1
+      },
+      "old_value": {
+        "type": "string",
+        "description": "Current incorrect value"
+      },
+      "new_value": {
+        "type": "string",
+        "description": "Corrected value"
+      },
+      "reason": {
+        "type": "string",
+        "description": "Explanation of why the correction is needed",
+        "minLength": 1
+      },
+      "reported_by": {
+        "type": "string",
+        "description": "Who reported the correction"
+      },
+      "password": {
+        "type": "string",
+        "description": "KB write password for authorization"
+      }
+    },
+    "required": ["source_file", "field_path", "old_value", "new_value", "reason", "password"]
+  },
+  "output_schema": {
+    "oneOf": [
+      {
+        "type": "object",
+        "properties": {
+          "ok": { "const": true },
+          "contract_version": { "const": "v1" },
+          "correction_id": { "type": "string" },
+          "stored_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["ok", "contract_version", "correction_id", "stored_at"]
+      },
+      {
+        "type": "object",
+        "properties": {
+          "ok": { "const": false },
+          "contract_version": { "const": "v1" },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "message": { "type": "string" }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["ok", "contract_version", "error"]
+      }
+    ]
+  },
+  "error_codes": ["PASSWORD_REQUIRED", "INVALID_PASSWORD", "WOLF_API_ERROR", "INTERNAL_ERROR"]
+}

@@ -110,7 +110,7 @@ class TaskQueue:
                         self._tasks[task.id] = task
                         # Re-queue pending tasks
                         if task.status == TaskStatus.PENDING:
-                            asyncio.create_task(self._queue.put((task.priority.value, task)))
+                            self._queue.put_nowait((task.priority.value, task))
             except Exception as e:
                 print(f"Warning: Could not load task state: {e}")
     

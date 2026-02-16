@@ -166,7 +166,18 @@ async def handle_task_list(arguments: dict[str, Any]) -> dict[str, Any]:
     # Parse optional filters
     status_str = arguments.get("status")
     type_str = arguments.get("task_type")
-    limit = arguments.get("limit", 20)
+    limit_raw = arguments.get("limit", 20)
+
+    # Validate and clamp limit to reasonable bounds
+    try:
+        limit = int(limit_raw)
+        limit = max(1, min(limit, 100))  # Clamp between 1 and 100
+    except (TypeError, ValueError):
+        return {"error": "limit must be a valid integer"}
+
+    # Validate status string length before enum conversion
+    if status_str and len(str(status_str)) > 50:
+        return {"error": "status parameter too long (max 50 characters)"}
 
     status_filter: TaskStatus | None = None
     if status_str:
@@ -174,6 +185,10 @@ async def handle_task_list(arguments: dict[str, Any]) -> dict[str, Any]:
             status_filter = TaskStatus(status_str)
         except ValueError:
             return {"error": f"Invalid status: '{status_str}'. Valid: pending, running, completed, failed, cancelled"}
+
+    # Validate task_type string length before enum conversion
+    if type_str and len(str(type_str)) > 50:
+        return {"error": "task_type parameter too long (max 50 characters)"}
 
     type_filter: TaskType | None = None
     if type_str:
