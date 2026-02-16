@@ -112,6 +112,11 @@ async def handle_bom_calculate(arguments: dict[str, Any], legacy_format: bool = 
     """Execute bom_calculate tool and return BOM breakdown in v1 contract format.
     
     Args:
+        arguments: Tool arguments containing product_family, thickness_mm, core_type, usage, length_m, width_m
+        legacy_format: If True, return legacy format for backwards compatibility
+    
+    Returns:
+        v1 contract envelope: {ok, contract_version, items, summary} or {ok, contract_version, error}
         arguments: Tool arguments containing product_family, thickness_mm, core_type, usage, dimensions
         legacy_format: If True, return legacy format for backwards compatibility
     
