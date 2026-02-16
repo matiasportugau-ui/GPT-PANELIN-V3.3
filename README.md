@@ -1392,7 +1392,7 @@ Only these files can be modified through governance:
 
 ## 💾 Quotation Persistence System
 
-**Version:** 1.0 | **Status:** ✅ Production Ready | **Handler:** `mcp/handlers/quotation.py` (187 lines)
+**Version:** 1.0 | **Status:** ✅ Production Ready | **Handler:** `mcp/handlers/quotation.py` (155 lines)
 
 ### Overview
 
