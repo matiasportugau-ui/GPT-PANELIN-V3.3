@@ -1,0 +1,159 @@
+# ==============================================================================
+# Docker Ignore File for GPT-PANELIN-V3.2
+# ==============================================================================
+# Files and directories to exclude from Docker build context
+
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyc
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.hypothesis/
+*.cover
+coverage.xml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.vscode-test/
+*.code-workspace
+
+# OS specific
+.DS_Store
+Thumbs.db
+*.log
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Environment files (contain secrets)
+.env
+.env.*
+!.env.example
+
+# Documentation (not needed in container)
+*.md
+!README.md
+docs/
+*.rtf
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Temporary files
+*.tmp
+*.bak
+*~
+tmp/
+temp/
+
+# Logs
+logs/
+*.log
+
+# Output files
+panelin_reports/output/*.pdf
+*.pdf
+
+# GPT Upload Package (generated)
+GPT_Upload_Package/
+
+# Compiled Python
+*.pyc
+*.cpython-*.pyc
+
+# CSV data files (unless needed)
+*.csv
+!shopify_catalog_index_v1.csv
+
+# Node modules (if any)
+node_modules/
+package-lock.json
+
+# EVOLUCIONADOR (not needed in production)
+.evolucionador/
+
+# Archive directory
+archive/
+
+# Artifacts directory (build outputs)
+artifacts/
+
+# Test files (not needed in production image)
+test_*.py
+*_test.py
+tests/
+test/
+
+# CI/CD configs (not needed in container)
+.github/
+.gitlab-ci.yml
+.travis.yml
+azure-pipelines.yml
+
+# Docker files (don't include in build context recursively)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Deployment scripts (not needed in container)
+scripts/deploy.sh
+scripts/pre_deploy_check.sh
+
+# Development files
+*.draft
+*.scratch
+*.backup
+
+# Large data files not needed in production
+normalized_full_cleaned.csv
+shopify_catalog_index_v1.csv
+
+# RTF files (not needed)
+*.rtf
+
+# Audit and planning documents
+AUDIT_*.md
+*_PLAN.md
+*_SUMMARY.md
+*_PROMPT.md
+*_ANALYSIS.md
+*_GUIDE.md
+*_CHECKLIST.md
+IMPROVEMENT_*.md

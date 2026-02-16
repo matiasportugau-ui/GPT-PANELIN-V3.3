@@ -158,11 +158,57 @@ class RepositoryAnalyzer:
                 else:
                     files_mentioned.add(match)
         
+        # Build an index of all filenames in the repo for fallback search
+        # NOTE: We only exclude .git and __pycache__ here (not .evolucionador)
+        # because README references files inside .evolucionador/
+        repo_file_index = {}
+        for file_path in self.repo_root.rglob('*'):
+            if file_path.is_file() and '.git' not in file_path.parts and '__pycache__' not in file_path.parts:
+                repo_file_index[file_path.name] = file_path
+                # Also index relative paths from repo root
+                rel = str(file_path.relative_to(self.repo_root))
+                repo_file_index[rel] = file_path
+        
         # Check if mentioned files exist
         for file_ref in files_mentioned:
+            # Skip references that look like shell commands (e.g., "python validate_gpt_files.py")
+            if ' ' in file_ref.strip() and not file_ref.strip().startswith('.'):
+                continue
+            
+            # Skip template/placeholder paths (e.g., "YYYY-MM-DD.md")
+            if 'YYYY' in file_ref or 'XXXX' in file_ref:
+                continue
+            
             compliance['files_checked'] += 1
-            file_path = self.repo_root / file_ref
-            if file_path.exists():
+            
+            # 1. Check exact path from repo root
+            exact_path = self.repo_root / file_ref
+            if exact_path.exists():
+                compliance['files_exist'] += 1
+                continue
+            
+            # 2. Try to find by relative path in file index
+            if file_ref in repo_file_index:
+                compliance['files_exist'] += 1
+                continue
+            
+            # 3. Try to find by filename only (basename)
+            basename = Path(file_ref).name
+            if basename in repo_file_index:
+                compliance['files_exist'] += 1
+                continue
+            
+            # 4. Try matching the last N path components
+            found = False
+            file_ref_parts = Path(file_ref).parts
+            for indexed_path, indexed_full in repo_file_index.items():
+                indexed_parts = Path(indexed_path).parts
+                if len(indexed_parts) >= len(file_ref_parts):
+                    if indexed_parts[-len(file_ref_parts):] == file_ref_parts:
+                        found = True
+                        break
+            
+            if found:
                 compliance['files_exist'] += 1
             else:
                 compliance['files_missing'].append(file_ref)

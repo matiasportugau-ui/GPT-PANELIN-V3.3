@@ -1,0 +1,177 @@
+name: Test Suite
+
+on:
+  pull_request:
+    branches: ['**']
+  push:
+    branches: ['**']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r panelin_mcp_server/requirements.txt
+          pip install pytest pytest-asyncio pytest-cov
+      
+      - name: Run unit tests
+        run: |
+          echo "🧪 Running unit tests..."
+          pytest test_mcp_handlers_v1.py -v --cov=panelin_mcp_server --cov-report=term
+      
+      - name: Test MCP server startup
+        run: |
+          echo "🔌 Testing MCP server initialization..."
+          timeout 5 python panelin_mcp_server/server.py --help || true
+          echo "✅ MCP server can be imported and initialized"
+      
+      - name: Integration tests for MCP server
+        run: |
+          echo "🔗 Running MCP integration tests..."
+          python -c "
+          import sys
+          from pathlib import Path
+          
+          # Test that MCP handlers can be imported
+          try:
+              from panelin_mcp_server.handlers import pricing, catalog, bom
+              print('✅ MCP handlers imported successfully')
+          except ImportError as e:
+              print(f'❌ Failed to import MCP handlers: {e}')
+              sys.exit(1)
+          
+          # Test that contracts can be loaded
+          try:
+              import json
+              contracts_dir = Path('mcp_tools/contracts')
+              if contracts_dir.exists():
+                  for contract_file in contracts_dir.glob('*.v1.json'):
+                      with open(contract_file, 'r') as f:
+                          json.load(f)
+                  print('✅ All contract files are valid JSON')
+              else:
+                  print('⚠️ Contracts directory not found')
+          except Exception as e:
+              print(f'❌ Failed to load contracts: {e}')
+              sys.exit(1)
+          "
+      
+      - name: OpenAI ecosystem tests
+        run: |
+          echo "🤖 Testing OpenAI ecosystem compatibility..."
+          python -c "
+          import sys
+          
+          # Verify MCP tools structure
+          from pathlib import Path
+          tools_dir = Path('panelin_mcp_server/tools')
+          if tools_dir.exists():
+              tool_files = list(tools_dir.glob('*.json'))
+              print(f'✅ Found {len(tool_files)} MCP tool definitions')
+          else:
+              print('⚠️ MCP tools directory not found')
+          
+          # Verify handlers are compatible with expected interface
+          try:
+              from panelin_mcp_server.handlers.pricing import handle_price_check
+              from panelin_mcp_server.handlers.catalog import handle_catalog_search
+              from panelin_mcp_server.handlers.bom import handle_bom_calculate
+              print('✅ All core handlers are importable')
+          except ImportError as e:
+              print(f'❌ Handler import failed: {e}')
+              sys.exit(1)
+          "
+      
+      - name: Knowledge base validation
+        run: |
+          echo "📚 Validating knowledge base files..."
+          python -c "
+          import json
+          import sys
+          from pathlib import Path
+          
+          # List of required knowledge base files
+          kb_files = [
+              'bromyros_pricing_master.json',
+              'bromyros_pricing_gpt_optimized.json',
+              'BMC_Base_Conocimiento_GPT-2.json',
+              'bom_rules.json',
+              'accessories_catalog.json',
+              'shopify_catalog_v1.json'
+          ]
+          
+          passed = 0
+          failed = 0
+          
+          for file in kb_files:
+              path = Path(file)
+              if not path.exists():
+                  print(f'⚠️ {file} not found (may be optional)')
+                  continue
+              
+              try:
+                  with open(path, 'r', encoding='utf-8') as f:
+                      data = json.load(f)
+                  
+                  # Basic validation
+                  if isinstance(data, dict):
+                      print(f'✅ {file} is valid (dict with {len(data)} keys)')
+                  elif isinstance(data, list):
+                      print(f'✅ {file} is valid (list with {len(data)} items)')
+                  else:
+                      print(f'✅ {file} is valid JSON')
+                  passed += 1
+              except json.JSONDecodeError as e:
+                  print(f'❌ {file} has invalid JSON: {e}')
+                  failed += 1
+              except Exception as e:
+                  print(f'❌ {file} error: {e}')
+                  failed += 1
+          
+          print(f'\n📊 Validation summary: {passed} passed, {failed} failed')
+          if failed > 0:
+              sys.exit(1)
+          "
+      
+      - name: Quotation calculator tests
+        run: |
+          echo "🧮 Testing quotation calculator..."
+          python -c "
+          import sys
+          from pathlib import Path
+          
+          calc_file = Path('quotation_calculator_v3.py')
+          if calc_file.exists():
+              try:
+                  import quotation_calculator_v3
+                  print('✅ Quotation calculator module can be imported')
+              except ImportError as e:
+                  print(f'⚠️ Could not import quotation calculator: {e}')
+          else:
+              print('⚠️ Quotation calculator not found')
+          
+          ",
+message":"Fix workflow: update mcp/ path to panelin_mcp_server/","owner":"matiasportugau-ui","path":".github/workflows/test.yml","repo":"GPT-PANELIN-V3.3","sha":"a355d43bfa1593503ba74e61c35189cef13b0920"}

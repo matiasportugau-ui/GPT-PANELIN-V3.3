@@ -1,0 +1,217 @@
+name: Health Check
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to check'
+        required: false
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+permissions:
+  contents: read
+
+jobs:
+  health-check:
+    name: System Health Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r panelin_mcp_server/requirements.txt
+          pip install requests
+      
+      - name: Check MCP server endpoints
+        run: |
+          echo "🔌 Checking MCP server health..."
+          python -c "
+          import sys
+          from pathlib import Path
+          
+          # Verify server file exists
+          server_file = Path('panelin_mcp_server/server.py')
+          if not server_file.exists():
+              print('❌ MCP server file not found')
+              sys.exit(1)
+          
+          # Test import
+          try:
+              import panelin_mcp_server.server
+              print('✅ MCP server module can be imported')
+          except Exception as e:
+              print(f'❌ Failed to import MCP server: {e}')
+              sys.exit(1)
+          "
+      
+      - name: Validate knowledge base files
+        run: |
+          echo "📚 Validating knowledge base integrity..."
+          python -c "
+          import json
+          import sys
+          from pathlib import Path
+          
+          kb_files = {
+              'bromyros_pricing_master.json': {'required': True, 'min_size': 100000},
+              'bromyros_pricing_gpt_optimized.json': {'required': True, 'min_size': 50000},
+              'BMC_Base_Conocimiento_GPT-2.json': {'required': True, 'min_size': 1000},
+              'bom_rules.json': {'required': True, 'min_size': 1000},
+              'accessories_catalog.json': {'required': True, 'min_size': 1000},
+              'shopify_catalog_v1.json': {'required': True, 'min_size': 50000},
+              'corrections_log.json': {'required': False, 'min_size': 0}
+          }
+          
+          errors = []
+          warnings = []
+          
+          for file, config in kb_files.items():
+              path = Path(file)
+              
+              if not path.exists():
+                  if config['required']:
+                      errors.append(f'{file}: File not found')
+                  else:
+                      warnings.append(f'{file}: Optional file not found')
+                  continue
+              
+              try:
+                  # Check file size
+                  size = path.stat().st_size
+                  if size < config['min_size']:
+                      warnings.append(f'{file}: File size {size} is smaller than expected {config[\"min_size\"]}')
+                  
+                  # Validate JSON
+                  with open(path, 'r', encoding='utf-8') as f:
+                      data = json.load(f)
+                  
+                  print(f'✅ {file} is valid ({size:,} bytes)')
+              
+              except json.JSONDecodeError as e:
+                  errors.append(f'{file}: Invalid JSON - {str(e)[:100]}')
+              except Exception as e:
+                  errors.append(f'{file}: {str(e)[:100]}')
+          
+          # Report results
+          if warnings:
+              print('\n⚠️ Warnings:')
+              for warning in warnings:
+                  print(f'  - {warning}')
+          
+          if errors:
+              print('\n❌ Errors:')
+              for error in errors:
+                  print(f'  - {error}')
+              sys.exit(1)
+          else:
+              print('\n✅ All knowledge base files are healthy')
+          "
+      
+      - name: Test quotation calculator
+        run: |
+          echo "🧮 Testing quotation calculator functionality..."
+          python -c "
+          import sys
+          from pathlib import Path
+          
+          calc_file = Path('quotation_calculator_v3.py')
+          
+          if not calc_file.exists():
+              print('⚠️ Quotation calculator not found, skipping...')
+              sys.exit(0)
+          
+          try:
+              # Try to import and verify basic structure
+              import importlib.util
+              spec = importlib.util.spec_from_file_location('calc', calc_file)
+              if spec and spec.loader:
+                  calc = importlib.util.module_from_spec(spec)
+                  spec.loader.exec_module(calc)
+                  print('✅ Quotation calculator is importable')
+              else:
+                  print('⚠️ Could not load quotation calculator')
+          except Exception as e:
+              print(f'❌ Quotation calculator test failed: {e}')
+              sys.exit(1)
+          "
+      
+      - name: Verify tool contracts
+        run: |
+          echo "📋 Verifying MCP tool contracts..."
+          python -c "
+          import json
+          import sys
+          from pathlib import Path
+          
+          # Check mcp_tools/contracts directory
+          contracts_dir = Path('mcp_tools/contracts')
+          
+          if not contracts_dir.exists():
+              print('⚠️ Contracts directory not found')
+              sys.exit(0)
+          
+          contract_files = list(contracts_dir.glob('*.v1.json'))
+          
+          if not contract_files:
+              print('⚠️ No v1 contract files found')
+              sys.exit(0)
+          
+          errors = []
+          for contract_file in contract_files:
+              try:
+                  with open(contract_file, 'r', encoding='utf-8') as f:
+                      contract = json.load(f)
+                  
+                  # Verify basic contract structure
+                  required_keys = ['name', 'version']
+                  for key in required_keys:
+                      if key not in contract:
+                          errors.append(f'{contract_file.name}: Missing required key \"{key}\"')
+                  
+                  print(f'✅ {contract_file.name} is valid')
+              
+              except json.JSONDecodeError as e:
+                  errors.append(f'{contract_file.name}: Invalid JSON')
+              except Exception as e:
+                  errors.append(f'{contract_file.name}: {str(e)[:100]}')
+          
+          if errors:
+              print('\n❌ Contract validation errors:')
+              for error in errors:
+                  print(f'  - {error}')
+              sys.exit(1)
+          else:
+              print(f'\n✅ All {len(contract_files)} contracts are valid')
+          "
+      
+      - name: Report status
+        if: always()
+        run: |
+          echo "📊 Health Check Summary"
+          echo "======================="
+          echo "Environment: ${{ inputs.environment || 'scheduled' }}"
+          echo "Status: ${{ job.status }}"
+          echo "Timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          
+          # In a real deployment, you would send this to your monitoring system
+          # Examples: DataDog, New Relic, Prometheus, custom webhook, etc.

@@ -57,13 +57,29 @@ async def handle_report_error(arguments: dict[str, Any]) -> dict[str, Any]:
     ):
         return {"error": "kb_file, field, wrong_value, and correct_value are required"}
 
+    # Validate kb_file to prevent path traversal and ensure it's a known file
+    allowed_kb_files = [
+        "bromyros_pricing_master.json",
+        "bromyros_pricing_gpt_optimized.json",
+        "accessories_catalog.json",
+        "bom_rules.json",
+        "shopify_catalog_v1.json",
+        "BMC_Base_Conocimiento_GPT-2.json",
+        "perfileria_index.json",
+    ]
+    
+    # Remove any path separators and validate against whitelist
+    kb_file_clean = str(kb_file).replace("/", "").replace("\\", "").replace("..", "")
+    if kb_file_clean not in allowed_kb_files:
+        return {"error": f"Invalid kb_file. Must be one of: {', '.join(allowed_kb_files)}"}
+
     data = _load_corrections()
     corrections = data.get("corrections", [])
 
     entry = {
         "id": _next_id(corrections),
         "date": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "kb_file": kb_file,
+        "kb_file": kb_file_clean,  # Use sanitized version
         "field": field,
         "wrong_value": wrong_value,
         "correct_value": correct_value,

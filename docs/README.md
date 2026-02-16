@@ -22,6 +22,7 @@ Welcome to the **Panelin 3.3** documentation hub! This directory serves as the c
 | **MCP Agent** | [MCP Architect Agent Prompt](../MCP_AGENT_ARCHITECT_PROMPT.md) | AI agent for OpenAI + GitHub MCP architecture |
 | **MCP Migration** | [KB Architecture Audit](../KB_ARCHITECTURE_AUDIT.md) | Critical review of all KB files for MCP transition |
 | **MCP Migration** | [KB MCP Migration Prompt](../KB_MCP_MIGRATION_PROMPT.md) | Executable prompt for KB restructuring |
+| **MCP Migration** | [KB Pipeline](../kb_pipeline/README.md) | Build MCP lookup artifacts and source manifest |
 
 ---
 
@@ -76,6 +77,20 @@ Market research and comparative analysis for MCP server integration:
 5. **[KB MCP Migration Prompt](../KB_MCP_MIGRATION_PROMPT.md)** - Executable prompt and results for KB restructuring
 6. **[MCP Cross-Check & Evolution Plan](../MCP_CROSSCHECK_EVOLUTION_PLAN.md)** - Full cross-check analysis, gap audit, corrected cost projections, and fast-track execution plan
 7. **[MCP Server](../panelin_mcp_server/)** - MCP server skeleton with tool schemas, handlers, and config
+8. **[KB Pipeline](../kb_pipeline/README.md)** - Rebuild command and artifact expectations for MCP lookup indexes
+
+
+### 🧾 MCP Tool Contract Compatibility (v1)
+
+| Tool | Contract Version | Contract File |
+|------|------------------|---------------|
+| `kb_search`* | `v1` | `mcp_tools/contracts/kb_search.v1.json` |
+| `price_check` | `v1` | `mcp_tools/contracts/price_check.v1.json` |
+| `bom_calculate` | `v1` | `mcp_tools/contracts/bom_calculate.v1.json` |
+| `catalog_search` | `v1` | `mcp_tools/contracts/catalog_search.v1.json` |
+| `quotation_store`* | `v1` | `mcp_tools/contracts/quotation_store.v1.json` |
+
+\* `kb_search` and `quotation_store` are defined as v1 contract schemas but are **not yet registered/exposed** as tools in the MCP server (`panelin_mcp_server/server.py`). They are planned for future implementation.
 
 ### 📦 Archived Documents
 

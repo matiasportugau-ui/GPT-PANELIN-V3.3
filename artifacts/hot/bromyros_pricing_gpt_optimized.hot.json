@@ -1,0 +1,962 @@
+[
+  {
+    "sku": "IAGRO30",
+    "title": "Isoroof FOIL 30 mm - Color Gris-Rojo",
+    "category": "ISOROOF / FOIL",
+    "price": 39.48,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[0]",
+    "checksum": "2dd186e00b155156da46ae57d5f0463d56161cc0cfe38a7fd9802924bb89bddc"
+  },
+  {
+    "sku": "IAGRO50",
+    "title": "Isoroof FOIL 50 mm - Color Rojo-Gris",
+    "category": "ISOROOF / FOIL",
+    "price": 44.76,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[1]",
+    "checksum": "1dcbadc6c94fdc13dd526606236210c8f13e9dfad12e5e88367df997c65a4d81"
+  },
+  {
+    "sku": "IROOF30",
+    "title": "Isoroof 30 mm Terracota o Gris",
+    "category": "ISOROOF",
+    "price": 48.74,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[2]",
+    "checksum": "d182fd1beaaba187ac16926ea4a1df7cf4265e799c9459404e085419c52e535b"
+  },
+  {
+    "sku": "IROOF40",
+    "title": "Isoroof 40 mm Terracota o Gris",
+    "category": "ISOROOF",
+    "price": 51.21,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[3]",
+    "checksum": "fbf739757b3f3554ada686fd90d956e468923f52ae1df95fefc8a710d719b98e"
+  },
+  {
+    "sku": "IROOF50",
+    "title": "Isoroof 50 mm Terracota o Gris",
+    "category": "ISOROOF",
+    "price": 53.68,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[4]",
+    "checksum": "edf9e9935eea9d3c4660ce7dd4c4fdd9d71e0849074f05026ee5c0e6a1a4634b"
+  },
+  {
+    "sku": "IROOF80",
+    "title": "Isoroof 80 mm - Gris - Rojo",
+    "category": "ISOROOF",
+    "price": 63.11,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[5]",
+    "checksum": "5d68422395bdd35a355681c14ec31937d51361d1f5bc76498b68494bbcf8d1d4"
+  },
+  {
+    "sku": "IROOF100",
+    "title": "Isoroof 100 mm - Gris - Rojo",
+    "category": "ISOROOF",
+    "price": 69.29,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[6]",
+    "checksum": "32b9a26008592259024cd341a4740b7bebf533f9793c837cc3fa47ee580b0ab7"
+  },
+  {
+    "sku": "IROOF50-PLS",
+    "title": "Isoroof Plus 50 mm - Gris - Rojo (MINIMO 800 M2)",
+    "category": "ISOROOF",
+    "price": 74.35,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[7]",
+    "checksum": "a3dca0b3f59662d0027383e0bc3d5ffcdb2add66106683e60156865eec446702"
+  },
+  {
+    "sku": "IROOF80-PLS",
+    "title": "Isoroof Plus 80 mm - Gris - Rojo",
+    "category": "ISOROOF",
+    "price": 71.76,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[8]",
+    "checksum": "2a9050ca3469b7bc40d3f97d28f376943a4a5e8ba3e2bc1d2afcd1f4bc0a28af"
+  },
+  {
+    "sku": "C.But.",
+    "title": "Cinta Butilo 2mm x 15mm x 22.5m lineales",
+    "category": "Estandar",
+    "price": 22.12,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[9]",
+    "checksum": "854d55776bcbad9d4c14b99c51eb57befab34b5cc8e089727b2d1b3e7e86c29f"
+  },
+  {
+    "sku": "Cab. Roj",
+    "title": "Caballete Rojo Teja, Gris y blanco- (Arandela Trapezoidal)",
+    "category": "ISOROOF",
+    "price": 0.56,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[10]",
+    "checksum": "b6c38b0614e615fc45e82f26a6dc24d112c2991993d7c36d7fc5feff8f5de223"
+  },
+  {
+    "sku": "Bromplast",
+    "title": "Bromplast 8 - Silicona Neutra  X 600",
+    "category": "Estandar",
+    "price": 13.51,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[11]",
+    "checksum": "7b4033e892a0a400c44ae88aa3092d84d8d100867148d136f28e8480d95cbb79"
+  },
+  {
+    "sku": "GFS30",
+    "title": "Gotero Frontal Simple 30mm Prep.",
+    "category": "ISOROOF",
+    "price": 22.53,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[12]",
+    "checksum": "645502b4caa8ddf5960e146f3fa50e6f8056963aeb5b255647c523be0a9d8072"
+  },
+  {
+    "sku": "GFS50",
+    "title": "Gotero Frontal Simple 50mm Prep.",
+    "category": "ISOROOF",
+    "price": 23.86,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[13]",
+    "checksum": "0346bc6d47d37e6bf4412aabe7914eb25ff8b6c203ad76e5f714333f9255ef19"
+  },
+  {
+    "sku": "GFS80",
+    "title": "Gotero Frontal Simple 80mm Prep.",
+    "category": "ISOROOF",
+    "price": 25.09,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[14]",
+    "checksum": "8519d9170a5a9cdcacdf815bc4385cd62356b0407401883c1f2e33b488bb7d29"
+  },
+  {
+    "sku": "GFSUP30",
+    "title": "Gotero Superior 30mm Prep.",
+    "category": "ISOROOF",
+    "price": 40.16,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[15]",
+    "checksum": "905578daf4d2c33e8d84d36e19ef62de3ca992851cd9906c0e1b077219ac4dc4"
+  },
+  {
+    "sku": "GFSUP40",
+    "title": "Gotero Superior 40mm Prep.",
+    "category": "ISOROOF",
+    "price": 36.38,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[16]",
+    "checksum": "5815ceef7fd30b322b3a3ff38f5e671f875371b2f16a4d9c0cb63669a84b111a"
+  },
+  {
+    "sku": "GFSUP50",
+    "title": "Gotero Superior 50mm Prep.",
+    "category": "ISOROOF",
+    "price": 41.38,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[17]",
+    "checksum": "124121cc3b8479e7f099456aa58db61dc3c4be054dfaa2f311719bb9fd7189e3"
+  },
+  {
+    "sku": "GFSUP80",
+    "title": "Gotero Superior 80mm Prep.",
+    "category": "ISOROOF",
+    "price": 43.9,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[18]",
+    "checksum": "b2ac331f0eb369984681884666c63717f135bf22dfea431f8fcfbd28977e9f6c"
+  },
+  {
+    "sku": "GFCGR30",
+    "title": "Gotero frontal con greca  1 x panel  30 - 40 - 50 - 80 - 100 mm",
+    "category": "ISOROOF",
+    "price": 23.64,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[19]",
+    "checksum": "b73269a5d5ad085c4ea01e0f1199a3f142209b7c4d9e9bdaa18ebcb222a9a973"
+  },
+  {
+    "sku": "GSDECAM50",
+    "title": "Gotero Superior  -  DE CAMARA  50mm",
+    "category": "ISODEC",
+    "price": 38.89,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[20]",
+    "checksum": "1786748c3f8a172e904264f7549bd33e5debc3a45cabfe6a460071f89a32a390"
+  },
+  {
+    "sku": "GSDECAM80",
+    "title": "Gotero Superior  -  DE CAMARA  80mm",
+    "category": "ISODEC",
+    "price": 42.61,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[21]",
+    "checksum": "0b245efc63abad337f5f5296f04762d3e0b05471d8e292d65d6bc9e4e4b891d4"
+  },
+  {
+    "sku": "GL30",
+    "title": "Gotero Lateral 30mm  Prep.",
+    "category": "ISOROOF",
+    "price": 31.07,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[22]",
+    "checksum": "2c3533cae51240ad68769d1cbfaab2cb774f49e4433cf994e5cb41a778d9c916"
+  },
+  {
+    "sku": "GL40",
+    "title": "Gotero Lateral 40mm  Prep.",
+    "category": "ISOROOF",
+    "price": 32.28,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[23]",
+    "checksum": "49b3a9927000a473f428ba8f3e6fc965a1249144e10f3dbdab3caa449820bca6"
+  },
+  {
+    "sku": "GL50",
+    "title": "Gotero Lateral 50mm  Prep.",
+    "category": "ISOROOF",
+    "price": 33.55,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[24]",
+    "checksum": "fb338e4da9adaebbb92bb71304e3ed1798f5f4006408d77f1f1d5622f6cb3a7d"
+  },
+  {
+    "sku": "GL80",
+    "title": "Gotero Lateral 80mm  Prep.",
+    "category": "ISOROOF",
+    "price": 36.02,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[25]",
+    "checksum": "7852d65b6c89559bf4225749de41a231e52402af77a42d06a6a137ec570d113c"
+  },
+  {
+    "sku": "GLDCAM50",
+    "title": "Gotero Lateral   CAMARA  50mm  Prep.",
+    "category": "ISOROOF",
+    "price": 31.77,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[26]",
+    "checksum": "4697d6b1c10f95f581461edcc67d8cebd07f5d66063e3a9f22f6e7c5feb71262"
+  },
+  {
+    "sku": "GLDCAM80",
+    "title": "Gotero Lateral  CAMARA  80mm  Prep.",
+    "category": "ISOROOF",
+    "price": 35.73,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[27]",
+    "checksum": "c294107d85b1c8f8de195bd119ae63fe34ee1d4e9b7b9340f2fe72eeb3b34374"
+  },
+  {
+    "sku": "BBAS3G",
+    "title": "Babeta de Atornillar Superior 3G",
+    "category": "ISOROOF",
+    "price": 33.78,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[28]",
+    "checksum": "3e12436bd7c9dfc14757a8e04c548c11afd06ee79f13a62e3bd0ef9479edd23a"
+  },
+  {
+    "sku": "BBESUP",
+    "title": "Babeta de Empotrar Superior 3G",
+    "category": "ISOROOF",
+    "price": 32.55,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[29]",
+    "checksum": "f6661c1e8ecb9fc6f0ada579cbf9c0bffdec919ceb8142afa9d6e6801a35cc23"
+  },
+  {
+    "sku": "BBAL-ATN",
+    "title": "Babeta de Atornillar Lateral",
+    "category": "ISOROOF",
+    "price": 20.5,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[30]",
+    "checksum": "064e84f9287fb7711bdb50345933d9176a2a986d769f82c02db7e1288eef4075"
+  },
+  {
+    "sku": "BBAL-EMP",
+    "title": "Babeta de Empotrar Lateral",
+    "category": "ISOROOF",
+    "price": 18.0,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[31]",
+    "checksum": "bd7ec4dd27de884663dda75fc77a5ecddfc5418511c9c9763c45eb7acf2807f6"
+  },
+  {
+    "sku": "CD30",
+    "title": "Canalón Doble roof 30mm / base 150mm + tapas + agujero + bajada / 3,03 m",
+    "category": "ISOROOF",
+    "price": 102.24,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[32]",
+    "checksum": "40d4dcf0b1e4265006838051d6cfb07995782f2a6a1c2a0411183ad222572b9e"
+  },
+  {
+    "sku": "CD50",
+    "title": "Canalón Doble roof 50mm / base 150mm + tapas + agujero + bajada / 3,03 m",
+    "category": "ISOROOF",
+    "price": 104.17,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[33]",
+    "checksum": "df82b66d14c0981500c5e9709eb3d110af4c1598fbad166eaac9babd67c50bd1"
+  },
+  {
+    "sku": "CD80",
+    "title": "Canalón Doble roof 80mm / base 150mm + tapas + agujero + bajada / 3,03 m",
+    "category": "ISOROOF",
+    "price": 105.64,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[34]",
+    "checksum": "9c58fff15fc4e10658b3d42b3e4a898d3822fd928b6c7f8d072bad1340039ec1"
+  },
+  {
+    "sku": "SOPCAN3M",
+    "title": "Soporte para Canalón Isoroof (3m)",
+    "category": "ISOROOF",
+    "price": 18.67,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[35]",
+    "checksum": "863dd51a011e32c5a4aee97e41e7d3e22eae46c27fd4f27d21e340fbca5a215c"
+  },
+  {
+    "sku": "CUMROOF3M",
+    "title": "Cumbrera Roof 3G de 3 m",
+    "category": "ISOROOF",
+    "price": 50.13,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[36]",
+    "checksum": "900c5bc3972e817e9dbab35d49ca14258395edfe6e9b8ba80c98069811ef8660"
+  },
+  {
+    "sku": "CUMROOF3M_1",
+    "title": "Cumbrera Roof COLONIAL - 2,2 m (2 piezas de 1,1m)",
+    "category": "ISOROOF Colonial",
+    "price": 139.29,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[37]",
+    "checksum": "7061938f3597e3ed033b367d2c5387a4efb924a426d85bddcb1335bdcd08ec6a"
+  },
+  {
+    "sku": "IW50",
+    "title": "Isowall 50 mm PIR - GRIS / Blanco",
+    "category": "ISOWALL",
+    "price": 57.03,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[38]",
+    "checksum": "342e9dd7417d8599bfe5d23f54110058f822f8599c9f88036c64d7ecd3b6f71c"
+  },
+  {
+    "sku": "IW50_1",
+    "title": "Isowall 80 mm PIR - GRIS / Blanco",
+    "category": "ISOWALL",
+    "price": 68.0,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[39]",
+    "checksum": "d3ea0a152291a5483c3265b1d6fb51b0c1e43199df2e1014ade1da1acce86883"
+  },
+  {
+    "sku": "IW50_2",
+    "title": "Isowall 50 mm",
+    "category": "ISOWALL",
+    "price": 54.65,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[40]",
+    "checksum": "1dd0620abc9ca04b16686717ce8236e1ab4bd9581b7ca220623b2046369fa010"
+  },
+  {
+    "sku": "IW80",
+    "title": "Isowall 80 mm",
+    "category": "ISOWALL",
+    "price": 65.17,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[41]",
+    "checksum": "002d5113ec19b5ae262fdfa8f2b86bb813505dc1e9df7c7af55731ef4b6423ee"
+  },
+  {
+    "sku": "IW100",
+    "title": "Isowall 100 mm",
+    "category": "ISOWALL",
+    "price": 71.86,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[42]",
+    "checksum": "011effa95dc071888180b25b60671421abb01c275f4acfd8c667fe5c0ae9a383"
+  },
+  {
+    "sku": "IF40",
+    "title": "IsoFrig 40 mm",
+    "category": "ISOFRIG",
+    "price": 53.11,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[43]",
+    "checksum": "31875381d4658c273300742c341679ef9cca5c7cc0c2bf45ee43907f4b37d41f"
+  },
+  {
+    "sku": "IF60 - IFSL60",
+    "title": "IsoFrig - Sala Limpia 60 mm",
+    "category": "ISOFRIG",
+    "price": 57.83,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[44]",
+    "checksum": "d55905013b3ec5279fffd38abf312e9350d56b10ccecfb4b1765ff970c9a8bc5"
+  },
+  {
+    "sku": "IF80 - IFSL80",
+    "title": "IsoFrig - Sala Limpia 80 mm",
+    "category": "ISOFRIG",
+    "price": 63.8,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[45]",
+    "checksum": "5bcdff99ba0f15f0c92a02ca9504ed8bbe98ba92c0a1e4d6ea31520cb2c24d87"
+  },
+  {
+    "sku": "IF100 - IFSL100",
+    "title": "IsoFrig - Sala Limpia 100 mm",
+    "category": "ISOFRIG",
+    "price": 70.77,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[46]",
+    "checksum": "e3a2406c31d5e4090981519809796ea743adae38b1af74c62caa15c2c1444dcd"
+  },
+  {
+    "sku": "IF150 - IFSL150",
+    "title": "IsoFrig - Sala Limpia 150 mm",
+    "category": "ISOFRIG",
+    "price": 85.85,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[47]",
+    "checksum": "4003187ee7cf07723062b47c528ee845ac06856a781c1d75a3faf2de5c219c92"
+  },
+  {
+    "sku": "ISD50EPS",
+    "title": "ISOPANEL EPS 50 mm",
+    "category": "ISOPANEL",
+    "price": 41.88,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[48]",
+    "checksum": "e4dfa2c51711d42a933981692901433d489858f1f6daad1b27687b64f45b718c"
+  },
+  {
+    "sku": "ISD100EPS",
+    "title": "ISOPANEL EPS 100 mm",
+    "category": "ISOPANEL",
+    "price": 46.07,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[49]",
+    "checksum": "ca6dd4f1436bbdeb89f2b9e428a18314863ec2e09a48c35c2bb30783e29c7512"
+  },
+  {
+    "sku": "ISD150EPS",
+    "title": "ISOPANEL EPS 150 mm",
+    "category": "ISOPANEL",
+    "price": 51.82,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[50]",
+    "checksum": "31b5978ef6bfcc7d9e89d6b2203a49cb1ee58f5e4be213300ee2f9168131433b"
+  },
+  {
+    "sku": "ISD200EPS",
+    "title": "ISOPANEL EPS 200 mm",
+    "category": "ISOPANEL",
+    "price": 58.12,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[51]",
+    "checksum": "8a1fd9599c18c1bd7db71e9da999b453929a67da440eae8a58b24764afb6fac3"
+  },
+  {
+    "sku": "ISD250EPS",
+    "title": "ISOPANEL EPS 250mm",
+    "category": "ISOPANEL",
+    "price": 63.87,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[52]",
+    "checksum": "e76673bc392671205a92701ce5af0298c0bce3b4a7a91ded1fc1badb9d265a48"
+  },
+  {
+    "sku": "PU50MM",
+    "title": "Perfil Ch. Blanco U 40 mm x 35 mm ISOFRIG / 3 m",
+    "category": "ISOFRIG",
+    "price": 16.14,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[53]",
+    "checksum": "e30c96e3c8036734974b483480b62d49014168c2125381b1a377f97d36286d92"
+  },
+  {
+    "sku": "PU50MM_1",
+    "title": "Perfil Ch. Blanco U 50 mm x 35 mm / 3 m (ISOWALL - ISOPANEL)",
+    "category": "ISOWALL-ISOPANEL",
+    "price": 14.23,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[54]",
+    "checksum": "444f310e1df7c59a4139368486bfabc57ba005f09c3f8e07a6082a9704ee9f90"
+  },
+  {
+    "sku": "PU50MM_2",
+    "title": "Perfil Ch. Blanco U 60 mm x 35 mm ISOFRIG / 3 m",
+    "category": "ISOFRIG",
+    "price": 17.35,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[55]",
+    "checksum": "196e51e51aa626f7b14bfe9c346814cdea40962fbb0dcb518c7f34ba5378e85d"
+  },
+  {
+    "sku": "PU50MM_3",
+    "title": "Perfil Ch. Blanco U 80 mm x 35 mm ISOWALL / 3 m",
+    "category": "ISOWALL",
+    "price": 18.67,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[56]",
+    "checksum": "bd0592a5be298c2b8e330d32f3f27b0a2eb5695720ad5f65576515455f916f72"
+  },
+  {
+    "sku": "PU100MM",
+    "title": "Perfil Ch. Blanco U 100 mm x 35 mm / 3 m",
+    "category": "ISOPANEL EPS & PIR / ISOFRIG / ISOWALL",
+    "price": 17.68,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[57]",
+    "checksum": "cd7bd8c24441d13f191624ca832fc2c49f4b312ca262033993b393ec95935d2b"
+  },
+  {
+    "sku": "PU150MM",
+    "title": "Perfil Ch. Blanco U 150 mm x 35 mm / 3 m",
+    "category": "ISOPANEL",
+    "price": 19.88,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[58]",
+    "checksum": "3b43ca9a210e11cbd1a9c5b6b757e0bcc110ef00fe94714ee180767f49311d39"
+  },
+  {
+    "sku": "PU200MM",
+    "title": "Perfil Ch. Blanco U 200 mm x 35 mm / 3 m",
+    "category": "ISOPANEL",
+    "price": 24.8,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[59]",
+    "checksum": "e5dc8ecca0a1805480bb6351f12b9459786d193402bf0d849ee8755f8b3e8bd4"
+  },
+  {
+    "sku": "PU250MM",
+    "title": "Perfil Ch. Blanco U 250 mm x 35 mm / 3 m",
+    "category": "ISOPANEL",
+    "price": 29.8,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[60]",
+    "checksum": "9fb47b30e8d084a2560cf176cf795e9ee8708152cd955ac242b2c0ad5f3e1bc9"
+  },
+  {
+    "sku": "PLEGU148",
+    "title": "Plegado Galv. Tipo U 148 mm / 2 m de largo",
+    "category": "ISOPANEL / ISODEC",
+    "price": 40.51,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[61]",
+    "checksum": "257d2ab09546c08a427d74727d59821d2e50e6be301b881ae0aeeccfda5ae3a9"
+  },
+  {
+    "sku": "PLECHU98",
+    "title": "Plegado Galv. Tipo U 98 mm / 2 m de largo",
+    "category": "ISOPANEL / ISODEC",
+    "price": 31.03,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[62]",
+    "checksum": "525cca47a4767acc2eb1523047e7015777cd90415af972d2d9b408d9f8a0a434"
+  },
+  {
+    "sku": "ISD100EPS_1",
+    "title": "ISODEC EPS 100 mm",
+    "category": "ISODEC",
+    "price": 46.07,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[63]",
+    "checksum": "f0a3a0e3ee235c0cb4079fff313a25b9d542a3221bf50eef00aa9b5e901e9d69"
+  },
+  {
+    "sku": "ISD150EPS_1",
+    "title": "ISODEC EPS 150 mm",
+    "category": "ISODEC",
+    "price": 51.82,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[64]",
+    "checksum": "ff908e036c0b62a13e5b032cde20d02c3bca3f2112e98db78c9949553705651c"
+  },
+  {
+    "sku": "ISD200EPS_1",
+    "title": "ISODEC EPS 200 mm",
+    "category": "ISODEC",
+    "price": 58.12,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[65]",
+    "checksum": "8c472ffc2b3c8cd89be19222a6326f8530de92df32e4f7dbab83c68488d39e02"
+  },
+  {
+    "sku": "ISD250EPS_1",
+    "title": "ISODEC EPS 250mm",
+    "category": "ISODEC",
+    "price": 63.87,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[66]",
+    "checksum": "163f765744db368b80bb5a855f44d16a346e5f91ede31e34666bbc6fdbb33ded"
+  },
+  {
+    "sku": "ISD50PIR",
+    "title": "ISODEC 50mm PIR (EVITAR ESTE ESPESOR)",
+    "category": "ISODEC",
+    "price": 51.02,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[67]",
+    "checksum": "62d7a0830d3c9291efb6a7e580a0674506fb216682dde871c36405053fb17d17"
+  },
+  {
+    "sku": "ISD80PIR",
+    "title": "ISODEC 80mm PIR",
+    "category": "ISODEC",
+    "price": 52.15,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[68]",
+    "checksum": "43200536dfde93841c0f8c51ee655096d8608796b0bb5fb69d2ba65b71609c14"
+  },
+  {
+    "sku": "ISD80PIR_1",
+    "title": "ISODEC 120mm PIR",
+    "category": "ISODEC",
+    "price": 62.69,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[69]",
+    "checksum": "d50d9d0ad6bfc766d3c2cb3808515c2d5a9b0906301aa82023d64f6080543ae1"
+  },
+  {
+    "sku": "GF80DC",
+    "title": "Perf. Ch. Gotero Frontal 50mm - ISODEC PIR  - (3,03m)",
+    "category": "ISODEC",
+    "price": 28.42,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[70]",
+    "checksum": "137af42f8cf9c216ee0ceb94a27daad5cd8da4ab22b88ab4a03617d712f85fa3"
+  },
+  {
+    "sku": "GF120DC",
+    "title": "Perf. Ch. Gotero Frontal 80mm - ISODEC PIR  - (3,03m)",
+    "category": "ISODEC",
+    "price": 29.7,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[71]",
+    "checksum": "ef496feeef9c5466aa4ff8ccafb01ad7ad4d70112f42a82316b28c8ac40be56c"
+  },
+  {
+    "sku": "6838",
+    "title": "Perf. Ch. Gotero Frontal 100mm - (3,03m)",
+    "category": "ISODEC",
+    "price": 22.31,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[72]",
+    "checksum": "d97ebfda490b74b4c324d079a71281e8debc0f602975b27f56930abe1653dede"
+  },
+  {
+    "sku": "GF120DC_1",
+    "title": "Perf. Ch. Gotero Frontal 120mm - ISODEC PIR  - (3,03m)",
+    "category": "ISODEC",
+    "price": 35.14,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[73]",
+    "checksum": "527fd67a06b4132d6b7dc34733ddec111bf53c47065ad406c32dc82b0f5077f9"
+  },
+  {
+    "sku": "6839",
+    "title": "Perf. Ch. Gotero Frontal 150mm - (3,03m)",
+    "category": "ISODEC",
+    "price": 32.23,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[74]",
+    "checksum": "c5a8bdf8b50938ce791c7b0973fdb9234fc0e966a45afa53ef487b14193c68cd"
+  },
+  {
+    "sku": "6840",
+    "title": "Perf. Ch. Gotero Frontal 200mm - (3,03m)",
+    "category": "ISODEC",
+    "price": 33.55,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[75]",
+    "checksum": "1b095cc5232e05ec7334c3a5e740074ca797be8bbb877054ce32d413dec32a5b"
+  },
+  {
+    "sku": "6841",
+    "title": "Perf. Ch. Gotero Frontal 250mm - (3,03m)",
+    "category": "ISODEC",
+    "price": 33.87,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[76]",
+    "checksum": "0b6be6d22e208ee2f2b745640e40f9639efce8c4457f88584bde5451ec79ab8e"
+  },
+  {
+    "sku": "GL80DC",
+    "title": "Perf. Ch. Gotero Lateral 50mm - ISODEC PIR  - (3m)",
+    "category": "ISODEC",
+    "price": 37.73,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[77]",
+    "checksum": "6c305bc9019fd0da62f438ced1a01a653ae42211281ae61d048e77c65321762b"
+  },
+  {
+    "sku": "GL80DC_1",
+    "title": "Perf. Ch. Gotero Lateral 80mm - ISODEC PIR  - (3m)",
+    "category": "ISODEC",
+    "price": 37.73,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[78]",
+    "checksum": "46073da495f07f6e71a3138b91d88b2514559dc2a602988e916b71405bdda030"
+  },
+  {
+    "sku": "6842",
+    "title": "Perf. Ch. Gotero Lateral 100mm - (3m)",
+    "category": "ISODEC",
+    "price": 29.57,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[79]",
+    "checksum": "e0620e09d1d44d7f4100f5d3bcf960a8b52eb63cd217da99783e3648699e5ccc"
+  },
+  {
+    "sku": "GL120DC",
+    "title": "Perf. Ch. Gotero Lateral 120mm - ISODEC PIR  - (3m)",
+    "category": "ISODEC",
+    "price": 44.24,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[80]",
+    "checksum": "462ca7684462a08382dea3693d3b8daa9010350047ee2ae172832444ee5da463"
+  },
+  {
+    "sku": "6843",
+    "title": "Perf. Ch. Gotero Lateral 150mm - (3m)",
+    "category": "ISODEC",
+    "price": 41.37,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[81]",
+    "checksum": "f9c1d1f5aad26798e67cc40fe2aa5586479e2b1f947fd08d78d65612966d38b5"
+  },
+  {
+    "sku": "6844",
+    "title": "Perf. Ch. Gotero Lateral 200mm - (3m)",
+    "category": "ISODEC",
+    "price": 45.19,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[82]",
+    "checksum": "29dc2c28d6a6960c0cb03909c72b250be49ad195b33afa80703d4b00d7f048e6"
+  },
+  {
+    "sku": "6845",
+    "title": "Perf. Ch. Gotero Lateral 250mm - (3m)",
+    "category": "ISODEC",
+    "price": 45.47,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[83]",
+    "checksum": "6164e0a6fa5f981d6e176d98c36216eed30b0d0b139e95ffce29c07e38a5ee9b"
+  },
+  {
+    "sku": "6847",
+    "title": "Perfil Cumbrera",
+    "category": "ISODEC",
+    "price": 33.55,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[84]",
+    "checksum": "70aa1df5e41e508d78b1e4dad7fa27e501945a90236987cc4fae13cc3309b669"
+  },
+  {
+    "sku": "6828",
+    "title": "Babeta ISODEC de Adosar",
+    "category": "ISODEC",
+    "price": 17.35,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[85]",
+    "checksum": "e84211f1cbf33d1d077d7f5d1e7fa36bdc92b97654a8c6db71509ef22bb89bff"
+  },
+  {
+    "sku": "6865",
+    "title": "Babeta ISODEC de empotrar",
+    "category": "ISODEC",
+    "price": 17.35,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[86]",
+    "checksum": "9536be4bbb22b888ad14910b1fac0fcf8ef8a93ec47de266b0ed6fbadefadf0b"
+  },
+  {
+    "sku": "6825",
+    "title": "Vaina ISODEC Sist 2000",
+    "category": "ISODEC",
+    "price": 12.91,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[87]",
+    "checksum": "fffcfaa34f20f5f169cf6f18ce0c53b9669a543dd8e9fff1c509c44b02758840"
+  },
+  {
+    "sku": "CAN.ISDC120",
+    "title": "Canalón Isodec 50mm ISODEC PIR",
+    "category": "ISODEC",
+    "price": 132.74,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[88]",
+    "checksum": "7ff82be1971b2059ca01a4efd4de15f89e71eeec22548991ab30016264117f58"
+  },
+  {
+    "sku": "CAN.ISDC120_1",
+    "title": "Canalón Isodec 80mm ISODEC PIR",
+    "category": "ISODEC",
+    "price": 132.74,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[89]",
+    "checksum": "97fda70c9dc2242034e778832d786e6f8fa16769901973f2ce800f59ffaf4c01"
+  },
+  {
+    "sku": "6801",
+    "title": "Canalón Estandar 100 mm",
+    "category": "ISODEC",
+    "price": 98.98,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[90]",
+    "checksum": "2ee0406937764b8f12aafebdb4e5cc3e7916764beafd10ff82aaaa0ecaed98a5"
+  },
+  {
+    "sku": "CAN.ISDC120_2",
+    "title": "Canalón Isodec 120mm ISODEC PIR",
+    "category": "ISODEC",
+    "price": 132.74,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[91]",
+    "checksum": "5cd86485feb84665a11ff2405c41749d4d012f7cb56fd9e80fa0544b5744c4fb"
+  },
+  {
+    "sku": "6802",
+    "title": "Canalón Estandar 150 mm",
+    "category": "ISODEC",
+    "price": 113.94,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[92]",
+    "checksum": "48b4a083b364e99163a6c72c6ae8785fcebd2e7fe884177b0ab437b9ed315aef"
+  },
+  {
+    "sku": "6803",
+    "title": "Canalón Estandar 200 mm",
+    "category": "ISODEC",
+    "price": 113.48,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[93]",
+    "checksum": "4a1bf52aa379a208b18c77b445f01cbfd1fc36e7912276d518cbdb9cd247c976"
+  },
+  {
+    "sku": "6804",
+    "title": "Canalón Estandar 250 mm",
+    "category": "ISODEC",
+    "price": 148.46,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[94]",
+    "checksum": "5fa8b6113bc335717f4fab42432b100cef647915237e00a021b55bf74ee52a70"
+  },
+  {
+    "sku": "6805",
+    "title": "Soporte de Canalón de 3 m",
+    "category": "ISODEC",
+    "price": 22.68,
+    "availability": "unknown",
+    "source_file": "bromyros_pricing_gpt_optimized.json",
+    "source_key": "products[95]",
+    "checksum": "a5fb8bcdccd8fd672f0f159f4ae3d561f4df98f278a75e80531dda5f743b9baf"
+  }
+]

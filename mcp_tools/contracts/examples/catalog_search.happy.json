@@ -1,0 +1,10 @@
+{
+  "input": {"query": "isopanel", "category": "pared", "limit": 3},
+  "output": {
+    "ok": true,
+    "contract_version": "v1",
+    "results": [
+      {"product_id": "shopify-9311", "name": "Isopanel 50", "category": "pared", "url": "https://example.com/p/9311", "score": 0.88}
+    ]
+  }
+}

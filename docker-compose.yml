@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # ==============================================================================
+  # GPT-PANELIN MCP Server
+  # ==============================================================================
+  panelin-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gpt-panelin-v32
+    image: gpt-panelin:latest
+    
+    # Environment variables from .env file
+    env_file:
+      - .env
+    
+    # Override specific environment variables if needed
+    environment:
+      - MCP_SERVER_HOST=0.0.0.0
+      - MCP_SERVER_PORT=8000
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+    
+    # Port mapping
+    ports:
+      - "8000:8000"
+      - "9090:9090"  # Metrics port
+    
+    # Volume mounts
+    volumes:
+      # Mount knowledge base for updates without rebuilding
+      - ./bromyros_pricing_master.json:/app/bromyros_pricing_master.json:ro
+      - ./bromyros_pricing_gpt_optimized.json:/app/bromyros_pricing_gpt_optimized.json:ro
+      - ./BMC_Base_Conocimiento_GPT-2.json:/app/BMC_Base_Conocimiento_GPT-2.json:ro
+      - ./bom_rules.json:/app/bom_rules.json:ro
+      - ./accessories_catalog.json:/app/accessories_catalog.json:ro
+      - ./shopify_catalog_v1.json:/app/shopify_catalog_v1.json:ro
+      - ./corrections_log.json:/app/corrections_log.json:rw
+      
+      # Mount logs directory for persistence
+      - ./logs:/app/logs
+      
+      # Mount output directory for PDF reports
+      - ./panelin_reports/output:/app/panelin_reports/output
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; from pathlib import Path; sys.exit(0 if Path('panelin_mcp_server/server.py').exists() else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Network
+    networks:
+      - panelin-network
+
+  # ==============================================================================
+  # Redis (Optional - for caching)
+  # ==============================================================================
+  # Uncomment if you need Redis for caching
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: panelin-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis-data:/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - panelin-network
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+# ==============================================================================
+# Networks
+# ==============================================================================
+networks:
+  panelin-network:
+    driver: bridge
+
+# ==============================================================================
+# Volumes
+# ==============================================================================
+volumes:
+  # Uncomment if using Redis
+  # redis-data:
+  #   driver: local
+  
+  # Persistent storage for logs (optional)
+  # panelin-logs:
+  #   driver: local

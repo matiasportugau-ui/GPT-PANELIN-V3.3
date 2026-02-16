@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GPT-PANELIN MCP Observability Metrics Schema",
+  "type": "object",
+  "required": [
+    "tokens_by_session",
+    "tool_invocations",
+    "tool_errors",
+    "cache_efficiency"
+  ],
+  "properties": {
+    "tokens_by_session": {
+      "description": "Input/output token accounting grouped by session_id.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "date",
+          "session_id",
+          "token_input",
+          "token_output",
+          "total_tokens"
+        ],
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "session_id": { "type": "string", "minLength": 1 },
+          "token_input": { "type": "integer", "minimum": 0 },
+          "token_output": { "type": "integer", "minimum": 0 },
+          "total_tokens": { "type": "integer", "minimum": 0 },
+          "estimated_cost_usd": { "type": "number", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "tool_invocations": {
+      "description": "Tool call count and latency by tool.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "date",
+          "tool_name",
+          "call_count",
+          "latency_p50_ms",
+          "latency_p95_ms",
+          "latency_avg_ms"
+        ],
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "tool_name": { "type": "string", "minLength": 1 },
+          "call_count": { "type": "integer", "minimum": 0 },
+          "latency_p50_ms": { "type": "number", "minimum": 0 },
+          "latency_p95_ms": { "type": "number", "minimum": 0 },
+          "latency_avg_ms": { "type": "number", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "tool_errors": {
+      "description": "Tool error rates by normalized error_code.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "date",
+          "tool_name",
+          "error_code",
+          "error_count",
+          "error_rate"
+        ],
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "tool_name": { "type": "string", "minLength": 1 },
+          "error_code": { "type": "string", "minLength": 1 },
+          "error_count": { "type": "integer", "minimum": 0 },
+          "error_rate": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "cache_efficiency": {
+      "description": "Cache hit/miss ratio by cacheable tool and day.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "date",
+          "tool_name",
+          "cache_hits",
+          "cache_misses",
+          "hit_ratio"
+        ],
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "tool_name": { "type": "string", "minLength": 1 },
+          "cache_hits": { "type": "integer", "minimum": 0 },
+          "cache_misses": { "type": "integer", "minimum": 0 },
+          "hit_ratio": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

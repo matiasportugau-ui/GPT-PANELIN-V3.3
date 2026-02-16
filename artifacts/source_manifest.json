@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "generator": "kb_pipeline/build_indexes.py",
+  "sources": [
+    {
+      "source_file": "shopify_catalog_v1.json",
+      "source_file_sha256": "20a5dfc64c93cc9e6eb0a0fa40caa68356a3c3f9b91bc0dc84ba91c675a4fdc7",
+      "indexed_rows": 1,
+      "unique_skus": 1,
+      "required_fields": [
+        "sku",
+        "title",
+        "category",
+        "price",
+        "availability",
+        "source_file",
+        "source_key",
+        "checksum"
+      ],
+      "hot_artifact": "hot/shopify_catalog_v1.hot.json"
+    },
+    {
+      "source_file": "bromyros_pricing_master.json",
+      "source_file_sha256": "fddd33f475f98955b08ef294054e93fd20f9aae0ce212982297ea1238d31c251",
+      "indexed_rows": 96,
+      "unique_skus": 96,
+      "required_fields": [
+        "sku",
+        "title",
+        "category",
+        "price",
+        "availability",
+        "source_file",
+        "source_key",
+        "checksum"
+      ],
+      "hot_artifact": "hot/bromyros_pricing_master.hot.json"
+    },
+    {
+      "source_file": "bromyros_pricing_gpt_optimized.json",
+      "source_file_sha256": "671fa6afb77b98595a0ffe22e1608bed1f804b4e8f3a9552e743a4f772cb2fdd",
+      "indexed_rows": 96,
+      "unique_skus": 96,
+      "required_fields": [
+        "sku",
+        "title",
+        "category",
+        "price",
+        "availability",
+        "source_file",
+        "source_key",
+        "checksum"
+      ],
+      "hot_artifact": "hot/bromyros_pricing_gpt_optimized.hot.json"
+    }
+  ]
+}
