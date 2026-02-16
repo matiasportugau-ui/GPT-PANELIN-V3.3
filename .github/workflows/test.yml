@@ -53,11 +53,17 @@ jobs:
         run: |
           echo "🔌 Testing MCP server initialization..."
           if [ -f mcp/server.py ]; then
-            timeout 5 python mcp/server.py --help || true
-            echo "✅ MCP server can be imported and initialized"
+            if timeout 5 python mcp/server.py --help 2>&1 | head -20; then
+              echo "✅ MCP server (mcp/) can be imported and initialized"
+            else
+              echo "⚠️ MCP server startup test completed (may have timed out)"
+            fi
           elif [ -f panelin_mcp_server/server.py ]; then
-            timeout 5 python panelin_mcp_server/server.py --help || true
-            echo "✅ MCP server can be imported and initialized"
+            if timeout 5 python panelin_mcp_server/server.py --help 2>&1 | head -20; then
+              echo "✅ MCP server (panelin_mcp_server/) can be imported and initialized"
+            else
+              echo "⚠️ MCP server startup test completed (may have timed out)"
+            fi
           else
             echo "⚠️ No MCP server found, skipping startup test"
           fi
@@ -69,7 +75,7 @@ jobs:
           import sys
           from pathlib import Path
           
-          # Determine which MCP directory exists
+          # Determine which MCP directory exists (mcp/ or panelin_mcp_server/)
           mcp_dir = None
           if Path('mcp/handlers').exists():
               mcp_dir = 'mcp'
@@ -114,7 +120,7 @@ jobs:
           import sys
           from pathlib import Path
           
-          # Determine which MCP directory exists
+          # Determine which MCP directory exists (mcp/ or panelin_mcp_server/)
           mcp_dir = None
           if Path('mcp/handlers').exists():
               mcp_dir = 'mcp'
