@@ -1,0 +1,92 @@
+# Cloud Build configuration for automated CI/CD deployment
+# Triggered by GitHub repository changes
+
+steps:
+  # Step 1: Build and push backend service image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-backend'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:$COMMIT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:latest'
+      - './backend'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-backend'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service'
+
+  # Step 2: Build and push frontend service image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-frontend'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:$COMMIT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:latest'
+      - './frontend'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-frontend'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service'
+
+  # Step 3: Deploy backend service to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-backend'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'backend-service'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:$COMMIT_SHA'
+      - '--platform=managed'
+      - '--region=us-central1'
+      - '--no-allow-unauthenticated'
+      - '--service-account=cloud-run-service-account@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--add-cloudsql-instances=$PROJECT_ID:us-central1:web-app-db'
+      - '--update-secrets=CLOUD_SQL_CREDENTIALS_SECRET=db-secret:latest'
+      - '--ingress=internal'
+      - '--set-env-vars=DB_CONNECTION_NAME=$PROJECT_ID:us-central1:web-app-db'
+      - '--set-env-vars=DB_USER=postgres'
+      - '--set-env-vars=DB_NAME=app_database'
+      - '--set-env-vars=PROJECT_ID=$PROJECT_ID'
+
+  # Step 4: Deploy frontend service to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-frontend'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'frontend-service'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:$COMMIT_SHA'
+      - '--platform=managed'
+      - '--region=us-central1'
+      - '--no-allow-unauthenticated'
+      - '--service-account=cloud-run-service-account@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--ingress=internal-and-cloud-load-balancing'
+      - '--set-env-vars=BACKEND_SERVICE_URL=https://backend-service-<hash>-uc.a.run.app'
+
+# Output images to Artifact Registry
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:latest'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:latest'
+
+# Substitutions for Cloud Build variables
+substitutions:
+  _REGION: 'us-central1'
+  _DB_INSTANCE: 'web-app-db'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'N1_HIGHCPU_8'
