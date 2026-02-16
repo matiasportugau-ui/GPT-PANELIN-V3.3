@@ -124,17 +124,19 @@ try:
     assert hasattr(client, 'save_customer'), "save_customer method missing"
     assert hasattr(client, 'lookup_customer'), "lookup_customer method missing"
     
-    print("${GREEN}  ✓ Wolf client initialized successfully${NC}")
-    print("${GREEN}  ✓ All write methods available: persist_conversation, register_correction, save_customer${NC}")
-    print("${GREEN}  ✓ Read method available: lookup_customer${NC}")
+    print("  ✓ Wolf client initialized successfully")
+    print("  ✓ All write methods available: persist_conversation, register_correction, save_customer")
+    print("  ✓ Read method available: lookup_customer")
     sys.exit(0)
     
 except Exception as e:
-    print(f"${RED}  ✗ Wolf client initialization failed: {e}${NC}")
+    print(f"  ✗ Wolf client initialization failed: {e}")
     sys.exit(1)
 EOF
 
-    if [ $? -ne 0 ]; then
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}  ✓ Wolf client test passed${NC}"
+    else
         exit 1
     fi
 fi
@@ -154,31 +156,33 @@ from mcp.handlers.wolf_kb_write import _validate_password, KB_WRITE_PASSWORD
 # Test missing password
 result = _validate_password({})
 if result and not result.get("ok") and result["error"]["code"] == "PASSWORD_REQUIRED":
-    print("${GREEN}  ✓ Missing password detection works${NC}")
+    print("  ✓ Missing password detection works")
 else:
-    print("${RED}  ✗ Missing password detection failed${NC}")
+    print("  ✗ Missing password detection failed")
     sys.exit(1)
 
 # Test wrong password
 result = _validate_password({"password": "wrongpassword"})
 if result and not result.get("ok") and result["error"]["code"] == "INVALID_PASSWORD":
-    print("${GREEN}  ✓ Wrong password detection works${NC}")
+    print("  ✓ Wrong password detection works")
 else:
-    print("${RED}  ✗ Wrong password detection failed${NC}")
+    print("  ✗ Wrong password detection failed")
     sys.exit(1)
 
 # Test correct password
 result = _validate_password({"password": KB_WRITE_PASSWORD})
 if result is None:
-    print(f"${GREEN}  ✓ Correct password validation works (password: {KB_WRITE_PASSWORD})${NC}")
+    print(f"  ✓ Correct password validation works (password: {KB_WRITE_PASSWORD})")
 else:
-    print("${RED}  ✗ Correct password validation failed${NC}")
+    print("  ✗ Correct password validation failed")
     sys.exit(1)
 
 sys.exit(0)
 EOF
 
-if [ $? -ne 0 ]; then
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}  ✓ Password validation test passed${NC}"
+else
     exit 1
 fi
 

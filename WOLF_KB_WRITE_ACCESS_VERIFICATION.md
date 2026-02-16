@@ -167,7 +167,7 @@ def create_server() -> Any:
 
 ### 4.1 Unit Tests
 
-Complete test suite available at `mcp/tests/test_wolf_kb_write.py` with 19 test cases:
+Complete test suite available at `mcp/tests/test_wolf_kb_write.py` with 20 test cases:
 
 **Coverage:**
 - ✅ Password validation (missing password, wrong password)
