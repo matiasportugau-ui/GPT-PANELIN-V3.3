@@ -37,7 +37,6 @@ class PanelinMCPResponsesAPI:
             "authorization": self.wolf_api_key,
             "require_approval": {
                 "never": {
-                    "tool_names": ["find_products", "get_product_price", "check_availability"]
                     "tool_names": ["find_products", "get_product_price", "check_availability", "lookup_customer"]
                 },
                 "always": {
