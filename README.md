@@ -857,7 +857,7 @@ The MCP server's stdio transport cannot be used directly with OpenAI Custom GPT 
 ### Architecture
 
 ```
-panelin_mcp_server/
+mcp/
 ├── server.py              # Main MCP server implementation
 ├── requirements.txt       # Python dependencies
 ├── config/                # Configuration files
