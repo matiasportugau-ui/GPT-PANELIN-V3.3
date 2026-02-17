@@ -119,6 +119,15 @@ After upload, test these queries:
 - [ ] Request complete quotation → Should include panels + accessories + fixings
 - [ ] "Genera un PDF" → Code Interpreter should activate
 - [ ] Request technical diagram → Image Generation should work
+- [ ] **"¿Puede el GPT modificar pesos en el catálogo?"** → Should confirm YES with security requirements (v3.4+)
+
+### Testing Modification Capability (v3.4+)
+
+To verify the variable modification feature:
+1. Ask: "¿Puede modificar pesos de productos?"
+2. GPT should confirm capability exists
+3. GPT should explain authorization requirements
+4. See [GPT_WEIGHT_MODIFICATION_GUIDE.md](GPT_WEIGHT_MODIFICATION_GUIDE.md) for details
 
 ---
 
@@ -151,6 +160,7 @@ Your GPT is ready when:
 - ✅ Knowledge base queries return correct prices
 - ✅ PDF generation works
 - ✅ Quotations include complete BOM (panels + accessories + fixings)
+- ✅ Modification capability available (v3.4+ - with password authorization)
 
 ---
 

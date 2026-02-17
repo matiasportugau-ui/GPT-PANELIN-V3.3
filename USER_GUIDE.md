@@ -86,7 +86,33 @@ After uploading, test your GPT with these queries:
 4. "Genera un PDF"
    → Should generate a PDF document
 
+5. **Test modification capability** (requires password):
+   → "¿Puede el GPT modificar pesos en el catálogo?"
+   → Should confirm YES and explain the process
+
 If all these work, congratulations! Your GPT is ready! 🎉
+
+## 🔧 Advanced Features
+
+### Variable Modification Capability
+
+Your GPT can modify product variables in the catalog (v3.4+):
+
+- **Product Weights (kg)**: Update shipping weights for logistics
+- **Data Corrections**: Register fixes to improve catalog quality
+- **Customer Data**: Store and retrieve customer information
+
+**How it works:**
+1. Request a modification during conversation
+2. GPT will ask for authorization password
+3. Changes are logged with timestamp and audit trail
+4. See [GPT_WEIGHT_MODIFICATION_GUIDE.md](GPT_WEIGHT_MODIFICATION_GUIDE.md) for complete details
+
+**Security Features:**
+- 🔐 Password-protected operations
+- 📝 Full audit trail for all changes
+- ✅ Whitelist of authorized files
+- 🔍 Impact analysis before committing changes
 
 ## ❓ Common Problems
 
@@ -124,6 +150,7 @@ When done correctly, your GPT will:
 - ✅ Create professional PDF documents
 - ✅ Provide technical recommendations
 - ✅ Validate structural requirements
+- ✅ Modify catalog variables (weights, data) with authorization
 
 ## 🎯 Summary
 

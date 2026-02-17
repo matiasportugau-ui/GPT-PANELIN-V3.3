@@ -286,6 +286,11 @@ After deployment, test the GPT with these queries:
    - Query: "Genera un PDF para una cotización"
    - Expected: Code Interpreter activates and generates PDF
 
+5. **Modification Capability Test (v3.4+):**
+   - Query: "¿Puede el GPT modificar pesos en el catálogo?"
+   - Expected: Should confirm YES and explain authorization requirements
+   - See: [GPT_WEIGHT_MODIFICATION_GUIDE.md](GPT_WEIGHT_MODIFICATION_GUIDE.md)
+
 ---
 
 ## Configuration Details

@@ -128,6 +128,27 @@ async def handle_price_check(
 - `filter_type`: sku/family/type/search
 - `thickness_mm`: 20-250 range when provided
 
+### Variable Modification Handlers
+- Wolf API KB Write handlers require password authorization
+- All modifications are logged with timestamp and audit trail
+- Authorized files whitelist enforced (e.g., `shopify_catalog_v1.json`)
+- Example modification handler:
+  ```python
+  async def register_correction(
+      source_file: str,
+      field_path: str,
+      old_value: str,
+      new_value: str,
+      reason: str,
+      password: str
+  ) -> dict:
+      # Validate password
+      # Check file whitelist
+      # Log correction
+      # Apply change
+      pass
+  ```
+
 ---
 
 ## Docker & Deployment

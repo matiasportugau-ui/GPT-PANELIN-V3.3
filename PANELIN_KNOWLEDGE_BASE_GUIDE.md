@@ -386,5 +386,56 @@ Antes de considerar la Knowledge Base completa:
 
 ---
 
+## Variable Modification Capability (v3.4+)
+
+### Overview
+
+Panelin can modify catalog variables (weights, prices, corrections) through authorized mechanisms:
+
+1. **Wolf API KB Write** (`register_correction` tool)
+2. **Governance Flow** (`validate_correction` + `commit_correction`)
+
+### Authorized Files for Modification
+
+Only whitelisted files can be modified:
+- `shopify_catalog_v1.json` - Product weights and details
+- `BMC_Base_Conocimiento_GPT-2.json` - Master pricing and specs
+- `accessories_catalog.json` - Accessory catalog
+- `bromyros_pricing_master.json` - BROMYROS product base
+- `bom_rules.json` - BOM calculation rules
+- `corrections_log.json` - Corrections audit trail
+- `background_tasks_config.json` - Background task configuration
+
+### Security Requirements
+
+- 🔐 All modifications require password authorization
+- 📝 Changes are logged with timestamp and audit trail  
+- ✅ Field validation before applying changes
+- 🔍 Impact analysis for governance flow
+
+### Common Use Cases
+
+**Modify product weight:**
+```
+User: "El producto CONBPVC ahora pesa 1.2 kg en lugar de 1 kg"
+GPT: Registers correction with register_correction tool (requires password)
+```
+
+**Register price correction:**
+```
+User: "El precio de ISODEC 100mm debe ser $45.00 no $42.00"
+GPT: Validates current value and registers correction with reason
+```
+
+### Documentation
+
+See [GPT_WEIGHT_MODIFICATION_GUIDE.md](GPT_WEIGHT_MODIFICATION_GUIDE.md) for:
+- Complete technical details
+- Security guidelines
+- Code examples
+- FAQ section
+
+---
+
 **Última actualización**: 2026-02-07
 **Versión**: 3.0 (KB v7.0)
