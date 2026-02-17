@@ -317,7 +317,7 @@ As of **2026-02-17**, this repository now supports **100% automated deployment**
 
 The `deploy_gpt_assistant.py` script reads `Panelin_GPT_config.json` and:
 
-1. Uploads all 21 KB files via the OpenAI Files API
+1. Uploads all configured knowledge base files (from `deployment.files_to_upload`) via the OpenAI Files API
 2. Creates a Vector Store for file search (RAG)
 3. Creates or updates an OpenAI Assistant with instructions, tools, and the vector store
 4. Verifies the deployment matches expectations
