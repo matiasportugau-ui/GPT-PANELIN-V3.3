@@ -90,16 +90,23 @@ check_mcp_server() {
         local compose_cmd
         compose_cmd=$(get_docker_compose_cmd)
         if [ -n "$compose_cmd" ]; then
+            # Prefer a robust service-based check compatible with Docker Compose v1 and v2
             # shellcheck disable=SC2086
-            if $compose_cmd ps 2>/dev/null | grep -q "panelin-bot.*Up"; then
+            if [ -n "$($compose_cmd ps -q panelin-bot 2>/dev/null)" ]; then
                 log_success "MCP server container is running"
             else
-                if [ "$IS_CI" = "true" ]; then
-                    log_warning "MCP server container is not running (container checks skipped in CI)"
+                # Fallback for environments where service-based checks are unavailable
+                # shellcheck disable=SC2086
+                if $compose_cmd ps 2>/dev/null | grep -q "panelin-bot.*Up"; then
+                    log_success "MCP server container is running"
                 else
-                    log_error "MCP server container is not running"
-                    HEALTH_CHECK_FAILED=1
-                    return 1
+                    if [ "$IS_CI" = "true" ]; then
+                        log_warning "MCP server container is not running (container checks skipped in CI)"
+                    else
+                        log_error "MCP server container is not running"
+                        HEALTH_CHECK_FAILED=1
+                        return 1
+                    fi
                 fi
             fi
         else
