@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 KB_ROOT = Path(__file__).resolve().parent.parent.parent
 CORRECTIONS_FILE = KB_ROOT / "corrections_log.json"
 
+# Datetime format for consistency (same as governance.py)
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
 # Allowed KB files (same whitelist as governance.py)
 ALLOWED_KB_FILES = [
     "bromyros_pricing_master.json",
@@ -163,7 +166,7 @@ async def handle_report_error(
 
         entry = {
             "id": _next_id(corrections),
-            "date": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "date": datetime.now(timezone.utc).strftime(DATETIME_FORMAT),
             "kb_file": kb_file_clean,
             "field": field,
             "wrong_value": wrong_value,

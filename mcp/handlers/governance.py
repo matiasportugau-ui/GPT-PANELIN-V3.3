@@ -26,7 +26,7 @@ import json
 import logging
 import threading
 from datetime import datetime, timezone
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from pathlib import Path
 from typing import Any, Optional
 
@@ -41,6 +41,9 @@ logger = logging.getLogger(__name__)
 KB_ROOT = Path(__file__).resolve().parent.parent.parent
 CORRECTIONS_FILE = KB_ROOT / "corrections_log.json"
 QUOTATION_MEMORY_FILE = KB_ROOT / "mcp" / "quotation_memory.json"
+
+# Datetime format for consistency
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 # Allowed KB files (same whitelist as errors.py)
 ALLOWED_KB_FILES = [
@@ -344,7 +347,7 @@ async def handle_validate_correction(
 
         # --- Step 4: Generate change report ---
         change_id = _generate_change_id(kb_file_clean, field, str(proposed_value))
-        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        now = datetime.now(timezone.utc).strftime(DATETIME_FORMAT)
 
         severity = "low"
         if impact["quotations_affected"] > 0:
@@ -474,7 +477,7 @@ async def handle_commit_correction(
 
         entry = {
             "id": _next_correction_id(corrections),
-            "date": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "date": datetime.now(timezone.utc).strftime(DATETIME_FORMAT),
             "kb_file": pending["kb_file"],
             "field": pending["field"],
             "wrong_value": pending["current_value"],
@@ -702,7 +705,7 @@ async def handle_update_correction_status(
         
         # Update applied_date if status is 'applied'
         if new_status == "applied":
-            correction["applied_date"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            correction["applied_date"] = datetime.now(timezone.utc).strftime(DATETIME_FORMAT)
         elif new_status == "pending":
             correction["applied_date"] = None
 
@@ -711,7 +714,7 @@ async def handle_update_correction_status(
             if "status_history" not in correction:
                 correction["status_history"] = []
             correction["status_history"].append({
-                "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "timestamp": datetime.now(timezone.utc).strftime(DATETIME_FORMAT),
                 "from_status": old_status,
                 "to_status": new_status,
                 "notes": notes,
@@ -820,7 +823,9 @@ async def handle_batch_validate_corrections(
                 total_quotations_affected += impact.get("quotations_affected", 0)
                 try:
                     total_impact_usd += Decimal(impact.get("total_impact_usd", "0.00"))
-                except Exception:
+                except (ValueError, TypeError, InvalidOperation) as e:
+                    # Log but don't fail - use 0.00 for this impact
+                    logger.warning(f"Failed to parse total_impact_usd: {e}")
                     pass
 
         return {
