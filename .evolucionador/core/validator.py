@@ -13,6 +13,7 @@ Provides production-grade validation for:
 - Cross-reference integrity validation
 """
 
+import ast
 import json
 import re
 import math
@@ -403,20 +404,40 @@ class FormulaValidator:
                 return False
         return balance == 0
     
+    # Allowed binary operators for safe formula evaluation
+    _SAFE_BINOPS = {
+        ast.Add: lambda a, b: a + b,
+        ast.Sub: lambda a, b: a - b,
+        ast.Mult: lambda a, b: a * b,
+        ast.Div: lambda a, b: a / b,
+        ast.FloorDiv: lambda a, b: a // b,
+        ast.Mod: lambda a, b: a % b,
+        ast.Pow: lambda a, b: a ** b,
+    }
+
+    # Allowed unary operators for safe formula evaluation
+    _SAFE_UNARYOPS = {
+        ast.UAdd: lambda a: +a,
+        ast.USub: lambda a: -a,
+    }
+
+    # Whitelisted function names for safe formula evaluation
+    _SAFE_FUNCTIONS = {'abs', 'round', 'max', 'min', 'sqrt', 'pow', 'ceil', 'floor'}
+
     def _evaluate_formula(self, formula: str, context: Optional[Dict] = None) -> float:
         """
-        Safely evaluate a formula with restricted context.
-        
+        Safely evaluate a formula using AST parsing.
+
         Security Notes:
-        - Only allows mathematical operations and safe functions
-        - No access to builtins or file system
+        - Parses the formula into an AST and only allows safe node types
+        - Only allows mathematical operations and whitelisted functions
+        - No access to builtins, attribute access, or imports
         - Variables restricted to predefined context
-        - All attribute access disabled
-        
+
         Args:
             formula: Formula string
             context: Variables context (default: 1.0 for all variables)
-            
+
         Returns:
             Evaluated result
         """
@@ -427,16 +448,68 @@ class FormulaValidator:
                 'discount': 0.0, 'tax': 0.0, 'labor': 1.0,
                 'material': 1.0, 'markup': 1.0, 'cost': 1.0
             }
-        
+
         # Add math functions (safe to expose)
         context.update({
             'abs': abs, 'round': round, 'max': max, 'min': min,
             'sqrt': math.sqrt, 'pow': pow, 'ceil': math.ceil, 'floor': math.floor
         })
-        
-        # Use eval with empty builtins for safety (only mathematical operations allowed)
-        # This prevents access to file operations, imports, or other dangerous functions
-        return eval(formula, {"__builtins__": {}}, context)
+
+        tree = ast.parse(formula, mode='eval')
+        return self._safe_eval_node(tree.body, context)
+
+    def _safe_eval_node(self, node: ast.AST, context: Dict) -> Any:
+        """
+        Recursively evaluate an AST node using only safe operations.
+
+        Args:
+            node: AST node to evaluate
+            context: Variables and functions context
+
+        Returns:
+            Evaluated result
+
+        Raises:
+            ValueError: If an unsupported or unsafe construct is encountered
+        """
+        if isinstance(node, ast.Constant):
+            if isinstance(node.value, (int, float)):
+                return node.value
+            raise ValueError(f"Unsupported constant type: {type(node.value).__name__}")
+
+        if isinstance(node, ast.Name):
+            if node.id in context:
+                return context[node.id]
+            raise ValueError(f"Unknown variable: {node.id}")
+
+        if isinstance(node, ast.BinOp):
+            op_type = type(node.op)
+            if op_type not in self._SAFE_BINOPS:
+                raise ValueError(f"Unsupported operator: {op_type.__name__}")
+            left = self._safe_eval_node(node.left, context)
+            right = self._safe_eval_node(node.right, context)
+            return self._SAFE_BINOPS[op_type](left, right)
+
+        if isinstance(node, ast.UnaryOp):
+            op_type = type(node.op)
+            if op_type not in self._SAFE_UNARYOPS:
+                raise ValueError(f"Unsupported unary operator: {op_type.__name__}")
+            operand = self._safe_eval_node(node.operand, context)
+            return self._SAFE_UNARYOPS[op_type](operand)
+
+        if isinstance(node, ast.Call):
+            if not isinstance(node.func, ast.Name):
+                raise ValueError("Only direct function calls are allowed")
+            if node.func.id not in self._SAFE_FUNCTIONS:
+                raise ValueError(f"Function not allowed: {node.func.id}")
+            if node.func.id not in context:
+                raise ValueError(f"Unknown function: {node.func.id}")
+            if node.keywords:
+                raise ValueError("Keyword arguments are not allowed")
+            args = [self._safe_eval_node(arg, context) for arg in node.args]
+            return context[node.func.id](*args)
+
+        raise ValueError(f"Unsupported expression type: {type(node).__name__}")
 
 
 class PricingValidator:
