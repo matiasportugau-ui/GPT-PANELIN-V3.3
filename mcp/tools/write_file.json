@@ -1,0 +1,22 @@
+{
+  "name": "write_file",
+  "description": "Write or update a project file. Creates the file if it does not exist, or overwrites if it does. Requires KB write password. Blocked: .env, .git/, credentials, binary files, paths outside project root.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "file_path": {
+        "type": "string",
+        "description": "Relative path within the project (e.g., 'docs/notes.md', 'config/settings.json'). No '..' allowed."
+      },
+      "content": {
+        "type": "string",
+        "description": "Full text content to write to the file (UTF-8). Max 1 MB."
+      },
+      "password": {
+        "type": "string",
+        "description": "KB write password for authorization"
+      }
+    },
+    "required": ["file_path", "content", "password"]
+  }
+}

@@ -15,6 +15,9 @@ Wolf API KB Write tools (v3.4):
 - wolf_kb_write: persist_conversation, register_correction,
                  save_customer, lookup_customer
 
+File operation tools:
+- file_ops: write_file, read_file
+
 Background task tools (async):
 - tasks: batch_bom_calculate, bulk_price_check, full_quotation,
          task_status, task_result, task_list, task_cancel
