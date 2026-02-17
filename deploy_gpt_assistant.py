@@ -397,10 +397,17 @@ class AssistantDeployer:
 
         # Check tools include code_interpreter and file_search
         tool_types = [t.type for t in assistant.tools]
-        if "code_interpreter" in tool_types:
-            checks.append(("Code Interpreter", True, "enabled"))
+        capabilities = self.config.get("capabilities", {})
+        code_interpreter_requested = bool(capabilities.get("code_interpreter"))
+
+        if code_interpreter_requested:
+            if "code_interpreter" in tool_types:
+                checks.append(("Code Interpreter", True, "enabled"))
+            else:
+                checks.append(("Code Interpreter", False, "not found in tools"))
         else:
-            checks.append(("Code Interpreter", False, "not found in tools"))
+            # Code interpreter not requested in config; do not treat absence as a failure
+            checks.append(("Code Interpreter", True, "not requested in config"))
 
         if "file_search" in tool_types:
             checks.append(("File Search", True, "enabled"))
