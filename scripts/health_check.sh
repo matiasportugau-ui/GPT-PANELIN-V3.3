@@ -43,6 +43,19 @@ log_warning() {
 # Exit status
 HEALTH_CHECK_FAILED=0
 
+# Function to detect available docker compose command
+get_docker_compose_cmd() {
+    # Try modern docker compose first
+    if docker compose version >/dev/null 2>&1; then
+        echo "docker compose"
+    # Fall back to legacy docker-compose
+    elif command -v docker-compose >/dev/null 2>&1; then
+        echo "docker-compose"
+    else
+        echo ""
+    fi
+}
+
 # Function to check if URL is accessible
 check_url() {
     local url="$1"
@@ -73,13 +86,9 @@ check_mcp_server() {
     
     # Check if server process is running (Docker context)
     if command -v docker >/dev/null 2>&1; then
-        # Try modern docker compose command first, then fall back to docker-compose
-        if command -v docker compose >/dev/null 2>&1 || command -v docker-compose >/dev/null 2>&1; then
-            local compose_cmd="docker compose"
-            if ! command -v docker compose >/dev/null 2>&1; then
-                compose_cmd="docker-compose"
-            fi
-            
+        local compose_cmd=$(get_docker_compose_cmd)
+        
+        if [ -n "$compose_cmd" ]; then
             if $compose_cmd ps 2>/dev/null | grep -q "panelin-bot.*Up"; then
                 log_success "MCP server container is running"
             else
@@ -203,12 +212,9 @@ check_docker_resources() {
     fi
     
     # Check running containers if Docker Compose is available
-    if command -v docker compose >/dev/null 2>&1 || command -v docker-compose >/dev/null 2>&1; then
-        local compose_cmd="docker compose"
-        if ! command -v docker compose >/dev/null 2>&1; then
-            compose_cmd="docker-compose"
-        fi
-        
+    local compose_cmd=$(get_docker_compose_cmd)
+    
+    if [ -n "$compose_cmd" ]; then
         local container_count=$($compose_cmd ps -q 2>/dev/null | wc -l)
         if [ "$container_count" -gt 0 ]; then
             log_success "$container_count container(s) running"
