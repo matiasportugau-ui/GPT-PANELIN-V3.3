@@ -151,6 +151,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Set up Docker Compose
+        run: |
+          echo "🐋 Verifying Docker Compose availability..."
+          docker compose version
+          echo "✅ Docker Compose is available"
+      
       - name: Deploy to staging
         run: |
           echo "🚀 Deploying to staging environment..."
