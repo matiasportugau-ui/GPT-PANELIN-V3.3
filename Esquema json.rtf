@@ -9,8 +9,8 @@
   "openapi": "3.1.0",\
   "info": \{\
     "title": "Panelin Wolf API",\
-    "description": "Secure API for BMC Uruguay panel quotations. Authenticated endpoints require X-API-Key header.",\
-    "version": "2.0.0"\
+    "description": "Secure API for BMC Uruguay panel quotations with KB Write capabilities. Authenticated endpoints require X-API-Key header. Write operations require password.",\
+    "version": "3.0.0"\
   \},\
   "servers": [\
     \{\
@@ -139,6 +139,118 @@
                 \}\
               \}\
             \}\
+          \}\
+        \}\
+      \},\
+      "ConversationRequest": \{\
+        "type": "object",\
+        "required": [\
+          "client_id",\
+          "summary",\
+          "password"\
+        ],\
+        "properties": \{\
+          "client_id": \{\
+            "type": "string",\
+            "description": "Client identifier"\
+          \},\
+          "summary": \{\
+            "type": "string",\
+            "description": "Conversation summary"\
+          \},\
+          "quotation_ref": \{\
+            "type": "string",\
+            "description": "Optional quotation reference"\
+          \},\
+          "products_discussed": \{\
+            "type": "array",\
+            "items": \{\
+              "type": "string"\
+            \},\
+            "description": "Products discussed"\
+          \},\
+          "password": \{\
+            "type": "string",\
+            "description": "KB write password"\
+          \}\
+        \}\
+      \},\
+      "CorrectionRequest": \{\
+        "type": "object",\
+        "required": [\
+          "source_file",\
+          "field_path",\
+          "old_value",\
+          "new_value",\
+          "reason",\
+          "password"\
+        ],\
+        "properties": \{\
+          "source_file": \{\
+            "type": "string",\
+            "description": "KB file with error"\
+          \},\
+          "field_path": \{\
+            "type": "string",\
+            "description": "JSON path to field"\
+          \},\
+          "old_value": \{\
+            "type": "string",\
+            "description": "Current incorrect value"\
+          \},\
+          "new_value": \{\
+            "type": "string",\
+            "description": "Corrected value"\
+          \},\
+          "reason": \{\
+            "type": "string",\
+            "description": "Reason for correction"\
+          \},\
+          "reported_by": \{\
+            "type": "string",\
+            "description": "Who reported"\
+          \},\
+          "password": \{\
+            "type": "string",\
+            "description": "KB write password"\
+          \}\
+        \}\
+      \},\
+      "CustomerRequest": \{\
+        "type": "object",\
+        "required": [\
+          "name",\
+          "phone",\
+          "password"\
+        ],\
+        "properties": \{\
+          "name": \{\
+            "type": "string",\
+            "description": "Customer full name"\
+          \},\
+          "phone": \{\
+            "type": "string",\
+            "description": "Uruguayan phone format"\
+          \},\
+          "address": \{\
+            "type": "string",\
+            "description": "Work site address"\
+          \},\
+          "city": \{\
+            "type": "string",\
+            "description": "City"\
+          \},\
+          "department": \{\
+            "type": "string",\
+            "description": "Department"\
+          \},\
+          "notes": \{\
+            "type": "string",\
+            "description": "Additional notes"\
+          \},\
+          "password": \{\
+            "type": "string",\
+            "description": "KB write password"\
           \}\
         \}\
       \}\
@@ -460,6 +572,239 @@
           \},\
           "404": \{\
             "description": "Product not found",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/kb/conversations": \{\
+      "post": \{\
+        "operationId": "persist_conversation",\
+        "summary": "Save conversation summary and quotation history - requires password",\
+        "requestBody": \{\
+          "required": true,\
+          "content": \{\
+            "application/json": \{\
+              "schema": \{\
+                "$ref": "#/components/schemas/ConversationRequest"\
+              \}\
+            \}\
+          \}\
+        \},\
+        "responses": \{\
+          "200": \{\
+            "description": "Conversation saved",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "status": \{\
+                      "type": "string"\
+                    \},\
+                    "conversation_id": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "400": \{\
+            "description": "Bad request or invalid password",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/kb/corrections": \{\
+      "post": \{\
+        "operationId": "register_correction",\
+        "summary": "Register KB correction - requires password",\
+        "requestBody": \{\
+          "required": true,\
+          "content": \{\
+            "application/json": \{\
+              "schema": \{\
+                "$ref": "#/components/schemas/CorrectionRequest"\
+              \}\
+            \}\
+          \}\
+        \},\
+        "responses": \{\
+          "200": \{\
+            "description": "Correction registered",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "status": \{\
+                      "type": "string"\
+                    \},\
+                    "correction_id": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "400": \{\
+            "description": "Bad request or invalid password",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/kb/customers": \{\
+      "post": \{\
+        "operationId": "save_customer",\
+        "summary": "Store customer data - requires password",\
+        "requestBody": \{\
+          "required": true,\
+          "content": \{\
+            "application/json": \{\
+              "schema": \{\
+                "$ref": "#/components/schemas/CustomerRequest"\
+              \}\
+            \}\
+          \}\
+        \},\
+        "responses": \{\
+          "200": \{\
+            "description": "Customer saved",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "status": \{\
+                      "type": "string"\
+                    \},\
+                    "customer_id": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "400": \{\
+            "description": "Bad request, invalid phone or password",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \},\
+      "get": \{\
+        "operationId": "lookup_customer",\
+        "summary": "Retrieve customer data by name, phone or address - no password required",\
+        "parameters": [\
+          \{\
+            "name": "search",\
+            "in": "query",\
+            "required": true,\
+            "schema": \{\
+              "type": "string"\
+            \},\
+            "description": "Search query"\
+          \}\
+        ],\
+        "responses": \{\
+          "200": \{\
+            "description": "Customer data",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "customers": \{\
+                      "type": "array",\
+                      "items": \{\
+                        "type": "object",\
+                        "properties": \{\
+                          "customer_id": \{\
+                            "type": "string"\
+                          \},\
+                          "name": \{\
+                            "type": "string"\
+                          \},\
+                          "phone": \{\
+                            "type": "string"\
+                          \},\
+                          "address": \{\
+                            "type": "string"\
+                          \},\
+                          "city": \{\
+                            "type": "string"\
+                          \},\
+                          "department": \{\
+                            "type": "string"\
+                          \}\
+                        \}\
+                      \}\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
             "content": \{\
               "application/json": \{\
                 "schema": \{\
