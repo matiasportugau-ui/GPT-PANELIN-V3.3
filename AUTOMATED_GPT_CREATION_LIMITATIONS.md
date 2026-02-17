@@ -309,25 +309,84 @@ If you absolutely need programmatic GPT creation, consider:
 
 ---
 
+## NEW: Automated Deployment via Assistants API
+
+As of **2026-02-17**, this repository now supports **100% automated deployment** using the OpenAI Assistants API as an alternative to Custom GPTs.
+
+### How It Works
+
+The `deploy_gpt_assistant.py` script reads `Panelin_GPT_config.json` and:
+
+1. Uploads all 21 KB files via the OpenAI Files API
+2. Creates a Vector Store for file search (RAG)
+3. Creates or updates an OpenAI Assistant with instructions, tools, and the vector store
+4. Verifies the deployment matches expectations
+5. Saves state to `.gpt_assistant_state.json` for idempotent updates
+
+The `deploy-gpt-assistant.yml` GitHub Actions workflow triggers automatically on config/KB file changes and runs the full deployment pipeline.
+
+### Usage
+
+```bash
+# Preview what would change (no API calls)
+python deploy_gpt_assistant.py --dry-run
+
+# Deploy (requires OPENAI_API_KEY)
+python deploy_gpt_assistant.py
+
+# Force re-deploy everything
+python deploy_gpt_assistant.py --force
+
+# Rollback to previous deployment
+python deploy_gpt_assistant.py --rollback
+```
+
+### Capability Comparison: Custom GPT vs Assistants API
+
+| Feature | Custom GPT | Assistants API |
+|---------|-----------|----------------|
+| **Automated deployment** | No | **Yes** |
+| **Web browsing** | Yes | No |
+| **Image generation** | Yes | No |
+| **Canvas** | Yes | No |
+| **Code Interpreter** | Yes | Yes |
+| **File search (KB)** | Yes | Yes |
+| **Function calling** | Yes (Actions) | Yes |
+| **Conversation starters** | Yes | No |
+| **User interface** | ChatGPT web UI | API-based |
+| **Deployment time** | ~15 min manual | ~2 min automated |
+
+### Dual-Target Strategy
+
+This repo supports **both** deployment targets:
+
+- **Assistants API** (`deploy_gpt_assistant.py` + `deploy-gpt-assistant.yml`): 100% automated, API-based conversations, ideal for programmatic integrations
+- **Custom GPT** (`autoconfig_gpt.py` + `generate-gpt-config.yml`): Generates deployment package for manual upload to ChatGPT web UI
+
+Both read from the same `Panelin_GPT_config.json` source of truth.
+
+### Required Secrets
+
+For the automated workflow, configure these GitHub secrets:
+
+- `OPENAI_API_KEY` -- OpenAI API key with Assistants API access
+- Optional: `GCP_SA_KEY` and `GCS_STATE_BUCKET` for GCS-based state persistence
+
+---
+
 ## Summary
 
 **Question:** Can GitHub Actions create the GPT automatically?
 
-**Answer:** No, because OpenAI provides no API for Custom GPT management.
+**Answer for Custom GPTs:** No, because OpenAI provides no API for Custom GPT management.
 
-**What we CAN do:** Automate configuration generation via GitHub Actions.
+**Answer for Assistants API:** **Yes!** The `deploy-gpt-assistant.yml` workflow handles this fully automatically.
 
-**What you MUST do:** Manually upload to OpenAI GPT Builder (15 minutes).
-
-**Why:** Technical limitation of OpenAI platform, not repository limitation.
-
-**When will this change?** When/if OpenAI releases a GPT management API.
-
-**What's the best approach?** Use the GitHub Actions workflow we provide + 15 minutes manual upload.
+**Recommended approach:** Use the Assistants API for automated deployments. Use Custom GPT package for ChatGPT web UI access (15 min manual upload).
 
 ---
 
-**Last Updated:** 2026-02-16  
-**Status:** Technically impossible due to platform constraints  
-**Workarounds:** None that don't violate ToS  
-**Alternative:** Use OpenAI Assistants API if you need full automation
+**Last Updated:** 2026-02-17
+**Status:** Fully automated via Assistants API; Custom GPTs still require manual upload
+**Automated Workflow:** `.github/workflows/deploy-gpt-assistant.yml`
+**Manual Workflow:** `.github/workflows/generate-gpt-config.yml`

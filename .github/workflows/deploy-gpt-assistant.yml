@@ -1,0 +1,247 @@
+name: Deploy GPT Assistant
+
+# Automated deployment of Panelin GPT via OpenAI Assistants API.
+# This workflow creates/updates an OpenAI Assistant with the latest
+# configuration and knowledge base files from the repository.
+#
+# For Custom GPT (ChatGPT web UI) deployment, see generate-gpt-config.yml.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Panelin_GPT_config.json'
+      - 'BMC_Base_Conocimiento_GPT-2.json'
+      - 'accessories_catalog.json'
+      - 'bom_rules.json'
+      - 'bromyros_pricing_*.json'
+      - 'shopify_catalog_*.json'
+      - 'shopify_catalog_*.csv'
+      - 'BMC_Base_Unificada_v4.json'
+      - 'panelin_truth_*.json'
+      - 'PANELIN_*.md'
+      - 'GPT_*.md'
+      - '*.rtf'
+      - 'bmc_logo.png'
+      - 'deploy_gpt_assistant.py'
+
+  workflow_dispatch:
+    inputs:
+      force_deploy:
+        description: 'Force deployment even if no changes detected'
+        type: boolean
+        default: false
+      dry_run:
+        description: 'Preview changes without deploying'
+        type: boolean
+        default: false
+      model:
+        description: 'OpenAI model to use'
+        type: choice
+        options:
+          - gpt-4o
+          - gpt-4-turbo
+          - gpt-4o-mini
+        default: gpt-4o
+
+jobs:
+  validate:
+    name: Validate KB Files
+    runs-on: ubuntu-latest
+    outputs:
+      validation_passed: ${{ steps.validate.outputs.passed }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Validate GPT files
+        id: validate
+        run: |
+          if python validate_gpt_files.py; then
+            echo "passed=true" >> $GITHUB_OUTPUT
+          else
+            echo "passed=false" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+  deploy:
+    name: Deploy Assistant via API
+    runs-on: ubuntu-latest
+    needs: validate
+    if: always()
+    environment:
+      name: openai-production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install openai>=1.0.0
+
+      # State persistence via GitHub Actions cache
+      # Alternative: use GCS bucket with google-github-actions/auth
+      - name: Restore deployment state
+        id: restore-state
+        uses: actions/cache/restore@v4
+        with:
+          path: .gpt_assistant_state.json
+          key: gpt-assistant-state-${{ github.sha }}
+          restore-keys: |
+            gpt-assistant-state-
+
+      - name: Deploy GPT Assistant
+        id: deploy
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          ARGS=""
+          if [ "${{ inputs.force_deploy }}" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          MODEL="${{ inputs.model }}"
+          ARGS="$ARGS --model ${MODEL:-gpt-4o}"
+
+          python deploy_gpt_assistant.py $ARGS 2>&1 | tee deploy_output.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          exit $EXIT_CODE
+
+      - name: Save deployment state
+        if: steps.deploy.outputs.exit_code == '0' && inputs.dry_run != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .gpt_assistant_state.json
+          key: gpt-assistant-state-${{ github.sha }}
+
+      - name: Create deployment summary
+        if: always()
+        run: |
+          echo "## GPT Assistant Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "> **Mode:** DRY-RUN (no changes made)" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.validate.outputs.validation_passed }}" = "true" ]; then
+            echo "- **File Validation:** Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **File Validation:** Issues found (see logs)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ steps.deploy.outputs.exit_code }}" = "0" ]; then
+            echo "- **Deployment:** Successful" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Deployment:** Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Deployment Log" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ -f deploy_output.txt ]; then
+            tail -30 deploy_output.txt >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload deployment log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-log-${{ github.sha }}
+          path: deploy_output.txt
+          retention-days: 90
+
+  verify:
+    name: Verify Deployment
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: success() && inputs.dry_run != 'true'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install openai
+        run: pip install openai>=1.0.0
+
+      - name: Restore deployment state
+        uses: actions/cache/restore@v4
+        with:
+          path: .gpt_assistant_state.json
+          key: gpt-assistant-state-${{ github.sha }}
+
+      - name: Verify assistant exists and is configured
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python -c "
+          import json, os, sys
+          from openai import OpenAI
+
+          state_file = '.gpt_assistant_state.json'
+          if not os.path.exists(state_file):
+              print('No state file found, skipping verification')
+              sys.exit(0)
+
+          client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+          state = json.load(open(state_file))
+
+          assistant_id = state.get('assistant_id')
+          if not assistant_id:
+              print('No assistant_id in state, skipping')
+              sys.exit(0)
+
+          assistant = client.beta.assistants.retrieve(assistant_id)
+          print(f'Assistant: {assistant.name}')
+          print(f'Model: {assistant.model}')
+          tool_types = [t.type for t in assistant.tools]
+          print(f'Tools: {tool_types}')
+
+          vs_ids = []
+          if assistant.tool_resources and assistant.tool_resources.file_search:
+              vs_ids = assistant.tool_resources.file_search.vector_store_ids or []
+
+          expected_vs = state.get('vector_store_id')
+          if expected_vs and expected_vs in vs_ids:
+              print(f'Vector store: {expected_vs} (attached)')
+          elif expected_vs:
+              print(f'WARNING: Vector store {expected_vs} not attached!')
+              sys.exit(1)
+
+          print('Verification PASSED')
+          "

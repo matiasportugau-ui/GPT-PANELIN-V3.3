@@ -10,6 +10,9 @@ pytest-asyncio>=0.21.0
 # Testing
 pytest>=7.0.0
 
+# OpenAI Assistants API (for automated GPT deployment)
+openai>=1.0.0
+
 # Optional: REST API for background tasks
 # Uncomment to enable REST API endpoints
 # fastapi>=0.100.0
