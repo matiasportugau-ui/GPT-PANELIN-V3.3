@@ -43,6 +43,22 @@ log_warning() {
 # Exit status
 HEALTH_CHECK_FAILED=0
 
+# Detect if running in CI environment
+IS_CI="${CI:-false}"
+
+# Function to get docker-compose command
+get_docker_compose_cmd() {
+    # Try modern Docker Compose v2 first (docker compose)
+    if docker compose version >/dev/null 2>&1; then
+        echo "docker compose"
+    # Fall back to legacy docker-compose v1
+    elif command -v docker-compose >/dev/null 2>&1; then
+        echo "docker-compose"
+    else
+        echo ""
+    fi
+}
+
 # Function to check if URL is accessible
 check_url() {
     local url="$1"
@@ -73,12 +89,28 @@ check_mcp_server() {
     
     # Check if server process is running (Docker context)
     if command -v docker >/dev/null 2>&1; then
-        if docker-compose ps | grep -q "panelin-bot.*Up"; then
-            log_success "MCP server container is running"
+        local compose_cmd=$(get_docker_compose_cmd)
+        
+        if [ -n "$compose_cmd" ]; then
+            if $compose_cmd ps 2>/dev/null | grep -q "panelin-bot.*Up"; then
+                log_success "MCP server container is running"
+            else
+                # In CI environments, containers may not be running - treat as warning
+                if [ "$IS_CI" = "true" ]; then
+                    log_warning "MCP server container is not running (expected in CI environment)"
+                else
+                    log_error "MCP server container is not running"
+                    HEALTH_CHECK_FAILED=1
+                    return 1
+                fi
+            fi
         else
-            log_error "MCP server container is not running"
-            HEALTH_CHECK_FAILED=1
-            return 1
+            # Docker Compose not available - treat as warning in CI
+            if [ "$IS_CI" = "true" ]; then
+                log_warning "Docker Compose not available (expected in CI environment)"
+            else
+                log_warning "Docker Compose not available, skipping container check"
+            fi
         fi
     fi
     
@@ -190,17 +222,33 @@ check_docker_resources() {
     if docker info > /dev/null 2>&1; then
         log_success "Docker daemon is running"
     else
-        log_error "Docker daemon is not accessible"
-        HEALTH_CHECK_FAILED=1
-        return 1
+        # In CI environments, Docker daemon may not be accessible - treat as warning
+        if [ "$IS_CI" = "true" ]; then
+            log_warning "Docker daemon is not accessible (expected in CI environment)"
+            return 0
+        else
+            log_error "Docker daemon is not accessible"
+            HEALTH_CHECK_FAILED=1
+            return 1
+        fi
     fi
     
     # Check running containers
-    local container_count=$(docker-compose ps -q 2>/dev/null | wc -l)
-    if [ "$container_count" -gt 0 ]; then
-        log_success "$container_count container(s) running"
+    local compose_cmd=$(get_docker_compose_cmd)
+    if [ -n "$compose_cmd" ]; then
+        local container_count=$($compose_cmd ps -q 2>/dev/null | wc -l)
+        if [ "$container_count" -gt 0 ]; then
+            log_success "$container_count container(s) running"
+        else
+            # In CI environments, no containers is expected - treat as warning
+            if [ "$IS_CI" = "true" ]; then
+                log_warning "No containers are currently running (expected in CI environment)"
+            else
+                log_warning "No containers are currently running"
+            fi
+        fi
     else
-        log_warning "No containers are currently running"
+        log_warning "Docker Compose not available, skipping container count"
     fi
     
     return 0
