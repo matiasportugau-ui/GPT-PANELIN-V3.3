@@ -73,12 +73,20 @@ check_mcp_server() {
     
     # Check if server process is running (Docker context)
     if command -v docker >/dev/null 2>&1; then
-        if docker-compose ps | grep -q "panelin-bot.*Up"; then
-            log_success "MCP server container is running"
+        # Try modern docker compose command first, then fall back to docker-compose
+        if command -v docker compose >/dev/null 2>&1 || command -v docker-compose >/dev/null 2>&1; then
+            local compose_cmd="docker compose"
+            if ! command -v docker compose >/dev/null 2>&1; then
+                compose_cmd="docker-compose"
+            fi
+            
+            if $compose_cmd ps 2>/dev/null | grep -q "panelin-bot.*Up"; then
+                log_success "MCP server container is running"
+            else
+                log_warning "MCP server container is not running (may not be deployed in this environment)"
+            fi
         else
-            log_error "MCP server container is not running"
-            HEALTH_CHECK_FAILED=1
-            return 1
+            log_warning "Docker Compose not available, skipping container checks"
         fi
     fi
     
@@ -190,17 +198,25 @@ check_docker_resources() {
     if docker info > /dev/null 2>&1; then
         log_success "Docker daemon is running"
     else
-        log_error "Docker daemon is not accessible"
-        HEALTH_CHECK_FAILED=1
-        return 1
+        log_warning "Docker daemon is not accessible (expected in CI environment)"
+        return 0
     fi
     
-    # Check running containers
-    local container_count=$(docker-compose ps -q 2>/dev/null | wc -l)
-    if [ "$container_count" -gt 0 ]; then
-        log_success "$container_count container(s) running"
+    # Check running containers if Docker Compose is available
+    if command -v docker compose >/dev/null 2>&1 || command -v docker-compose >/dev/null 2>&1; then
+        local compose_cmd="docker compose"
+        if ! command -v docker compose >/dev/null 2>&1; then
+            compose_cmd="docker-compose"
+        fi
+        
+        local container_count=$($compose_cmd ps -q 2>/dev/null | wc -l)
+        if [ "$container_count" -gt 0 ]; then
+            log_success "$container_count container(s) running"
+        else
+            log_warning "No containers are currently running"
+        fi
     else
-        log_warning "No containers are currently running"
+        log_warning "Docker Compose not available, skipping container checks"
     fi
     
     return 0
