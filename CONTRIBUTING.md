@@ -1,6 +1,8 @@
-# Contributing to GPT-PANELIN-V3.2
+# Contributing to GPT-PANELIN-V3.3
 
-Thank you for your interest in contributing to GPT-PANELIN-V3.2! This document provides guidelines and instructions for contributing to the project.
+Thank you for your interest in contributing to GPT-PANELIN-V3.3! This document provides guidelines and instructions for contributing to the project.
+
+> **📘 Developer Guidelines:** Before contributing, please review our comprehensive [GitHub Copilot Instructions](.github/copilot-instructions.md) which cover coding standards, testing practices, MCP patterns, Docker conventions, and security guidelines. These instructions are used by GitHub Copilot and serve as the authoritative reference for all development work.
 
 ## 📋 Table of Contents
 
@@ -343,14 +345,18 @@ docker-compose up -d --build
 
 ## Code Style
 
+> **📘 Comprehensive Guidelines:** For complete coding standards, testing practices, MCP patterns, Docker conventions, and security guidelines, see [.github/copilot-instructions.md](.github/copilot-instructions.md). The following is a summary of key points.
+
 ### Python Style Guide
 
 We follow PEP 8 with some modifications:
 
+- **Indentation**: Exactly 4 spaces per level (CRITICAL - PEP 8 standard)
 - **Line length**: 127 characters
 - **Imports**: Organized (standard library, third-party, local)
 - **Docstrings**: Use for public functions and classes
-- **Type hints**: Encouraged but not required
+- **Type hints**: Use Python typing for all function signatures
+- **Financial calculations**: ALWAYS use `Decimal`, never `float`
 
 ### Formatting
 
@@ -461,10 +467,15 @@ For price updates:
 
 ## Additional Resources
 
+### Development Guidelines
+- [.github/copilot-instructions.md](.github/copilot-instructions.md) - **Comprehensive developer guidelines** (coding standards, testing, security)
+
+### Project Documentation
 - [README.md](README.md) - Project overview and features
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Comprehensive deployment guide
 - [MCP_QUICK_START.md](MCP_QUICK_START.md) - MCP server guide
 - [PANELIN_KNOWLEDGE_BASE_GUIDE.md](PANELIN_KNOWLEDGE_BASE_GUIDE.md) - KB architecture
+- [.evolucionador/README.md](.evolucionador/README.md) - EVOLUCIONADOR autonomous evolution system
 
 ---
 
@@ -482,4 +493,4 @@ By contributing, you agree that your contributions will be licensed under the sa
 
 ---
 
-**Thank you for contributing to GPT-PANELIN-V3.2!** 🚀
+**Thank you for contributing to GPT-PANELIN-V3.3!** 🚀
