@@ -7,8 +7,8 @@ referenced GPT configuration and knowledge-base file, and exports them into
 an organized ZIP package ready for upload to OpenAI GPT Builder.
 
 Usage:
-    python3 export_gpt_config.py              # export to gpt_config_export/
-    python3 export_gpt_config.py -o /tmp/out  # custom output directory
+    python3 export_gpt_config.py                   # export to gpt_config_export/
+    python3 export_gpt_config.py -o custom_export  # custom output directory (must be inside repo)
 
 The script is fully non-interactive and uses only the Python standard library.
 """
@@ -16,7 +16,6 @@ The script is fully non-interactive and uses only the Python standard library.
 import argparse
 import hashlib
 import json
-import os
 import shutil
 import sys
 import zipfile
@@ -116,16 +115,6 @@ def format_size(size_bytes: int) -> str:
 # ---------------------------------------------------------------------------
 # Core logic
 # ---------------------------------------------------------------------------
-
-
-def load_config(repo_root: Path) -> Dict[str, Any]:
-    """Load and return Panelin_GPT_config.json."""
-    config_path = repo_root / CONFIG_FILENAME
-    if not config_path.exists():
-        print(f"❌  Config file not found: {config_path}", file=sys.stderr)
-        sys.exit(1)
-    with open(config_path, "r", encoding="utf-8") as f:
-        return json.load(f)
 
 
 def collect_files_from_config(config: Dict[str, Any]) -> Dict[int, List[str]]:
@@ -304,7 +293,7 @@ def build_readme(
         f"   - Name: {config.get('name', '')}",
         "   - Description: copy from Panelin_GPT_config.json",
         "   - Instructions: copy from Panelin_GPT_config.json",
-        "4. Enable capabilities: Web Browsing, Code Interpreter, Image Generation.",
+        "4. Enable capabilities: Code Interpreter, Canvas, Web Browsing, Image Generation.",
         "5. Upload knowledge-base files IN PHASE ORDER (see below).",
         "6. Save & test the GPT.",
         "",
@@ -392,6 +381,14 @@ def create_export(
 
     Returns the path to the generated ZIP, or None on failure.
     """
+    # Safety check: never delete the repository root
+    if output_dir.resolve() == repo_root.resolve():
+        print(
+            "❌  Cannot use repository root as output directory (would delete repo)",
+            file=sys.stderr,
+        )
+        return None
+    
     # Clean previous export
     if output_dir.exists():
         shutil.rmtree(output_dir)
@@ -453,7 +450,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "-o",
         "--output",
         default=DEFAULT_OUTPUT_DIR,
-        help=f"Output directory (default: {DEFAULT_OUTPUT_DIR})",
+        help=f"Output directory inside repo (default: {DEFAULT_OUTPUT_DIR})",
     )
     parser.add_argument(
         "--config",
@@ -522,6 +519,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # --- Summary ---
     print()
+    rec_by_name = {r["filename"]: r for r in records}
     for phase_num in sorted(phases):
         files = phases[phase_num]
         if not files:
@@ -530,7 +528,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         desc = phase_description(phase_num)
         print(f"  Phase {phase_num}: {desc}")
         for fname in files:
-            rec = {r["filename"]: r for r in records}.get(fname, {})
+            rec = rec_by_name.get(fname, {})
             if rec.get("exists"):
                 print(f"    ✅  {fname} ({rec.get('size_readable', '')})")
             else:
