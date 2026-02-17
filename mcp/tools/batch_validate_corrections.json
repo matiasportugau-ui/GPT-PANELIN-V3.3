@@ -1,0 +1,45 @@
+{
+  "name": "batch_validate_corrections",
+  "description": "Validate multiple KB corrections in a single request. Useful when multiple errors are detected during a single conversation. Returns validation results and impact analysis for each correction. Each correction must specify kb_file, field, and proposed_value.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "corrections": {
+        "type": "array",
+        "description": "Array of corrections to validate",
+        "items": {
+          "type": "object",
+          "properties": {
+            "kb_file": {
+              "type": "string",
+              "description": "KB file name (e.g., 'bromyros_pricing_master.json')"
+            },
+            "field": {
+              "type": "string",
+              "description": "JSON path or field reference (e.g., 'data.products[0].pricing.web_iva_inc')"
+            },
+            "current_value": {
+              "type": "string",
+              "description": "The expected current value (optional, for mismatch detection)"
+            },
+            "proposed_value": {
+              "type": "string",
+              "description": "The new corrected value"
+            },
+            "source": {
+              "type": "string",
+              "enum": ["user_correction", "validation_check", "audit", "web_verification", "conversation"],
+              "description": "How the correction was discovered"
+            },
+            "notes": {
+              "type": "string",
+              "description": "Additional context about this correction"
+            }
+          },
+          "required": ["kb_file", "field", "proposed_value"]
+        }
+      }
+    },
+    "required": ["corrections"]
+  }
+}

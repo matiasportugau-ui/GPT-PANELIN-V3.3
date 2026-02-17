@@ -22,7 +22,7 @@
       },
       "source": {
         "type": "string",
-        "enum": ["user_correction", "validation_check", "audit", "web_verification"],
+        "enum": ["user_correction", "validation_check", "audit", "web_verification", "conversation"],
         "description": "How the error was discovered"
       },
       "notes": {

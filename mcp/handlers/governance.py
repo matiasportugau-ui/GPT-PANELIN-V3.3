@@ -521,3 +521,330 @@ async def handle_commit_correction(
                 "message": f"Internal error during commit: {e}",
             },
         }
+
+
+async def handle_list_corrections(
+    arguments: dict[str, Any],
+    legacy_format: bool = False,
+) -> dict[str, Any]:
+    """List corrections from the corrections log with optional filtering.
+
+    Supports filtering by status, KB file, and pagination for large result sets.
+
+    Args:
+        arguments: Tool arguments containing optional status, kb_file,
+            limit, and offset parameters
+        legacy_format: If True, return legacy format for
+            backwards compatibility
+
+    Returns:
+        v1 contract envelope with list of corrections and pagination info
+    """
+    status_filter = arguments.get("status", "all")
+    kb_file_filter = arguments.get("kb_file")
+    limit = arguments.get("limit", 50)
+    offset = arguments.get("offset", 0)
+
+    # Validate limit and offset
+    if not isinstance(limit, int) or limit < 1 or limit > 500:
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "INVALID_LIMIT",
+                "message": "Limit must be an integer between 1 and 500",
+            },
+        }
+
+    if not isinstance(offset, int) or offset < 0:
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "INVALID_OFFSET",
+                "message": "Offset must be a non-negative integer",
+            },
+        }
+
+    try:
+        data = _load_corrections()
+        corrections = data.get("corrections", [])
+
+        # Apply filters
+        filtered = corrections
+        if status_filter != "all":
+            filtered = [c for c in filtered if c.get("status") == status_filter]
+
+        if kb_file_filter:
+            filtered = [c for c in filtered if c.get("kb_file") == kb_file_filter]
+
+        # Apply pagination
+        total_count = len(filtered)
+        paginated = filtered[offset:offset + limit]
+
+        return {
+            "ok": True,
+            "contract_version": CONTRACT_VERSION,
+            "corrections": paginated,
+            "pagination": {
+                "total": total_count,
+                "limit": limit,
+                "offset": offset,
+                "has_more": (offset + limit) < total_count,
+            },
+        }
+
+    except Exception as e:
+        logger.exception("Internal error listing corrections")
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": f"Internal error listing corrections: {e}",
+            },
+        }
+
+
+async def handle_update_correction_status(
+    arguments: dict[str, Any],
+    legacy_format: bool = False,
+) -> dict[str, Any]:
+    """Update the status of a correction in the corrections log.
+
+    Requires password for authorization. Allows marking corrections as
+    applied, rejected, or reverting to pending status.
+
+    Args:
+        arguments: Tool arguments containing correction_id, new_status,
+            optional notes, and password
+        legacy_format: If True, return legacy format for
+            backwards compatibility
+
+    Returns:
+        v1 contract envelope with updated correction info
+    """
+    from .wolf_kb_write import KB_WRITE_PASSWORD
+
+    correction_id = arguments.get("correction_id", "")
+    new_status = arguments.get("new_status", "")
+    notes = arguments.get("notes", "")
+    password = arguments.get("password", "")
+
+    # Validate password
+    if not password:
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "PASSWORD_REQUIRED",
+                "message": "KB write password is required for this operation",
+            },
+        }
+
+    if password != KB_WRITE_PASSWORD:
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "INVALID_PASSWORD",
+                "message": "Invalid KB write password",
+            },
+        }
+
+    # Validate required parameters
+    if not correction_id or not new_status:
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "MISSING_PARAMETERS",
+                "message": "correction_id and new_status are required",
+            },
+        }
+
+    # Validate new_status value
+    valid_statuses = ["pending", "applied", "rejected"]
+    if new_status not in valid_statuses:
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "INVALID_STATUS",
+                "message": f"new_status must be one of: {', '.join(valid_statuses)}",
+            },
+        }
+
+    try:
+        data = _load_corrections()
+        corrections = data.get("corrections", [])
+
+        # Find the correction
+        correction = None
+        for c in corrections:
+            if c.get("id") == correction_id:
+                correction = c
+                break
+
+        if not correction:
+            return {
+                "ok": False,
+                "contract_version": CONTRACT_VERSION,
+                "error": {
+                    "code": "CORRECTION_NOT_FOUND",
+                    "message": f"Correction '{correction_id}' not found",
+                },
+            }
+
+        # Update status
+        old_status = correction.get("status")
+        correction["status"] = new_status
+        
+        # Update applied_date if status is 'applied'
+        if new_status == "applied":
+            correction["applied_date"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        elif new_status == "pending":
+            correction["applied_date"] = None
+
+        # Add status change note if provided
+        if notes:
+            if "status_history" not in correction:
+                correction["status_history"] = []
+            correction["status_history"].append({
+                "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "from_status": old_status,
+                "to_status": new_status,
+                "notes": notes,
+            })
+
+        # Save changes
+        _save_corrections(data)
+
+        return {
+            "ok": True,
+            "contract_version": CONTRACT_VERSION,
+            "correction": correction,
+            "message": f"Correction {correction_id} status updated from '{old_status}' to '{new_status}'",
+            "total_pending": sum(1 for c in corrections if c.get("status") == "pending"),
+        }
+
+    except Exception as e:
+        logger.exception("Internal error updating correction status")
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": f"Internal error updating status: {e}",
+            },
+        }
+
+
+async def handle_batch_validate_corrections(
+    arguments: dict[str, Any],
+    legacy_format: bool = False,
+) -> dict[str, Any]:
+    """Validate multiple KB corrections in a single batch request.
+
+    Processes each correction independently and returns validation results
+    for all corrections. Useful when multiple errors are detected during
+    a single conversation.
+
+    Args:
+        arguments: Tool arguments containing an array of corrections
+        legacy_format: If True, return legacy format for
+            backwards compatibility
+
+    Returns:
+        v1 contract envelope with array of validation results
+    """
+    corrections_input = arguments.get("corrections", [])
+
+    if not isinstance(corrections_input, list):
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "INVALID_INPUT",
+                "message": "corrections must be an array",
+            },
+        }
+
+    if len(corrections_input) == 0:
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "EMPTY_BATCH",
+                "message": "At least one correction is required",
+            },
+        }
+
+    if len(corrections_input) > 20:
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "BATCH_TOO_LARGE",
+                "message": "Maximum 20 corrections per batch",
+            },
+        }
+
+    try:
+        results = []
+        for idx, correction in enumerate(corrections_input):
+            # Validate each correction individually
+            result = await handle_validate_correction(correction, legacy_format)
+            
+            # Add index to help identify which correction this result belongs to
+            result["batch_index"] = idx
+            result["correction_input"] = {
+                "kb_file": correction.get("kb_file"),
+                "field": correction.get("field"),
+                "proposed_value": correction.get("proposed_value"),
+            }
+            
+            results.append(result)
+
+        # Calculate summary statistics
+        successful = sum(1 for r in results if r.get("ok"))
+        failed = len(results) - successful
+        
+        # Aggregate total impact
+        total_quotations_affected = 0
+        total_impact_usd = Decimal("0.00")
+        
+        for r in results:
+            if r.get("ok"):
+                impact = r.get("impact_analysis", {})
+                total_quotations_affected += impact.get("quotations_affected", 0)
+                try:
+                    total_impact_usd += Decimal(impact.get("total_impact_usd", "0.00"))
+                except Exception:
+                    pass
+
+        return {
+            "ok": True,
+            "contract_version": CONTRACT_VERSION,
+            "results": results,
+            "summary": {
+                "total_corrections": len(corrections_input),
+                "successful_validations": successful,
+                "failed_validations": failed,
+                "total_quotations_affected": total_quotations_affected,
+                "total_impact_usd": str(
+                    total_impact_usd.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                ),
+            },
+        }
+
+    except Exception as e:
+        logger.exception("Internal error in batch validation")
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": f"Internal error during batch validation: {e}",
+            },
+        }
