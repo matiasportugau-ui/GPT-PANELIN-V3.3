@@ -388,7 +388,7 @@ def create_export(
             file=sys.stderr,
         )
         return None
-    
+
     # Clean previous export
     if output_dir.exists():
         shutil.rmtree(output_dir)
