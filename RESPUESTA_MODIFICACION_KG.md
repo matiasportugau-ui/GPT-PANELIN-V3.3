@@ -71,13 +71,13 @@ Archivo: `shopify_catalog_v1.json`
 
 ## Seguridad y Auditoría
 
-✅ **Todas las modificaciones están protegidas y auditadas:**
+✅ **Todas las modificaciones están auditadas y controladas. Solo las escrituras vía Wolf API (KB Write) requieren contraseña:**
 
-- 🔐 Contraseña requerida para escribir
-- 📋 Registro de todas las modificaciones
+- 🔐 Contraseña requerida para escrituras vía Wolf API (`WOLF_KB_WRITE_PASSWORD`)
+- 📋 Registro de todas las modificaciones (incluye flujo de gobernanza)
 - 🔍 Validación de archivos autorizados
 - ⏰ Timestamps en todas las operaciones
-- 👤 Trazabilidad de quién hizo cada cambio
+- 👤 Trazabilidad de quién propuso, validó y aplicó cada cambio
 
 ---
 
