@@ -40,8 +40,22 @@ log_warning() {
     echo -e "${YELLOW}[!]${NC} $1"
 }
 
+# CI detection
+IS_CI="${CI:-false}"
+
 # Exit status
 HEALTH_CHECK_FAILED=0
+
+# Detect Docker Compose command (v2 vs v1)
+get_docker_compose_cmd() {
+    if docker compose version > /dev/null 2>&1; then
+        echo "docker compose"
+    elif command -v docker-compose > /dev/null 2>&1; then
+        echo "docker-compose"
+    else
+        echo ""
+    fi
+}
 
 # Function to check if URL is accessible
 check_url() {
@@ -73,12 +87,23 @@ check_mcp_server() {
     
     # Check if server process is running (Docker context)
     if command -v docker >/dev/null 2>&1; then
-        if docker-compose ps | grep -q "panelin-bot.*Up"; then
-            log_success "MCP server container is running"
+        local compose_cmd
+        compose_cmd=$(get_docker_compose_cmd)
+        if [ -n "$compose_cmd" ]; then
+            # shellcheck disable=SC2086
+            if $compose_cmd ps 2>/dev/null | grep -q "panelin-bot.*Up"; then
+                log_success "MCP server container is running"
+            else
+                if [ "$IS_CI" = "true" ]; then
+                    log_warning "MCP server container is not running (container checks skipped in CI)"
+                else
+                    log_error "MCP server container is not running"
+                    HEALTH_CHECK_FAILED=1
+                    return 1
+                fi
+            fi
         else
-            log_error "MCP server container is not running"
-            HEALTH_CHECK_FAILED=1
-            return 1
+            log_warning "Docker Compose not available, skipping container checks"
         fi
     fi
     
@@ -196,11 +221,18 @@ check_docker_resources() {
     fi
     
     # Check running containers
-    local container_count=$(docker-compose ps -q 2>/dev/null | wc -l)
-    if [ "$container_count" -gt 0 ]; then
-        log_success "$container_count container(s) running"
+    local compose_cmd
+    compose_cmd=$(get_docker_compose_cmd)
+    if [ -n "$compose_cmd" ]; then
+        # shellcheck disable=SC2086
+        local container_count=$($compose_cmd ps -q 2>/dev/null | wc -l)
+        if [ "$container_count" -gt 0 ]; then
+            log_success "$container_count container(s) running"
+        else
+            log_warning "No containers are currently running"
+        fi
     else
-        log_warning "No containers are currently running"
+        log_warning "Docker Compose not available, skipping container checks"
     fi
     
     return 0
