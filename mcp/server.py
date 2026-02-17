@@ -12,6 +12,10 @@ Wolf API KB Write tools (v3.4):
 - save_customer: Store customer data for future quotations
 - lookup_customer: Retrieve existing customer data
 
+File operation tools:
+- write_file: Create or update project files (password required)
+- read_file: Read project file contents
+
 Background task processing tools (async, long-running operations):
 - batch_bom_calculate: Submit batch BOM calculations
 - bulk_price_check: Submit bulk pricing lookups
@@ -62,6 +66,7 @@ from .handlers.wolf_kb_write import (
     handle_save_customer,
     handle_lookup_customer,
 )
+from .handlers.file_ops import handle_write_file, handle_read_file
 from .storage.factory import initialize_memory_store
 from .observability import (
     get_invocation_context,
@@ -104,6 +109,9 @@ TOOL_HANDLERS = {
     "register_correction": handle_register_correction,
     "save_customer": handle_save_customer,
     "lookup_customer": handle_lookup_customer,
+    # File operation tools
+    "write_file": handle_write_file,
+    "read_file": handle_read_file,
     # Background task tools (async)
     "batch_bom_calculate": handle_batch_bom_calculate,
     "bulk_price_check": handle_bulk_price_check,
