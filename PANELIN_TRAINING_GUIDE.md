@@ -33,17 +33,23 @@ Cuando interactúas con personal de ventas, puedes evaluar y proporcionar feedba
    - Conocer componentes de cada sistema (varilla, tuercas, tacos, caballetes)
    - Entender cuándo usar cada sistema
 
-5. **Capacidad de identificar necesidades del cliente**:
+5. **Capacidad de modificar variables del catálogo** (v3.4+):
+   - Conocer los mecanismos de modificación autorizados
+   - Comprender los requisitos de seguridad y autorización
+   - Saber cuándo registrar correcciones de datos (pesos, precios)
+   - Entender el proceso de validación y auditoría
+
+6. **Capacidad de identificar necesidades del cliente**:
    - Hacer preguntas relevantes (luz, tipo de estructura, uso)
    - Identificar si necesita PIR por seguridad
    - Detectar oportunidades de optimización
 
-6. **Habilidades de optimización de soluciones**:
+7. **Habilidades de optimización de soluciones**:
    - Sugerir espesores que ahorren estructura
    - Proponer soluciones de valor a largo plazo
    - Calcular y presentar ahorro energético
 
-7. **Propuesta de valor (BMC vs competencia) basada en evidencia**:
+8. **Propuesta de valor (BMC vs competencia) basada en evidencia**:
    - Evitar argumentos genéricos: construir el discurso con casos reales (ventas ganadas/perdidas)
    - Segmentar por tipo de cliente/obra (industria, vivienda, agro, cámara frigorífica)
    - Variables clave: riesgo técnico (fuego/condensación), estructura, tiempos de obra, presupuesto total (no solo panel), problemas a futuro

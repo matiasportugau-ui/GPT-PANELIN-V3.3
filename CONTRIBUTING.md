@@ -457,6 +457,45 @@ For price updates:
 3. Document in commit message with date and source
 4. Test price_check tool with updated data
 
+### Variable Modifications (v3.4+)
+
+When modifying catalog variables (weights, prices, etc.):
+
+1. **Use authorized mechanisms only:**
+   - `register_correction` tool (Wolf API KB Write)
+   - Governance flow (`validate_correction` + `commit_correction`)
+
+2. **Security requirements:**
+   - All modifications require password authorization
+   - Changes are logged in `corrections_log.json`
+   - Only whitelisted files can be modified
+
+3. **Process:**
+   ```bash
+   # Set password environment variable
+   export WOLF_KB_WRITE_PASSWORD="your-secure-password"
+   
+   # Validate the correction first
+   # Use validate_correction tool to analyze impact
+   
+   # Register the correction
+   # Use register_correction tool with password
+   ```
+
+4. **Documentation:**
+   - See [GPT_WEIGHT_MODIFICATION_GUIDE.md](GPT_WEIGHT_MODIFICATION_GUIDE.md) for complete guide
+   - All corrections must include a reason/justification
+   - Changes are audited with timestamp and reporter
+
+5. **Testing modifications:**
+   ```bash
+   # Verify the change was applied
+   grep -A 5 "correction_id" corrections_log.json
+   
+   # Test with actual queries
+   pytest mcp/tests/test_handlers.py -v -k "wolf"
+   ```
+
 ---
 
 ## Additional Resources

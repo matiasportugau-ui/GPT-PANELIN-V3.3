@@ -64,6 +64,15 @@ Your MCP server exposes 4 tools:
 | `bom_calculate` | Calculate Bill of Materials | Generate complete BOM for 12m x 6m roof installation |
 | `report_error` | Log KB errors | Report incorrect pricing in knowledge base |
 
+### Additional Tools (v3.4+)
+
+**Variable Modification Tools:**
+- `register_correction` - Register corrections to catalog data (requires password)
+- `validate_correction` - Validate impact of proposed corrections
+- `commit_correction` - Apply validated corrections
+
+See [GPT_WEIGHT_MODIFICATION_GUIDE.md](GPT_WEIGHT_MODIFICATION_GUIDE.md) for details on modification capabilities.
+
 ---
 
 ## 💡 Integration Examples
