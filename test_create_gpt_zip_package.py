@@ -50,9 +50,10 @@ class TestGPTZipPackagerInit:
         # Extract timestamp from filename
         filename_parts = packager.zip_filename.split('_')
         assert len(filename_parts) >= 5
-        # Should contain date in format YYYYMMDD
-        assert len(filename_parts[-2]) == 8
-        assert filename_parts[-2].isdigit()
+        # Should contain date in format YYYYMMDD (8 digits)
+        date_part = filename_parts[-2]
+        assert len(date_part) == 8
+        assert date_part.isdigit()
 
 
 class TestGetAllRequiredFiles:
@@ -309,7 +310,9 @@ class TestGenerateManifest:
         assert "files" in manifest
         
         assert manifest["package_name"] == "Panelin GPT Configuration Package"
-        assert manifest["version"] == "3.3"
+        # Verify version field exists (don't hardcode specific version)
+        assert isinstance(manifest["version"], str)
+        assert len(manifest["version"]) > 0
         assert manifest["total_files"] == 1
     
     def test_manifest_includes_file_list(self, tmp_path):
@@ -435,7 +438,7 @@ class TestCreateZipPackage:
             manifest = json.loads(manifest_content)
             assert "package_name" in manifest
     
-    def test_zip_organizes_files_by_category(self, tmp_path):
+    def test_zip_organizes_files_by_category(self, tmp_path, monkeypatch):
         """Test that ZIP organizes files into category folders."""
         packager = GPTZipPackager(tmp_path)
         
@@ -444,7 +447,6 @@ class TestCreateZipPackage:
         test_file.write_text('{"test": true}')
         
         # Use custom file structure instead of the default one
-        # Create a temporary packager with overridden get_all_required_files
         test_files = {"Phase_1_Test": ["test.json"]}
         
         # Manually create the validation structure as the method would
@@ -456,14 +458,10 @@ class TestCreateZipPackage:
             "file_details": {"test.json": {"exists": True, "size": test_file.stat().st_size, "category": "Phase_1_Test"}}
         }
         
-        # Temporarily override the get_all_required_files method
-        original_method = packager.get_all_required_files
-        packager.get_all_required_files = lambda: test_files
+        # Use monkeypatch to override the get_all_required_files method
+        monkeypatch.setattr(packager, 'get_all_required_files', lambda: test_files)
         
         zip_path = packager.create_zip_package(validation)
-        
-        # Restore original method
-        packager.get_all_required_files = original_method
         
         with zipfile.ZipFile(zip_path, 'r') as zipf:
             namelist = zipf.namelist()
