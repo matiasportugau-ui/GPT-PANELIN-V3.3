@@ -39,6 +39,19 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Function to get docker-compose command
+get_docker_compose_cmd() {
+    # Try modern Docker Compose v2 first (docker compose)
+    if docker compose version >/dev/null 2>&1; then
+        echo "docker compose"
+    # Fall back to legacy docker-compose v1
+    elif command -v docker-compose >/dev/null 2>&1; then
+        echo "docker-compose"
+    else
+        echo ""
+    fi
+}
+
 # Function to load environment file
 load_env_file() {
     local env_file="$1"
@@ -97,11 +110,23 @@ deploy_docker_compose() {
     
     cd "$PROJECT_ROOT"
     
-    if docker-compose down; then
+    local compose_cmd=$(get_docker_compose_cmd)
+    
+    if [ -z "$compose_cmd" ]; then
+        log_error "Docker Compose is not available"
+        return 1
+    fi
+    
+    # Use word splitting intentionally - compose_cmd contains either "docker compose" or "docker-compose"
+    # Quoting would break "docker compose" by treating it as a single command name
+    # shellcheck disable=SC2086
+    if $compose_cmd down; then
         log_info "Stopped existing containers"
     fi
     
-    if docker-compose up -d --build; then
+    # Use word splitting intentionally - compose_cmd contains either "docker compose" or "docker-compose"
+    # shellcheck disable=SC2086
+    if $compose_cmd up -d --build; then
         log_success "Deployment completed successfully"
         return 0
     else
@@ -134,8 +159,14 @@ rollback_deployment() {
     
     cd "$PROJECT_ROOT"
     
-    # Stop current containers
-    docker-compose down
+    local compose_cmd=$(get_docker_compose_cmd)
+    
+    if [ -n "$compose_cmd" ]; then
+        # Stop current containers
+        # Use word splitting intentionally - compose_cmd contains either "docker compose" or "docker-compose"
+        # shellcheck disable=SC2086
+        $compose_cmd down
+    fi
     
     # Restore previous version (implement your rollback strategy here)
     log_info "Restoring previous version"
@@ -174,10 +205,14 @@ main() {
         exit 1
     fi
     
-    if ! command_exists docker-compose; then
-        log_error "docker-compose is not installed"
+    # Check for Docker Compose (v1 or v2)
+    local compose_cmd=$(get_docker_compose_cmd)
+    if [ -z "$compose_cmd" ]; then
+        log_error "Docker Compose is not installed"
+        log_info "Please install Docker Compose v2 (docker compose) or v1 (docker-compose)"
         exit 1
     fi
+    log_info "Using Docker Compose: $compose_cmd"
     
     # Load environment file
     ENV_FILE="${PROJECT_ROOT}/.env.${ENVIRONMENT}"
@@ -239,7 +274,12 @@ main() {
     
     # Show running containers
     log_info "Running containers:"
-    docker-compose ps
+    local compose_cmd=$(get_docker_compose_cmd)
+    if [ -n "$compose_cmd" ]; then
+        # Use word splitting intentionally - compose_cmd contains either "docker compose" or "docker-compose"
+        # shellcheck disable=SC2086
+        $compose_cmd ps
+    fi
 }
 
 # Run main function
