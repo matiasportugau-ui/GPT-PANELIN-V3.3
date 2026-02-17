@@ -382,7 +382,7 @@ gcloud run services list --region=us-central1
 | Docker local setup | 5 min | Automated |
 | Terraform setup | 10 min | Automated |
 | Cloud Build deploy | 10-15 min | Automated |
-| **Total (all platforms)** | **40-45 min** | Mixed |
+| **Total (all platforms)** | **41-46 min** | Mixed |
 
 ---
 
