@@ -24,5 +24,24 @@
     "status": "pending",
     "applied_date": null
   },
-  "corrections": []
+  "corrections": [
+    {
+      "id": "COR-001",
+      "date": "2026-02-17T18:16:37Z",
+      "kb_file": "bromyros_pricing_master.json",
+      "field": "meta.generated_from",
+      "wrong_value": "bromyros_pricing_gpt_optimized.json",
+      "correct_value": "e2e_test_value.json",
+      "source": "validation_check",
+      "notes": "E2E test",
+      "status": "pending",
+      "applied_date": null,
+      "change_id": "CHG-06D47D25D427",
+      "impact_summary": {
+        "quotations_affected": 0,
+        "total_impact_usd": "0.00",
+        "severity": "low"
+      }
+    }
+  ]
 }
