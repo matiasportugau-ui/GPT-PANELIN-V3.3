@@ -151,7 +151,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Set up Docker Compose
+      - name: Verify Docker Compose
         run: |
           echo "🐋 Verifying Docker Compose availability..."
           docker compose version
