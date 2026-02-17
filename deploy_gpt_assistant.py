@@ -342,7 +342,7 @@ class AssistantDeployer:
                 else t.get('type', '?')
                 for t in params['tools']
             ]
-            print(f"    Tools: {tools_list}")
+            print(f"    Tools: {', '.join(tools_list)}")
             return assistant_id or "dry-run-assistant-id"
 
         if assistant_id:
