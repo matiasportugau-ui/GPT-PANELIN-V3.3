@@ -187,7 +187,7 @@ async def generate_gpt_config(auto_approve: bool = True) -> list[TextContent]:
         if auto_approve:
             # Auto-approve by piping "yes" to the script
             process = subprocess.Popen(
-                ["python", str(script_path)],
+                [sys.executable, str(script_path)],
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -198,7 +198,7 @@ async def generate_gpt_config(auto_approve: bool = True) -> list[TextContent]:
         else:
             # Interactive mode
             process = subprocess.run(
-                ["python", str(script_path)],
+                [sys.executable, str(script_path)],
                 cwd=str(REPO_ROOT),
                 capture_output=True,
                 text=True
