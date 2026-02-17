@@ -1,14 +1,19 @@
 # RTF Files Update Summary - Version 3.4
 
 **Date:** 2026-02-14  
-**Updated Files:** 2 RTF files  
+**Updated Files in this PR:** 
+- `Esquema json.rtf` (modified)
+- `Instrucciones GPT.rtf` (modified)
+- `RTF_UPDATE_SUMMARY_V3.4.md` (new)
+- `RTF_UPDATE_VERIFICATION_CHECKLIST.md` (new)
+
 **Version:** v3.1 → v3.4
 
 ---
 
 ## Overview
 
-Updated two critical RTF documentation files to reflect the latest v3.4 development, specifically the Wolf API KB Write capabilities introduced in version 3.4.
+This PR updates two critical RTF documentation files (`Esquema json.rtf` and `Instrucciones GPT.rtf`) to reflect the latest v3.4 development, specifically the Wolf API KB Write capabilities introduced in version 3.4. Additionally, it includes this summary document and a verification checklist for validation.
 
 ---
 
@@ -191,7 +196,7 @@ These RTF files are used for:
 3. ⬜ Test Wolf API KB Write endpoints with new schema
 4. ⬜ Verify password validation works correctly
 5. ⬜ Test customer lookup (no password) vs customer save (password required)
-6. ⬜ Document KB Write password for team access
+6. ⬜ Document KB Write password access process (use secure secret manager / out-of-band; never store password in repo or shared docs)
 
 ---
 

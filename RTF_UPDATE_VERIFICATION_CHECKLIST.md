@@ -147,7 +147,7 @@ head -10 "Instrucciones GPT.rtf"
 
 # Count endpoints
 grep -c "operationId" "Esquema json.rtf"
-# Should show: 9 (5 original + 4 new)
+# Should show: 11 (7 existing + 4 new)
 ```
 
 ---
