@@ -344,7 +344,7 @@ await handle_register_correction({
 # Respuesta esperada
 {
     "ok": True,
-    "contract_version": "1.0.0",
+    "contract_version": "v1",
     "correction_id": "cor-20260217142530",
     "stored_at": "2026-02-17T14:25:30.123456Z"
 }
