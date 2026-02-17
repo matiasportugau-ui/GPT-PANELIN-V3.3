@@ -173,7 +173,8 @@ Los valores de peso **SOLO** pueden modificarse en archivos de la lista blanca:
 
 ### 4.1 Medidas de Seguridad
 
-✅ **Contraseña requerida**: Todas las operaciones de escritura requieren `WOLF_KB_WRITE_PASSWORD`  
+✅ **Contraseña requerida (herramientas de escritura de KB de Wolf API)**: Todas las operaciones de escritura que modifican directamente la base de conocimiento vía Wolf API requieren `WOLF_KB_WRITE_PASSWORD`.  
+✅ **Herramientas de gobernanza (validate_correction/commit_correction)**: Estas herramientas no validan `WOLF_KB_WRITE_PASSWORD` en la implementación actual; su uso está protegido por un flujo de confirmación explícito (`confirm=true`) antes de aplicar cambios.  
 ✅ **Validación de entrada**: Los campos y valores son validados antes de aplicar cambios  
 ✅ **Lista blanca de archivos**: Solo archivos autorizados pueden ser modificados  
 ✅ **Registro de auditoría**: Todas las modificaciones quedan registradas con timestamp
