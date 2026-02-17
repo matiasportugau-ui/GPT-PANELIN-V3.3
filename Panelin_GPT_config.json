@@ -77,6 +77,7 @@
       "Wolf API KB Write - Persist conversation summaries and quotation history",
       "Wolf API KB Write - Register corrections and data fixes to improve KB quality",
       "Wolf API KB Write - Store and retrieve customer data for seamless repeat quotations",
+      "Wolf API KB Write - Modify product weights (kg) in catalog through register_correction",
       "Customer lookup - Auto-retrieve returning customer info without re-asking",
       "Checkpoint persistence - Save conversation state via Wolf API for long sessions"
     ]

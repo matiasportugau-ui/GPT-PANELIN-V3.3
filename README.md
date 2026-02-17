@@ -514,9 +514,11 @@ A production-ready MCP server built on the MCP SDK that provides **18 specialize
 | Tool | Purpose | Handler |
 |------|---------|---------|
 | `persist_conversation` | Save conversation history to KB | `handlers/wolf_kb_write.py` |
-| `register_correction` | Register KB corrections | `handlers/wolf_kb_write.py` |
+| `register_correction` | Register KB corrections (prices, weights, specs) | `handlers/wolf_kb_write.py` |
 | `save_customer` | Store customer data | `handlers/wolf_kb_write.py` |
 | `lookup_customer` | Retrieve customer data | `handlers/wolf_kb_write.py` |
+
+> 📝 **New Feature:** The GPT can modify product weights (kg) in the catalog through `register_correction` tool. See [GPT_WEIGHT_MODIFICATION_GUIDE.md](GPT_WEIGHT_MODIFICATION_GUIDE.md) for complete documentation.
 
 **Self-Healing Governance Tools (2):**
 | Tool | Purpose | Handler |
@@ -2163,6 +2165,7 @@ See [PANELIN_TRAINING_GUIDE.md](PANELIN_TRAINING_GUIDE.md) for details.
 | [EVOLUCIONADOR_FINAL_REPORT.md](EVOLUCIONADOR_FINAL_REPORT.md) | EVOLUCIONADOR completion report | 1.0.0 |
 | [WOLF_KB_WRITE_ACCESS_VERIFICATION.md](WOLF_KB_WRITE_ACCESS_VERIFICATION.md) | Wolf API write access verification guide | 3.4 |
 | [WOLF_WRITE_ACCESS_QUICK_GUIDE.md](WOLF_WRITE_ACCESS_QUICK_GUIDE.md) | Quick guide for Wolf API write capabilities | 3.4 |
+| [GPT_WEIGHT_MODIFICATION_GUIDE.md](GPT_WEIGHT_MODIFICATION_GUIDE.md) | Complete guide for modifying product weights (kg) via GPT | 3.4 |
 
 ### MCP Integration Documentation
 
