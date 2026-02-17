@@ -294,13 +294,19 @@ class AssistantDeployer:
         # Wait for processing
         self._wait_for_vector_store_ready(vs.id)
 
-        # Delete old vector store
+        # NOTE:
+        # We intentionally do NOT delete the old vector store here.
+        # Deleting it immediately after creating the new one is unsafe because
+        # subsequent assistant update/verification steps may fail while
+        # production still references the old vector store. In that case,
+        # rollback would not be able to recover the deleted vector store.
+        # Instead, the old vector store (if any) should be garbage-collected
+        # explicitly after a successful deployment/verification step.
         if old_vs_id and old_vs_id != vs.id:
-            try:
-                self.client.beta.vector_stores.delete(old_vs_id)
-                print(f"  Deleted old vector store: {old_vs_id}")
-            except Exception:
-                print(f"  WARNING: Could not delete old vector store: {old_vs_id}")
+            print(
+                f"  NOTE: Old vector store remains: {old_vs_id} "
+                f"(eligible for cleanup after successful deployment)"
+            )
 
         return vs.id
 
