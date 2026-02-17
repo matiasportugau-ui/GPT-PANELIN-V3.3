@@ -92,7 +92,9 @@ check_mcp_server() {
         local compose_cmd=$(get_docker_compose_cmd)
         
         if [ -n "$compose_cmd" ]; then
-            # Use word splitting intentionally - compose_cmd is controlled
+            # Use word splitting intentionally - compose_cmd contains either "docker compose" or "docker-compose"
+            # Quoting would break "docker compose" by treating it as a single command name
+            # shellcheck disable=SC2086
             if $compose_cmd ps 2>/dev/null | grep -q "panelin-bot.*Up"; then
                 log_success "MCP server container is running"
             else
@@ -237,7 +239,9 @@ check_docker_resources() {
     # Check running containers
     local compose_cmd=$(get_docker_compose_cmd)
     if [ -n "$compose_cmd" ]; then
-        # Use word splitting intentionally - compose_cmd is controlled
+        # Use word splitting intentionally - compose_cmd contains either "docker compose" or "docker-compose"
+        # Quoting would break "docker compose" by treating it as a single command name
+        # shellcheck disable=SC2086
         local container_count=$($compose_cmd ps -q 2>/dev/null | wc -l)
         if [ "$container_count" -gt 0 ]; then
             log_success "$container_count container(s) running"
