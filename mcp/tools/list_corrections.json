@@ -1,0 +1,30 @@
+{
+  "name": "list_corrections",
+  "description": "List corrections from the corrections log with optional filtering by status, KB file, or date range. Useful for reviewing pending corrections, tracking correction history, and understanding what errors have been identified during verbal interactions with the GPT.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["pending", "applied", "rejected", "all"],
+        "description": "Filter corrections by status. Default is 'all' to show all corrections."
+      },
+      "kb_file": {
+        "type": "string",
+        "description": "Filter by specific KB file (e.g., 'accessories_catalog.json')"
+      },
+      "limit": {
+        "type": "integer",
+        "description": "Maximum number of corrections to return. Default is 50.",
+        "minimum": 1,
+        "maximum": 500
+      },
+      "offset": {
+        "type": "integer",
+        "description": "Number of corrections to skip for pagination. Default is 0.",
+        "minimum": 0
+      }
+    },
+    "required": []
+  }
+}

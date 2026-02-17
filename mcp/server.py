@@ -57,7 +57,13 @@ from .handlers.pricing import handle_price_check
 from .handlers.catalog import handle_catalog_search
 from .handlers.bom import handle_bom_calculate
 from .handlers.errors import handle_report_error
-from .handlers.governance import handle_validate_correction, handle_commit_correction
+from .handlers.governance import (
+    handle_validate_correction,
+    handle_commit_correction,
+    handle_list_corrections,
+    handle_update_correction_status,
+    handle_batch_validate_corrections,
+)
 from .handlers.quotation import configure_quotation_store, handle_quotation_store
 from .handlers.wolf_kb_write import (
     configure_wolf_kb_client,
@@ -103,6 +109,9 @@ TOOL_HANDLERS = {
     "report_error": handle_report_error,
     "validate_correction": handle_validate_correction,
     "commit_correction": handle_commit_correction,
+    "list_corrections": handle_list_corrections,
+    "update_correction_status": handle_update_correction_status,
+    "batch_validate_corrections": handle_batch_validate_corrections,
     "quotation_store": handle_quotation_store,
     # Wolf API KB Write tools (v3.4)
     "persist_conversation": handle_persist_conversation,
