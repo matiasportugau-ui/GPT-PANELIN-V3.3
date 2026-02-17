@@ -555,6 +555,7 @@ class AssistantDeployer:
                 if (
                     current_state.get("config_hash") == current_hash
                     and current_state.get("file_hashes") == current_file_hashes
+                    and current_state.get("model") == self.model
                 ):
                     print("  No changes detected. Use --force to deploy anyway.")
                     return 0
