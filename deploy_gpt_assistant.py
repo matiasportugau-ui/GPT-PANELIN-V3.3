@@ -6,7 +6,7 @@ Reads Panelin_GPT_config.json as source of truth and creates/updates
 the assistant with knowledge base files in a vector store.
 
 Usage:
-    python deploy_gpt_assistant.py [--dry-run] [--force] [--model gpt-4o] [--rollback]
+    python deploy_gpt_assistant.py [--dry-run] [--force] [--model gpt-4o] [--rollback] [--allow-partial]
 """
 
 import argparse
@@ -45,12 +45,14 @@ class AssistantDeployer:
         dry_run: bool = False,
         model: str = "gpt-4o",
         force: bool = False,
+        allow_partial: bool = False,
     ):
         self.repo_root = repo_root
         self.api_key = api_key
         self.dry_run = dry_run
         self.model = model
         self.force = force
+        self.allow_partial = allow_partial
         self.config: Dict[str, Any] = {}
         self.client = None
 
@@ -233,8 +235,12 @@ class AssistantDeployer:
             })
         return function_tools
 
-    def upload_files(self, current_state: Optional[Dict[str, Any]]) -> Dict[str, str]:
-        """Upload KB files via the Files API, skipping unchanged files."""
+    def upload_files(self, current_state: Optional[Dict[str, Any]]) -> tuple[Dict[str, str], int, List[str]]:
+        """Upload KB files via the Files API, skipping unchanged files.
+        
+        Returns:
+            tuple: (file_ids dict, failed_count, list of failed filenames)
+        """
         files_to_upload = self.config.get("deployment", {}).get("files_to_upload", [])
         new_hashes = self.compute_file_hashes()
         old_hashes = (current_state or {}).get("file_hashes", {})
@@ -244,12 +250,14 @@ class AssistantDeployer:
         uploaded_count = 0
         skipped_count = 0
         failed_count = 0
+        failed_files: List[str] = []
 
         for filename in files_to_upload:
             filepath = self.repo_root / filename
             if not filepath.exists():
                 print(f"  WARNING: {filename} not found, skipping")
                 failed_count += 1
+                failed_files.append(filename)
                 continue
 
             # Skip upload if file hasn't changed and old ID exists
@@ -280,9 +288,10 @@ class AssistantDeployer:
             except Exception as e:
                 print(f"  FAILED: {filename} - {e}")
                 failed_count += 1
+                failed_files.append(filename)
 
         print(f"\n  Summary: {uploaded_count} uploaded, {skipped_count} unchanged, {failed_count} failed")
-        return file_ids
+        return file_ids, failed_count, failed_files
 
     def create_or_update_vector_store(
         self, file_ids: Dict[str, str], current_state: Optional[Dict[str, Any]]
@@ -382,6 +391,12 @@ class AssistantDeployer:
                 for t in params['tools']
             ]
             print(f"    Tools: {tools_list}")
+            # Extract list comprehension to avoid nested f-string
+            tool_list = [
+                f"fn:{t.get('function', {}).get('name', '?')}" if t.get('type') == 'function' else t.get('type', '?') 
+                for t in params['tools']
+            ]
+            print(f"    Tools: {tool_list}")
             return assistant_id or "dry-run-assistant-id"
 
         if assistant_id:
@@ -625,10 +640,20 @@ class AssistantDeployer:
 
             # 6. Upload files
             print("[6/8] Uploading KB files...")
-            file_ids = self.upload_files(current_state)
+            file_ids, failed_count, failed_files = self.upload_files(current_state)
             if not file_ids:
                 print("  ERROR: No files were uploaded successfully")
                 return 1
+            
+            # Check for failures and exit if not allowing partial deployments
+            if failed_count > 0 and not self.allow_partial:
+                print(f"\n  ERROR: {failed_count} file(s) failed to upload:")
+                for filename in failed_files:
+                    print(f"    - {filename}")
+                print("\n  Deployment aborted. Use --allow-partial to proceed with partial KB.")
+                return 1
+            elif failed_count > 0 and self.allow_partial:
+                print(f"\n  WARNING: Proceeding with partial KB ({failed_count} file(s) missing)")
             print()
 
             # 7. Create/update vector store
@@ -711,6 +736,11 @@ def main():
         action="store_true",
         help="Restore previous vector store attachment from backup state (does not revert assistant name/instructions/tools)",
     )
+    parser.add_argument(
+        "--allow-partial",
+        action="store_true",
+        help="Allow deployment with partial KB if some files are missing or fail to upload",
+    )
     args = parser.parse_args()
 
     api_key = args.api_key or os.environ.get("OPENAI_API_KEY", "")
@@ -728,6 +758,7 @@ def main():
         dry_run=args.dry_run,
         model=args.model,
         force=args.force,
+        allow_partial=args.allow_partial,
     )
 
     if args.rollback:
