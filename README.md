@@ -249,6 +249,20 @@ GPT-PANELIN-V3.3/
 │           ├── commit_correction.json           # Governance commit schema
 │           └── quotation_store.json             # Quotation persistence schema
 │
+├── WOLF API (Knowledge Base Backend) — NEW in v3.4
+│   └── wolf_api/                                # FastAPI backend for KB operations
+│       ├── main.py                              # FastAPI app with /kb/conversations endpoint
+│       ├── requirements.txt                     # FastAPI, uvicorn, google-cloud-storage
+│       ├── requirements-test.txt                # pytest, httpx for testing
+│       ├── Dockerfile                           # Production-ready Docker image (Python 3.11)
+│       ├── .dockerignore                        # Docker build exclusions
+│       ├── README.md                            # Quick start and API documentation
+│       ├── DEPLOYMENT.md                        # Complete deployment guide (Cloud Run)
+│       ├── IAM_SETUP.md                         # IAM permissions and service account setup
+│       └── tests/                               # Unit tests (10 tests, all passing)
+│           ├── __init__.py
+│           └── test_kb_conversations.py         # /kb/conversations endpoint tests
+│
 ├── CALCULATION ENGINE
 │   ├── quotation_calculator_v3.py               # Python calculation engine v3.1
 │   └── quotation_calculator_v3.cpython-314.pyc  # Compiled bytecode
@@ -831,6 +845,16 @@ curl -H "X-API-Key: YOUR_WOLF_API_KEY" \
 | `/find_products` | POST | ✅ Yes | Natural language product search |
 | `/product_price` | POST | ✅ Yes | Get price for product by ID |
 | `/check_availability` | POST | ✅ Yes | Check product availability & stock |
+
+#### Knowledge Base Services (v3.4)
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/kb/conversations` | POST | ✅ Yes | Persist conversation summaries to GCS |
+
+**New in v3.4:** The Wolf API now includes Knowledge Base write operations that allow the GPT to persist conversation data, corrections, and customer information directly through chat interactions. Data is stored in Google Cloud Storage as JSONL for downstream analysis and training.
+
+**Implementation:** See [`wolf_api/`](./wolf_api/) for the FastAPI backend implementation with GCS persistence, including deployment guides and IAM setup instructions.
 
 ### Request Examples
 
