@@ -68,8 +68,32 @@ User → Frontend (port 8080) → Backend API (port 8081) → Database (optional
 
 ### Prerequisites
 
+**For local development without database:**
 ```bash
 pip install flask requests
+```
+
+**For local development with PostgreSQL:**
+```bash
+pip install flask requests psycopg2-binary
+```
+
+**For GCP Cloud Run deployment:**
+```bash
+pip install -r backend/requirements.txt  # Includes psycopg2, google-cloud-secret-manager
+pip install -r frontend/requirements.txt
+```
+
+### Database Initialization
+
+Before first use with database, run the initialization script:
+
+```bash
+# For local PostgreSQL
+psql -U postgres -d app_database -f backend/init_db.sql
+
+# For GCP Cloud SQL
+gcloud sql connect <instance-name> --user=postgres --database=app_database < backend/init_db.sql
 ```
 
 ### Local Development
@@ -156,11 +180,20 @@ Integration points marked with `TODO` comments in the code.
 
 ## Security Considerations
 
-- All write operations to Wolf API require password authentication
-- User input is sanitized before processing
-- CORS should be configured for production
-- HTTPS required for production deployment
-- Environment variables for sensitive configuration
+### Current Implementation
+- ✅ XSS Protection: Frontend uses `textContent` (not `innerHTML`) for user-generated content
+- ✅ Input Validation: Message length limited to 5000 characters (frontend and backend)
+- ✅ Parameterized Queries: All SQL queries use parameterization to prevent SQL injection
+- ✅ Error Handling: Generic error messages returned to users (no internal details exposed)
+- ✅ User Identification: Unique anonymous user IDs via localStorage
+
+### Production Requirements (TODO)
+- ⚠️ Rate Limiting: Add Flask-Limiter or similar to prevent spam (10-20 messages/minute recommended)
+- ⚠️ CORS Configuration: Configure allowed origins for API endpoints
+- ⚠️ HTTPS: Enforce HTTPS for all traffic in production
+- ⚠️ Authentication: Implement proper user authentication and sessions
+- ⚠️ Database Migrations: Use migration scripts (see `backend/init_db.sql`) instead of auto-creating tables
+- ⚠️ Wolf API Password: Store KB Write password in Secret Manager (never in code/env files)
 
 ## Development Notes
 

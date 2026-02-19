@@ -229,7 +229,7 @@
             <p>Asistente de Cotización BMC Uruguay</p>
         </div>
 
-        <div class="chat-messages" id="chatMessages">
+        <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Mensajes del chat">
             <div class="message bot">
                 <div class="message-content">
                     ¡Hola! Soy tu asistente de Panelin BMC Uruguay. ¿En qué puedo ayudarte hoy?
@@ -247,9 +247,11 @@
                     id="messageInput" 
                     placeholder="Escribe tu mensaje aquí..."
                     autocomplete="off"
+                    aria-label="Mensaje de chat"
+                    maxlength="5000"
                     required
                 />
-                <button type="submit" id="sendButton">Enviar</button>
+                <button type="submit" id="sendButton" aria-label="Enviar mensaje">Enviar</button>
             </form>
         </div>
     </div>
@@ -260,6 +262,18 @@
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
         const errorMessage = document.getElementById('errorMessage');
+
+        // Generate or retrieve unique user ID from localStorage
+        function getUserId() {
+            let userId = localStorage.getItem('panelin_user_id');
+            if (!userId) {
+                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('panelin_user_id', userId);
+            }
+            return userId;
+        }
+
+        const USER_ID = getUserId();
 
         document.getElementById('initialTime').textContent = new Date().toLocaleTimeString('es-UY', {
             hour: '2-digit',
@@ -275,12 +289,19 @@
                 minute: '2-digit'
             });
 
-            messageDiv.innerHTML = `
-                <div class="message-content">
-                    ${text}
-                    <div class="message-time">${time}</div>
-                </div>
-            `;
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            const textSpan = document.createElement('span');
+            textSpan.textContent = text;
+
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = time;
+
+            contentDiv.appendChild(textSpan);
+            contentDiv.appendChild(timeDiv);
+            messageDiv.appendChild(contentDiv);
 
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -336,7 +357,11 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ message: message })
+                    body: JSON.stringify({ 
+                        message: message,
+                        user_id: USER_ID
+                    })
+                });
                 });
 
                 hideTypingIndicator();

@@ -77,6 +77,7 @@ def chat():
     try:
         data = request.get_json()
         user_message = data.get('message', '')
+        user_id = data.get('user_id', 'anonymous')
         
         if not user_message:
             return jsonify({
@@ -84,11 +85,18 @@ def chat():
                 'message': 'No message provided'
             }), 400
         
+        # Validate message length
+        if len(user_message) > 5000:
+            return jsonify({
+                'status': 'error',
+                'message': 'Message too long. Maximum 5000 characters allowed.'
+            }), 400
+        
         # Forward to backend service
         try:
             response = requests.post(
                 f"{BACKEND_SERVICE_URL}/api/chat",
-                json={'message': user_message, 'user_id': 'web_user'},
+                json={'message': user_message, 'user_id': user_id},
                 timeout=30
             )
             response.raise_for_status()
@@ -101,7 +109,6 @@ def chat():
             return jsonify({
                 'status': 'success',
                 'response': (
-                    f"Recibí tu mensaje: '{user_message}'. "
                     "El servicio backend no está disponible en este momento. "
                     "Por favor, intenta nuevamente más tarde."
                 ),
@@ -119,9 +126,10 @@ def chat():
             }), 200
         
     except Exception as e:
+        print(f"Error processing chat: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': f'Error processing chat message: {str(e)}'
+            'message': 'Error al procesar el mensaje.'
         }), 500
 
 

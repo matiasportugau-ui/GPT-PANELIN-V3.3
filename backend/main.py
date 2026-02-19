@@ -6,7 +6,6 @@ Provides chat conversation storage and processing endpoints.
 
 import os
 import json
-from datetime import datetime
 from flask import Flask, jsonify, request
 
 # Optional imports for GCP
@@ -172,10 +171,18 @@ def process_chat():
         user_message = data.get('message', '')
         user_id = data.get('user_id', 'anonymous')
         
+        # Input validation
         if not user_message:
             return jsonify({
                 'status': 'error',
                 'message': 'No message provided'
+            }), 400
+        
+        # Validate message length (max 5000 characters)
+        if len(user_message) > 5000:
+            return jsonify({
+                'status': 'error',
+                'message': 'Message too long. Maximum 5000 characters allowed.'
             }), 400
         
         # Generate response (works with or without DB)
@@ -192,18 +199,8 @@ def process_chat():
                 try:
                     cursor = conn.cursor()
                     
-                    # Create conversations table if it doesn't exist
-                    cursor.execute("""
-                        CREATE TABLE IF NOT EXISTS conversations (
-                            id SERIAL PRIMARY KEY,
-                            user_id VARCHAR(255) NOT NULL,
-                            user_message TEXT NOT NULL,
-                            bot_response TEXT NOT NULL,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                        )
-                    """)
-                    
                     # Store conversation in database
+                    # Note: conversations table must be created via migrations/init script
                     cursor.execute("""
                         INSERT INTO conversations (user_id, user_message, bot_response)
                         VALUES (%s, %s, %s)
@@ -233,13 +230,11 @@ def process_chat():
         
     except Exception as e:
         print(f"Error processing chat: {str(e)}")
-        # Return response even on error
-        bot_response = 'Disculpa, encontré un problema al procesar tu mensaje. ¿Podrías intentar de nuevo?'
+        # Return generic error without exposing internal details
         return jsonify({
-            'status': 'success',
-            'response': bot_response,
-            'error_logged': str(e)
-        }), 200
+            'status': 'error',
+            'message': 'Error al procesar el mensaje. Por favor, intenta nuevamente.'
+        }), 500
         
     finally:
         if cursor:
@@ -259,7 +254,21 @@ def get_conversations():
     
     try:
         user_id = request.args.get('user_id', 'anonymous')
-        limit = int(request.args.get('limit', 20))
+        limit_param = request.args.get('limit', '20')
+        
+        # Validate limit parameter
+        try:
+            limit = int(limit_param)
+            if limit < 1 or limit > 100:
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Invalid limit parameter. Must be an integer between 1 and 100.'
+                }), 400
+        except ValueError:
+            return jsonify({
+                'status': 'error',
+                'message': 'Invalid limit parameter. Must be an integer.'
+            }), 400
         
         conn = get_db_connection()
         if not conn:
@@ -297,9 +306,10 @@ def get_conversations():
         }), 200
         
     except Exception as e:
+        print(f"Error retrieving conversations: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': f'Error retrieving conversations: {str(e)}'
+            'message': 'Error al recuperar las conversaciones.'
         }), 500
         
     finally:
