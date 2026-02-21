@@ -1,0 +1,196 @@
+# GPT Panel v3.4 Configuration
+# Self-Learning Knowledge Base System
+
+version: "3.4"
+name: "GPT-PANELIN-V3.4"
+release_date: "2026-02-18"
+
+# Knowledge Base Configuration
+knowledge_base:
+  # Storage backend - PostgreSQL (most efficient)
+  storage_backend: "postgresql"
+  host: "${KB_DB_HOST}"
+  port: "${KB_DB_PORT:5432}"
+  database: "gpt_panel_kb"
+  username: "${KB_DB_USER}"
+  password: "${KB_DB_PASSWORD}"
+
+  # Connection pooling
+  connection_pool_size: 20
+  max_overflow: 40
+
+  # Self-learning KB settings
+  self_learning:
+    enabled: true
+    auto_index: true
+    batch_size: 100
+    confidence_threshold: 0.75
+
+  # Storage options
+  persistence:
+    format: "jsonl"  # JSONL format for KB entries
+    gcs_bucket: "${KB_GCS_BUCKET}"
+    gcs_project: "${GCP_PROJECT_ID}"
+    backup_enabled: true
+    backup_interval: "daily"
+
+# Approval Workflow Configuration
+approval_workflow:
+  enabled: true
+  auto_approval: false  # Human approval required
+  approval_queue_ttl: 604800  # 7 days in seconds
+
+  notification:
+    enabled: true
+    channels:
+      - type: "email"
+        recipients: "${APPROVAL_NOTIFIERS}"
+      - type: "slack"
+        webhook: "${SLACK_WEBHOOK_URL}"
+
+  # Approval levels
+  levels:
+    - level: 1
+      name: "standard_review"
+      required_reviewers: 1
+      permission: "reviewer"
+    - level: 2
+      name: "technical_review"
+      required_reviewers: 1
+      permission: "technical_reviewer"
+
+# Training Loop Configuration
+training:
+  enabled: true
+  continuous_learning: true
+
+  # Training triggers
+  triggers:
+    - type: "conversation_completion"
+      threshold: 10  # Learn after every 10 conversations
+    - type: "scheduled"
+      schedule: "0 2 * * *"  # Daily at 2 AM
+
+  # Learning parameters
+  parameters:
+    learning_rate: 0.01
+    batch_size: 32
+    epochs: 5
+    validation_split: 0.2
+
+# API Configuration
+api:
+  version: "3.4"
+  base_url: "${API_BASE_URL}"
+  port: "${API_PORT:8000}"
+
+  # KB endpoints
+  kb_endpoints:
+    - path: "/api/v3.4/kb/write-entry"
+      method: "POST"
+      auth_required: true
+      description: "Submit new KB entry for approval"
+    - path: "/api/v3.4/approval/approve/{entry_id}"
+      method: "POST"
+      auth_required: true
+      description: "Approve KB entry"
+    - path: "/api/v3.4/approval/reject/{entry_id}"
+      method: "POST"
+      auth_required: true
+      description: "Reject KB entry"
+    - path: "/api/v3.4/approval/pending"
+      method: "GET"
+      auth_required: true
+      description: "Get pending approvals"
+
+# Monitoring & Logging
+monitoring:
+  enabled: true
+
+  # Metrics
+  metrics:
+    enabled: true
+    prometheus_enabled: true
+    port: 9090
+
+  # Logging
+  logging:
+    level: "INFO"
+    format: "json"
+    handlers:
+      - type: "file"
+        path: "/var/log/gpt-panel/v3.4.log"
+      - type: "gcp_logging"
+        project_id: "${GCP_PROJECT_ID}"
+
+  # Audit trail
+  audit:
+    enabled: true
+    track_kb_changes: true
+    track_approvals: true
+    retention_days: 365
+
+# Deployment Configuration
+deployment:
+  environment: "${DEPLOY_ENV:production}"
+
+  # Docker configuration
+  docker:
+    image: "gpt-panel:v3.4"
+    registry: "${DOCKER_REGISTRY}"
+    pull_policy: "always"
+
+  # Kubernetes
+  kubernetes:
+    namespace: "gpt-panel"
+    replicas: 3
+    strategy: "RollingUpdate"
+
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2000m"
+        memory: "4Gi"
+
+# Security Configuration
+security:
+  # Authentication
+  auth:
+    type: "jwt"
+    secret_key: "${JWT_SECRET}"
+    algorithm: "HS256"
+    expiration: 3600
+
+  # API Key validation
+  api_keys:
+    enabled: true
+    header_name: "X-API-Key"
+
+  # Data encryption
+  encryption:
+    enabled: true
+    algorithm: "AES-256-GCM"
+    key_rotation_days: 90
+
+  # CORS
+  cors:
+    enabled: true
+    allowed_origins: "${CORS_ORIGINS}"
+    allowed_methods: ["GET", "POST", "PUT", "DELETE"]
+
+# Feature Flags
+features:
+  kb_self_learning: true
+  approval_workflow: true
+  continuous_training: true
+  auto_backup: true
+  performance_monitoring: true
+  debug_mode: false
+
+# Database Migration
+migration:
+  auto_upgrade: true
+  backup_before_migration: true
+  rollback_on_error: true
