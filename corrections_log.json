@@ -186,6 +186,60 @@
       "notes": "",
       "status": "pending",
       "applied_date": null
+    },
+    {
+      "id": "COR-013",
+      "date": "2026-02-22T22:55:08Z",
+      "kb_file": "bromyros_pricing_master.json",
+      "field": "meta.generated_from",
+      "wrong_value": "bromyros_pricing_gpt_optimized.json",
+      "correct_value": "e2e_test_value.json",
+      "source": "validation_check",
+      "notes": "E2E test",
+      "status": "pending",
+      "applied_date": null,
+      "change_id": "CHG-E6772C7D3176",
+      "impact_summary": {
+        "quotations_affected": 0,
+        "total_impact_usd": "0.00",
+        "severity": "low"
+      }
+    },
+    {
+      "id": "COR-014",
+      "date": "2026-02-22T22:55:08Z",
+      "kb_file": "accessories_catalog.json",
+      "field": "test_field",
+      "wrong_value": "10.0",
+      "correct_value": "15.0",
+      "source": "conversation",
+      "notes": "Detected error during verbal interaction",
+      "status": "pending",
+      "applied_date": null
+    },
+    {
+      "id": "COR-015",
+      "date": "2026-02-22T22:55:08Z",
+      "kb_file": "accessories_catalog.json",
+      "field": "test",
+      "wrong_value": "1",
+      "correct_value": "2",
+      "source": "conversation",
+      "notes": "",
+      "status": "pending",
+      "applied_date": null
+    },
+    {
+      "id": "COR-016",
+      "date": "2026-02-22T22:55:08Z",
+      "kb_file": "accessories_catalog.json",
+      "field": "test",
+      "wrong_value": "1",
+      "correct_value": "2",
+      "source": "user_correction",
+      "notes": "",
+      "status": "pending",
+      "applied_date": null
     }
   ]
 }
