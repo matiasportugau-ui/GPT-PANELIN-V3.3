@@ -1,8 +1,10 @@
 """
 Wolf API - FastAPI Backend for Panelin Knowledge Base
 Implements POST /kb/conversations with GCS persistence
+Implements Event-Sourced Versioned KB Architecture (kb_routes)
 """
 
+import logging
 import os
 import json
 import hmac
@@ -16,15 +18,45 @@ from google.cloud import storage
 from google.api_core import exceptions as gexc
 from starlette.concurrency import run_in_threadpool
 
+logger = logging.getLogger(__name__)
+
 # FastAPI app configuration
 app = FastAPI(
     title="Panelin Wolf API",
     description="Knowledge Base API for Panelin GPT Assistant",
-    version="2.1.0",
+    version="2.2.0",
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json"
 )
+
+# --- KB Architecture: Event-Sourced Versioning ---
+try:
+    from .kb_routes import router as kb_architecture_router
+    app.include_router(kb_architecture_router)
+    _KB_ARCHITECTURE_AVAILABLE = True
+except Exception as e:
+    _KB_ARCHITECTURE_AVAILABLE = False
+    logger.warning(f"KB Architecture module not available: {e}")
+
+
+@app.on_event("startup")
+async def startup_create_kb_tables():
+    """Create KB Architecture tables on startup if DB is available."""
+    if not _KB_ARCHITECTURE_AVAILABLE:
+        return
+    kb_db_url = os.environ.get("KB_DATABASE_URL", "")
+    if not kb_db_url:
+        logger.info("KB_DATABASE_URL not set, skipping KB table creation")
+        return
+    try:
+        from .kb_database import engine
+        from .kb_models import Base
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("KB Architecture tables verified/created")
+    except Exception as e:
+        logger.warning(f"KB Architecture table creation skipped: {e}")
 
 # Security configuration
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
@@ -220,8 +252,9 @@ async def root():
     """API root endpoint."""
     return {
         "name": "Panelin Wolf API",
-        "version": "2.1.0",
-        "status": "operational"
+        "version": "2.2.0",
+        "status": "operational",
+        "kb_architecture": _KB_ARCHITECTURE_AVAILABLE
     }
 
 
