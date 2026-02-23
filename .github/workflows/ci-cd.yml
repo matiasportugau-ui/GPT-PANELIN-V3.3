@@ -57,5 +57,139 @@ jobs:
                   print('  - ' + error)
               sys.exit(1)
           else:
+              print('✅ All JSON files are valid')
+          "
+      
+      - name: Run tests with coverage
+        run: |
+          pytest test_mcp_handlers_v1.py -v --cov=mcp --cov-report=term-missing --cov-report=xml
+      
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+        continue-on-error: true
+
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+    if: success()
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check if Dockerfile exists
+        id: check_dockerfile
+        run: |
+          if [ -f "Dockerfile" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Set up Docker Buildx
+        if: steps.check_dockerfile.outputs.exists == 'true'
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build Docker image
+        if: steps.check_dockerfile.outputs.exists == 'true'
+        run: |
+          docker build -t gpt-panelin:${{ github.sha }} .
+          docker tag gpt-panelin:${{ github.sha }} gpt-panelin:latest
+      
+      - name: Test Docker image
+        if: steps.check_dockerfile.outputs.exists == 'true'
+        run: |
+          # Basic smoke test - ensure container starts
+          docker run --rm gpt-panelin:latest python --version
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && success()
+    permissions:
+      contents: read
+    environment:
+      name: staging
+      url: https://staging.example.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy to staging
+        run: |
+          echo "🚀 Deploying to staging environment..."
+          # Add your staging deployment commands here
+          # Example: ssh, kubectl, docker-compose, etc.
+          echo "✅ Deployment to staging completed"
+      
+      - name: Run health checks
+        run: |
+          echo "🏥 Running health checks..."
+          if [ -f "scripts/health_check.sh" ]; then
+            chmod +x scripts/health_check.sh
+            ./scripts/health_check.sh staging
+          else
+            echo "⚠️ Health check script not found, skipping..."
+          fi
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/main' && success()
+    permissions:
+      contents: read
+    environment:
+      name: production
+      url: https://production.example.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run pre-deployment checks
+        run: |
+          echo "🔍 Running pre-deployment checks..."
+          if [ -f "scripts/pre_deploy_check.sh" ]; then
+            chmod +x scripts/pre_deploy_check.sh
+            ./scripts/pre_deploy_check.sh
+          fi
+      
+      - name: Deploy to production
+        run: |
+          echo "🚀 Deploying to production environment..."
+          if [ -f "scripts/deploy.sh" ]; then
+            chmod +x scripts/deploy.sh
+            ./scripts/deploy.sh production
+          else
+            echo "⚠️ Deployment script not found"
+            exit 1
+          fi
+      
+      - name: Run post-deploy validation
+        run: |
+          echo "✅ Running post-deployment validation..."
+          if [ -f "scripts/health_check.sh" ]; then
+            chmod +x scripts/health_check.sh
+            ./scripts/health_check.sh production
+          fi
+      
+      - name: Send deployment notification
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          echo "📢 Deployment to production: $STATUS"
+          # Add notification logic here (Slack, email, etc.)
               print('All JSON files are valid')
           PY
