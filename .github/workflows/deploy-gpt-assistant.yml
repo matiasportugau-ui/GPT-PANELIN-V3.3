@@ -117,6 +117,9 @@ jobs:
           restore-keys: |
             gpt-assistant-state-
 
+      - name: Upgrade OpenAI package
+        run: pip install --upgrade 'openai>=1.2.0'
+
       - name: Deploy GPT Assistant
         id: deploy
         env:
