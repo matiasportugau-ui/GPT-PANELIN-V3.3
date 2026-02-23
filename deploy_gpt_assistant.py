@@ -261,6 +261,31 @@ class AssistantDeployer:
 
         print(f"\n  Summary: {uploaded_count} uploaded, {skipped_count} unchanged, {failed_count} failed")
         return file_ids
+    # EXPORT_SEAL
+    def _get_vector_stores_api(self):
+        """
+        Compat layer for different OpenAI Python SDK shapes:
+        - prefer: self.client.beta.vector_stores
+        - fallback: self.client.vector_stores
+        Raises AttributeError if none available with a helpful message.
+        """
+        beta = getattr(self.client, "beta", None)
+        if beta is not None:
+            vs = getattr(beta, "vector_stores", None) or getattr(beta, "vectorStore", None)
+            if vs is not None:
+                return vs
+
+        vs = getattr(self.client, "vector_stores", None) or getattr(self.client, "vectorStore", None)
+        if vs is not None:
+            return vs
+
+        raise AttributeError(
+            "OpenAI client does not expose a vector_stores API (tried beta.vector_stores and vector_stores). "
+            "Please upgrade the openai Python package in this environment (e.g. `pip install --upgrade openai`) "
+            "or verify which OpenAI client you are using."
+        )
+
+
 
     def create_or_update_vector_store(
         self, file_ids: Dict[str, str], current_state: Optional[Dict[str, Any]]
@@ -277,15 +302,16 @@ class AssistantDeployer:
         if not all_file_ids:
             raise RuntimeError("No files to add to vector store")
 
-        # Create new vector store
-        vs = self.client.beta.vector_stores.create(
-            name=f"Panelin KB v{kb_version}",
-            file_ids=all_file_ids,
-        )
-        print(f"  Created vector store: {vs.id}")
+        
+        # Create new vector store using compatibility helper
+        vs_api = self._get_vector_stores_api()
+        vs = vs_api.create(name=f"Panelin KB v{kb_version}", file_ids=all_file_ids)
+        vs_id = getattr(vs, "id", None) or (vs.get("id") if isinstance(vs, dict) else None)
+        print(f"  Created vector store: {vs_id}")
 
         # Wait for processing
-        self._wait_for_vector_store_ready(vs.id)
+        self._wait_for_vector_store_ready(vs_id)
+
 
         # NOTE:
         # We intentionally do NOT delete the old vector store here.
@@ -303,22 +329,35 @@ class AssistantDeployer:
 
         return vs.id
 
+    
     def _wait_for_vector_store_ready(self, vs_id: str, timeout: int = 300) -> None:
         """Poll vector store until all files are processed."""
         print("  Waiting for vector store processing...", end="", flush=True)
+        vs_api = self._get_vector_stores_api()
         start = time.time()
         while time.time() - start < timeout:
-            vs = self.client.beta.vector_stores.retrieve(vs_id)
-            counts = vs.file_counts
-            total = counts.completed + counts.failed + counts.cancelled + counts.in_progress
-            if counts.in_progress == 0 and total > 0:
-                print(f" done ({counts.completed} ready, {counts.failed} failed)")
-                if counts.failed > 0:
-                    print(f"  WARNING: {counts.failed} files failed processing")
+            vs = vs_api.retrieve(vs_id)
+            counts = getattr(vs, "file_counts", None) or (vs.get("file_counts") if isinstance(vs, dict) else None)
+            if counts is None:
+                print("\n  WARNING: vector store response missing 'file_counts'; continuing without detailed checks.")
                 return
+
+            completed = getattr(counts, "completed", None) or (counts.get("completed") if isinstance(counts, dict) else 0)
+            failed = getattr(counts, "failed", None) or (counts.get("failed") if isinstance(counts, dict) else 0)
+            cancelled = getattr(counts, "cancelled", None) or (counts.get("cancelled") if isinstance(counts, dict) else 0)
+            in_progress = getattr(counts, "in_progress", None) or (counts.get("in_progress") if isinstance(counts, dict) else 0)
+
+            total = (completed or 0) + (failed or 0) + (cancelled or 0) + (in_progress or 0)
+            if (in_progress or 0) == 0 and total > 0:
+                print(f" done ({completed} ready, {failed} failed)")
+                if failed and int(failed) > 0:
+                    print(f"  WARNING: {failed} files failed processing")
+                return
+
             print(".", end="", flush=True)
             time.sleep(3)
         raise TimeoutError(f"Vector store {vs_id} processing timed out after {timeout}s")
+
 
     def deploy_assistant(
         self, params: Dict[str, Any], vector_store_id: str, current_state: Optional[Dict[str, Any]]
