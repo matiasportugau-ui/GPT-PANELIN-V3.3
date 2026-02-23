@@ -1,11 +1,7 @@
       - name: Validate JSON files in knowledge_base
         run: |
           python -c "
-          import json
-          import sys
-          from pathlib import Path
-          
-          json_files = [
+ json_files = [
               'bromyros_pricing_master.json',
               'bromyros_pricing_gpt_optimized.json',
               'BMC_Base_Conocimiento_GPT-2.json',
