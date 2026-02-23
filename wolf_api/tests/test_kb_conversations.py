@@ -57,7 +57,7 @@ def test_root_endpoint(client):
     assert response.status_code == 200
     data = response.json()
     assert data["name"] == "Panelin Wolf API"
-    assert data["version"] == "2.1.0"
+    assert data["version"] == "2.2.0"
     assert data["status"] == "operational"
 
 
