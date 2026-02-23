@@ -181,6 +181,15 @@ class RepositoryAnalyzer:
             
             compliance['files_checked'] += 1
             
+            # 0. Handle glob patterns (e.g., mcp/tools/*.json)
+            if '*' in file_ref or '?' in file_ref:
+                glob_matches = list(self.repo_root.glob(file_ref))
+                if glob_matches:
+                    compliance['files_exist'] += 1
+                else:
+                    compliance['files_missing'].append(file_ref)
+                continue
+            
             # 1. Check exact path from repo root
             exact_path = self.repo_root / file_ref
             if exact_path.exists():

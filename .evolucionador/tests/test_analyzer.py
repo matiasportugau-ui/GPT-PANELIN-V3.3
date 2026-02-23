@@ -43,6 +43,17 @@ def test_readme_compliance():
     assert 0 <= result['score'] <= 100
 
 
+def test_readme_compliance_no_glob_false_positives():
+    """Test that glob patterns like mcp/tools/*.json are resolved, not treated as literal paths."""
+    analyzer = RepositoryAnalyzer()
+    result = analyzer.validate_readme_compliance()
+    
+    # Glob patterns should be resolved and not flagged as missing
+    for missing in result.get('files_missing', []):
+        assert '*' not in missing, f"Glob pattern falsely flagged as missing: {missing}"
+        assert '?' not in missing, f"Glob pattern falsely flagged as missing: {missing}"
+
+
 def test_knowledge_base_analysis():
     """Test knowledge base analysis."""
     analyzer = RepositoryAnalyzer()

@@ -1,0 +1,85 @@
+# Deploy Wolf API to Cloud Run
+#
+# This workflow deploys the Wolf API FastAPI backend to Google Cloud Run
+# when changes are pushed to the main branch.
+
+name: Deploy Wolf API to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'wolf_api/**'
+      - '.github/workflows/deploy-wolf-api.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: chatbot-bmc-live
+  REGION: us-central1
+  SERVICE_NAME: panelin-api
+  ARTIFACT_REGISTRY: us-central1-docker.pkg.dev
+
+jobs:
+  deploy:
+    name: Deploy Wolf API
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SA_EMAIL }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+
+      - name: Build and Push Docker Image
+        run: |
+          IMAGE_NAME="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/cloud-run-repo/wolf-api"
+          docker build -t "${IMAGE_NAME}:${{ github.sha }}" -t "${IMAGE_NAME}:latest" wolf_api/
+          docker push "${IMAGE_NAME}:${{ github.sha }}"
+          docker push "${IMAGE_NAME}:latest"
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          image: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/cloud-run-repo/wolf-api:${{ github.sha }}
+          env_vars: |
+            WOLF_API_KEY=${{ secrets.WOLF_API_KEY }}
+            KB_GCS_BUCKET=${{ secrets.KB_GCS_BUCKET }}
+            KB_GCS_PREFIX=kb/conversations
+            KB_GCS_MODE=daily_jsonl
+            KB_GCS_MAX_RETRIES=5
+          env_vars_update_strategy: merge
+          service_account: ${{ secrets.GCP_RUNTIME_SA_EMAIL }}
+          flags: |
+            --allow-unauthenticated
+            --min-instances=0
+            --max-instances=10
+            --memory=512Mi
+            --cpu=1
+            --timeout=60
+
+      - name: Show service URL
+        run: |
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} \
+            --region=${{ env.REGION }} \
+            --format='value(status.url)')
+          echo "Wolf API deployed to: $SERVICE_URL"
+          echo "OpenAPI docs available at: $SERVICE_URL/docs"

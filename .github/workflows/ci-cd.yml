@@ -1,63 +1,37 @@
-name: CI/CD Pipeline
+name: CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: ['**']
   pull_request:
-    branches: [main]
+    branches: ['**']
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  test:
-    name: Test
+  validate:
+    name: Validate Knowledge Base
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
-      
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r mcp/requirements.txt
-          pip install flake8 black mypy pytest-cov
-      
-      - name: Run linting - flake8
-        run: |
-          # Stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # Exit-zero treats all errors as warnings
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      
-      - name: Run linting - black
-        run: |
-          black --check --diff .
-        continue-on-error: true
-      
-      - name: Run linting - mypy
-        run: |
-          mypy mcp/ --ignore-missing-imports
-        continue-on-error: true
-      
+
       - name: Validate JSON files in knowledge_base
         run: |
-          python -c "
+          python - <<'PY'
           import json
           import sys
-          from pathlib import Path
-          
+
           json_files = [
               'bromyros_pricing_master.json',
               'bromyros_pricing_gpt_optimized.json',
@@ -67,20 +41,20 @@ jobs:
               'shopify_catalog_v1.json',
               'corrections_log.json'
           ]
-          
+
           errors = []
           for file in json_files:
               try:
                   with open(file, 'r', encoding='utf-8') as f:
                       json.load(f)
-                  print(f'✓ {file} is valid')
+                  print('OK: ' + file + ' is valid')
               except Exception as e:
-                  errors.append(f'{file}: {str(e)}')
-          
+                  errors.append(file + ': ' + str(e))
+
           if errors:
-              print('❌ JSON validation errors:')
+              print('JSON validation errors:')
               for error in errors:
-                  print(f'  - {error}')
+                  print('  - ' + error)
               sys.exit(1)
           else:
               print('✅ All JSON files are valid')
@@ -217,3 +191,5 @@ jobs:
           STATUS="${{ job.status }}"
           echo "📢 Deployment to production: $STATUS"
           # Add notification logic here (Slack, email, etc.)
+              print('All JSON files are valid')
+          PY

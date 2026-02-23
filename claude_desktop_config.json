@@ -1,15 +1,15 @@
 {
-  "mcpServers": {
-    "panelin-gpt-deployer": {
-      "command": "python",
-      "args": [
-        "-m",
-        "claude_mcp_deployer.server"
-      ],
-      "cwd": "/home/runner/work/GPT-PANELIN-V3.3/GPT-PANELIN-V3.3",
-      "env": {
-        "PYTHONPATH": "/home/runner/work/GPT-PANELIN-V3.3/GPT-PANELIN-V3.3"
-      }
+    "mcpServers": {
+          "panelin-gpt-deployer": {
+                  "command": "python3",
+                  "args": [
+                            "-m",
+                            "claude_mcp_deployer.server"
+                  ],
+                  "cwd": "/Users/matiasportugau/GPT-PANELIN-V3.3",
+                  "env": {
+                            "PYTHONPATH": "/Users/matiasportugau/GPT-PANELIN-V3.3"
+                  }
+          }
     }
-  }
 }

@@ -1,0 +1,6 @@
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+google-cloud-storage>=2.10.0
+# KB Architecture: Event-Sourced Versioning
+sqlalchemy[asyncio]>=2.0.25
+asyncpg>=0.29.0

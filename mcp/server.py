@@ -73,6 +73,10 @@ from .handlers.wolf_kb_write import (
     handle_lookup_customer,
 )
 from .handlers.file_ops import handle_write_file, handle_read_file
+from .handlers.kb_architecture import (
+    handle_kb_get_active_architecture,
+    handle_kb_create_architecture,
+)
 from .storage.factory import initialize_memory_store
 from .observability import (
     get_invocation_context,
@@ -121,6 +125,9 @@ TOOL_HANDLERS = {
     # File operation tools
     "write_file": handle_write_file,
     "read_file": handle_read_file,
+    # KB Architecture versioning tools
+    "kb_get_active_architecture": handle_kb_get_active_architecture,
+    "kb_create_architecture": handle_kb_create_architecture,
     # Background task tools (async)
     "batch_bom_calculate": handle_batch_bom_calculate,
     "bulk_price_check": handle_bulk_price_check,
