@@ -52,7 +52,7 @@ jobs:
             MISSING="$MISSING\n  - KB_GCS_BUCKET (GCS bucket name for KB data)"
           fi
           if [ -n "$MISSING" ]; then
-            echo "::error::Missing required GitHub secrets:$(echo -e "$MISSING")"
+            printf "::error::Missing required GitHub secrets:%b\n" "$MISSING"
             echo ""
             echo "Please configure the required secrets in Settings > Secrets and variables > Actions."
             echo "See wolf_api/IAM_SETUP.md for setup instructions."
