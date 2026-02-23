@@ -1,0 +1,251 @@
+# EXPORT_SEAL
+name: Apply vector store compat fix
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  apply-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Create patcher script and PR body
+        run: |
+          mkdir -p scripts
+
+          cat > scripts/apply_fix.py <<'PY'
+#!/usr/bin/env python3
+# EXPORT_SEAL
+"""
+apply_fix.py
+Edits deploy_gpt_assistant.py to add a compat helper _get_vector_stores_api()
+and replace direct uses of self.client.beta.vector_stores with a robust
+compat implementation.
+
+Uso: python scripts/apply_fix.py [--file PATH] [--dry-run]
+"""
+from pathlib import Path
+import argparse
+import sys
+
+HELPER = '''
+    # EXPORT_SEAL
+    def _get_vector_stores_api(self):
+        """
+        Compat layer for different OpenAI Python SDK shapes:
+        - prefer: self.client.beta.vector_stores
+        - fallback: self.client.vector_stores
+        Raises AttributeError if none available with a helpful message.
+        """
+        beta = getattr(self.client, "beta", None)
+        if beta is not None:
+            vs = getattr(beta, "vector_stores", None) or getattr(beta, "vectorStore", None)
+            if vs is not None:
+                return vs
+
+        vs = getattr(self.client, "vector_stores", None) or getattr(self.client, "vectorStore", None)
+        if vs is not None:
+            return vs
+
+        raise AttributeError(
+            "OpenAI client does not expose a vector_stores API (tried beta.vector_stores and vector_stores). "
+            "Please upgrade the openai Python package in this environment (e.g. `pip install --upgrade openai`) "
+            "or verify which OpenAI client you are using."
+        )
+'''.rstrip("\n")
+
+REPLACE_BLOCK_CREATE = '''
+        # Create new vector store using compatibility helper
+        vs_api = self._get_vector_stores_api()
+        vs = vs_api.create(name=f"Panelin KB v{kb_version}", file_ids=all_file_ids)
+        vs_id = getattr(vs, "id", None) or (vs.get("id") if isinstance(vs, dict) else None)
+        print(f"  Created vector store: {vs_id}")
+
+        # Wait for processing
+        self._wait_for_vector_store_ready(vs_id)
+'''.lstrip("\n")
+
+REPLACE_METHOD_WAIT = '''
+    def _wait_for_vector_store_ready(self, vs_id: str, timeout: int = 300) -> None:
+        """Poll vector store until all files are processed."""
+        print("  Waiting for vector store processing...", end="", flush=True)
+        vs_api = self._get_vector_stores_api()
+        import time
+        start = time.time()
+        while time.time() - start < timeout:
+            vs = vs_api.retrieve(vs_id)
+            # support both attribute-based and dict-based responses
+            counts = getattr(vs, "file_counts", None) or (vs.get("file_counts") if isinstance(vs, dict) else None)
+            if counts is None:
+                print("\\n  WARNING: vector store response missing 'file_counts'; continuing without detailed checks.")
+                return
+
+            completed = getattr(counts, "completed", None) or (counts.get("completed") if isinstance(counts, dict) else 0)
+            failed = getattr(counts, "failed", None) or (counts.get("failed") if isinstance(counts, dict) else 0)
+            cancelled = getattr(counts, "cancelled", None) or (counts.get("cancelled") if isinstance(counts, dict) else 0)
+            in_progress = getattr(counts, "in_progress", None) or (counts.get("in_progress") if isinstance(counts, dict) else 0)
+
+            total = (completed or 0) + (failed or 0) + (cancelled or 0) + (in_progress or 0)
+            if (in_progress or 0) == 0 and total > 0:
+                print(f" done ({completed} ready, {failed} failed)")
+                if failed and int(failed) > 0:
+                    print(f"  WARNING: {failed} files failed processing")
+                return
+
+            print(".", end="", flush=True)
+            time.sleep(3)
+        raise TimeoutError(f"Vector store {vs_id} processing timed out after {timeout}s")
+'''.rstrip("\n")
+
+def apply_patch(text: str) -> str:
+    # 1) Insert helper before def create_or_update_vector_store
+    anchor = "\n    def create_or_update_vector_store"
+    if "_get_vector_stores_api" in text:
+        raise RuntimeError("Archivo ya contiene _get_vector_stores_api. Abortando para no duplicar.")
+    text = text.replace(anchor, "\n" + HELPER + "\n\n    def create_or_update_vector_store")
+
+    # 2) Replace the block that creates vector store
+    import re
+    pattern_create = re.compile(r"# Create new vector store[\\s\\S]*?self\\._wait_for_vector_store_ready\\(vs.id\\)\\n", re.MULTILINE)
+    if not pattern_create.search(text):
+        raise RuntimeError("No pude encontrar el bloque exacto de creación de vector store para reemplazar.")
+    text = pattern_create.sub(REPLACE_BLOCK_CREATE + "\n", text, count=1)
+
+    # 3) Replace entire _wait_for_vector_store_ready method
+    start_marker = "def _wait_for_vector_store_ready(self, vs_id: str, timeout: int = 300) -> None:"
+    si = text.find(start_marker)
+    if si == -1:
+        raise RuntimeError("No encontré el método _wait_for_vector_store_ready para reemplazar.")
+    # find the next '\n\n    def ' or end of file
+    ni = text.find("\n\n    def ", si)
+    if ni == -1:
+        ni = len(text)
+    text = text[:si] + REPLACE_METHOD_WAIT + text[ni:]
+    return text
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--file", default="deploy_gpt_assistant.py", help="path to deploy_gpt_assistant.py")
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args()
+
+    p = Path(args.file)
+    if not p.exists():
+        print(f"ERROR: file not found: {p}", file=sys.stderr)
+        sys.exit(2)
+
+    original = p.read_text(encoding="utf-8")
+    try:
+        patched = apply_patch(original)
+    except Exception as e:
+        print("ERROR during patch:", e, file=sys.stderr)
+        sys.exit(3)
+
+    if args.dry_run:
+        print("Dry-run: patch would be applied. Exiting.")
+        sys.exit(0)
+
+    p.write_text(patched, encoding="utf-8")
+    print(f"Patched {p} successfully.")
+
+if __name__ == "__main__":
+    main()
+PY
+
+          cat > pr_body.md <<'MD'
+# EXPORT_SEAL
+## Fix: Compat-layer for OpenAI vector_stores API
+
+### Resumen
+Este PR añade una capa de compatibilidad para la API de *vector stores* del cliente OpenAI:
+- Detecta y usa `client.beta.vector_stores` o `client.vector_stores`.
+- Añade tolerancia a respuestas como objetos con atributos o como `dict`.
+- Evita el `AttributeError: 'Beta' object has no attribute 'vector_stores'` visto durante el despliegue.
+
+### Cambios principales
+- `deploy_gpt_assistant.py`
+  - Añadido `_get_vector_stores_api()` (compat helper).
+  - Reemplazada la creación y polling de vector store por llamadas a la API retornada por el helper.
+  - Manejo tolerante de `vs` y `file_counts` si vienen como objeto o dict.
+
+### Checklist antes de merge
+- [ ] Ejecutar `python deploy_gpt_assistant.py --dry-run` en runner local/CI con `openai` actualizado.
+- [ ] Actualizar `requirements.txt` (o lockfile) con `openai>=1.0.0`.
+- [ ] Re-run CI job y verificar paso `[7/8] Setting up vector store...` sin errores.
+- [ ] (Opcional) Revisar shapes reales de la respuesta `vector_stores.retrieve` en tu entorno y ajustar si difieren.
+MD
+
+          chmod +x scripts/apply_fix.py
+
+      - name: Check if file already patched
+        id: check
+        run: |
+          if grep -q "_get_vector_stores_api" deploy_gpt_assistant.py; then
+            echo "already=true" >> $GITHUB_OUTPUT
+          else
+            echo "already=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create branch
+        if: steps.check.outputs.already == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b fix/vector-store-compat
+
+      - name: Apply patch
+        if: steps.check.outputs.already == 'false'
+        run: |
+          python3 scripts/apply_fix.py
+
+      - name: Commit and push changes
+        if: steps.check.outputs.already == 'false'
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add deploy_gpt_assistant.py pr_body.md scripts/apply_fix.py || true
+            git commit -m "fix: compat-layer for OpenAI vector_stores API (beta vs top-level) and tolerant response handling" || echo "No changes to commit"
+            git push --set-upstream origin HEAD --force
+          else
+            echo "No changes after patch; nothing to commit"
+            exit 0
+          fi
+
+      - name: Create Pull Request
+        if: steps.check.outputs.already == 'false'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('pr_body.md', 'utf8');
+            const title = 'fix: compat-layer for OpenAI vector_stores API';
+            const head = 'fix/vector-store-compat';
+            const base = 'main';
+            // create PR
+            const pr = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              head,
+              base,
+              body
+            });
+            core.setOutput('pr_url', pr.data.html_url);
+
+      - name: Show PR URL
+        if: steps.check.outputs.already == 'false'
+        run: |
+          echo "PR created. Check Actions log for URL."
