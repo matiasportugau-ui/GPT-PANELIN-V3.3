@@ -216,13 +216,17 @@ def _persist_kb_conversation(payload: Dict[str, Any]) -> Dict[str, Any]:
             detail="Service not configured: KB_GCS_BUCKET is missing",
         )
 
+    # Allow callers to override the GCS prefix (e.g. for corrections/customers)
+    prefix_override = payload.pop("_gcs_prefix_override", None)
+    effective_prefix = prefix_override if prefix_override else KB_GCS_PREFIX
+
     # Ensure JSONL is one line + newline
     jsonl_line = json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n"
 
     if KB_GCS_MODE == "per_event_jsonl":
         # One object per event (still a valid JSONL line file)
         ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
-        obj = f"{KB_GCS_PREFIX}/events/{ts}-{uuid.uuid4().hex}.jsonl"
+        obj = f"{effective_prefix}/events/{ts}-{uuid.uuid4().hex}.jsonl"
         client = _get_storage_client()
         bucket = client.bucket(KB_GCS_BUCKET)
         blob = bucket.blob(obj)
@@ -231,12 +235,12 @@ def _persist_kb_conversation(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     # Default: daily JSONL append via compose
     day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    destination = f"{KB_GCS_PREFIX}/daily/{day}.jsonl"
+    destination = f"{effective_prefix}/daily/{day}.jsonl"
     result = _compose_append_jsonl_line(
         bucket_name=KB_GCS_BUCKET,
         destination_blob_name=destination,
         jsonl_line=jsonl_line,
-        tmp_prefix=KB_GCS_PREFIX,
+        tmp_prefix=effective_prefix,
         max_retries=KB_GCS_MAX_RETRIES,
     )
     result["mode"] = KB_GCS_MODE
@@ -308,6 +312,172 @@ async def kb_conversations(
     }
 
 
-# Additional placeholder endpoints for future KB write operations
-# (register_correction, save_customer, lookup_customer)
-# These can be implemented following the same pattern as kb_conversations
+@app.post("/kb/corrections", status_code=200)
+async def kb_corrections(
+    body: Dict[str, Any],
+    _: None = Security(_require_api_key)
+) -> Dict[str, Any]:
+    """
+    Persist a KB correction to the Knowledge Base.
+
+    Requires X-API-Key header for authentication.
+    Data is stored in GCS as JSONL format.
+
+    Request body should contain:
+    - source_file: str — KB file where the error was found
+    - field_path: str — JSON path to the incorrect field
+    - old_value: str — current incorrect value
+    - new_value: str — corrected value
+    - reason: str — explanation of the correction
+    - reported_by: str (optional) — who reported the correction
+
+    Returns:
+        Dict with correction_id, stored_at and GCS metadata
+    """
+    required = ("source_file", "field_path", "old_value", "new_value", "reason")
+    missing = [f for f in required if not body.get(f)]
+    if missing:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Missing required fields: {', '.join(missing)}",
+        )
+
+    correction_id = f"cor-{uuid.uuid4().hex[:12]}"
+    envelope = {
+        "received_at": _utc_now_iso(),
+        "type": "kb.correction",
+        "correction_id": correction_id,
+        "data": body,
+    }
+
+    gcs_result = await run_in_threadpool(
+        _persist_kb_conversation,  # reuse same GCS append helper
+        {**envelope, "_gcs_prefix_override": "kb/corrections"},
+    )
+
+    return {
+        "ok": True,
+        "correction_id": correction_id,
+        "stored_at": envelope["received_at"],
+        "gcs": gcs_result,
+    }
+
+
+@app.post("/kb/customers", status_code=200)
+async def kb_customers_save(
+    body: Dict[str, Any],
+    _: None = Security(_require_api_key)
+) -> Dict[str, Any]:
+    """
+    Store or update customer data in the Knowledge Base.
+
+    Requires X-API-Key header for authentication.
+    Data is stored in GCS as JSONL format.
+
+    Request body should contain:
+    - name: str — customer full name
+    - phone: str — Uruguayan phone (09XXXXXXX or +598XXXXXXXX)
+    - address: str (optional)
+    - city: str (optional)
+    - department: str (optional)
+    - notes: str (optional)
+
+    Returns:
+        Dict with customer_id, stored_at and GCS metadata
+    """
+    if not body.get("name") or not body.get("phone"):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Missing required fields: name, phone",
+        )
+
+    customer_id = f"cust-{uuid.uuid4().hex[:12]}"
+    envelope = {
+        "received_at": _utc_now_iso(),
+        "type": "kb.customer",
+        "customer_id": customer_id,
+        "data": body,
+    }
+
+    gcs_result = await run_in_threadpool(
+        _persist_kb_conversation,
+        {**envelope, "_gcs_prefix_override": "kb/customers"},
+    )
+
+    return {
+        "ok": True,
+        "customer_id": customer_id,
+        "stored_at": envelope["received_at"],
+        "gcs": gcs_result,
+    }
+
+
+@app.get("/kb/customers", status_code=200)
+async def kb_customers_lookup(
+    search: str = "",
+    _: None = Security(_require_api_key)
+) -> Dict[str, Any]:
+    """
+    Look up customer data from the Knowledge Base.
+
+    Requires X-API-Key header for authentication.
+    Returns a list of matching customers (GCS-backed JSONL store).
+
+    Query parameters:
+    - search: str — search term (name, phone, or address fragment)
+
+    Returns:
+        Dict with customers list and count
+    """
+    if len(search) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="search query must be at least 2 characters",
+        )
+
+    # GCS JSONL lookup: read today's and recent customer files and filter
+    if not KB_GCS_BUCKET:
+        return {"ok": True, "customers": [], "count": 0, "note": "KB_GCS_BUCKET not configured"}
+
+    def _read_customers() -> list:
+        client = _get_storage_client()
+        # Limit scan to the most recent 30 daily files to avoid unbounded reads
+        prefix = "kb/customers/daily/"
+        blobs = sorted(
+            client.list_blobs(KB_GCS_BUCKET, prefix=prefix),
+            key=lambda b: b.name,
+            reverse=True,
+        )[:30]
+        results = []
+        term = search.lower()
+        for blob in blobs:
+            try:
+                lines = blob.download_as_text().splitlines()
+                for line in lines:
+                    if not line.strip():
+                        continue
+                    record = json.loads(line)
+                    data = record.get("data", {})
+                    if (
+                        term in str(data.get("name", "")).lower()
+                        or term in str(data.get("phone", "")).lower()
+                        or term in str(data.get("address", "")).lower()
+                    ):
+                        results.append({
+                            "customer_id": record.get("customer_id"),
+                            "name": data.get("name"),
+                            "phone": data.get("phone"),
+                            "address": data.get("address"),
+                            "city": data.get("city"),
+                            "department": data.get("department"),
+                            "notes": data.get("notes"),
+                            "last_interaction": data.get("last_interaction"),
+                            "stored_at": record.get("received_at"),
+                        })
+            except Exception:
+                logger.warning("Skipping malformed record in blob %s", blob.name, exc_info=True)
+                continue
+        return results
+
+    customers = await run_in_threadpool(_read_customers)
+    return {"ok": True, "customers": customers, "count": len(customers)}

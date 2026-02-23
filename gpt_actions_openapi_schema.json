@@ -1,0 +1,480 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Panelin Wolf API",
+    "description": "Knowledge Base API for Panelin GPT Assistant (BMC Uruguay). Provides write access for persisting conversation summaries, KB corrections, and customer data. All write operations (POST) require X-API-Key header authentication.",
+    "version": "2.2.0"
+  },
+  "servers": [
+    {
+      "url": "https://panelin-api-642127786762.us-central1.run.app",
+      "description": "Production — GCP Cloud Run"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "healthCheck",
+        "summary": "Health check",
+        "description": "Returns 200 when the service is up. No authentication required.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Service healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/kb/conversations": {
+      "post": {
+        "operationId": "persistConversation",
+        "summary": "Persist conversation summary to Knowledge Base",
+        "description": "Saves a conversation summary and optional quotation reference to GCS as JSONL. Requires X-API-Key header.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Conversation persisted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/kb/corrections": {
+      "post": {
+        "operationId": "registerCorrection",
+        "summary": "Register a KB correction",
+        "description": "Persists a detected correction (price, formula, or technical data) for continuous KB improvement. Requires X-API-Key header.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrectionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Correction registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/kb/customers": {
+      "post": {
+        "operationId": "saveCustomer",
+        "summary": "Save or update customer data",
+        "description": "Stores customer contact and project information in GCS for reuse in future quotations. Requires X-API-Key header.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerSaveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Customer saved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerSaveResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      },
+      "get": {
+        "operationId": "lookupCustomer",
+        "summary": "Look up customer data",
+        "description": "Searches stored customer records by name, phone, or address fragment. Requires X-API-Key header.",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": true,
+            "description": "Search term: customer name, phone (09XXXXXXX or +598XXXXXXXX), or address fragment. Minimum 2 characters.",
+            "schema": {
+              "type": "string",
+              "minLength": 2
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer lookup result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerLookupResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Wolf API key. Set via WOLF_API_KEY environment variable on the server. Obtain from system administrator."
+      }
+    },
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "healthy"
+          }
+        }
+      },
+      "ConversationRequest": {
+        "type": "object",
+        "required": ["client_id", "summary"],
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "description": "Client identifier (phone number or name-based ID)",
+            "example": "091234567"
+          },
+          "summary": {
+            "type": "string",
+            "description": "Summary of the conversation and quotation details",
+            "example": "Cotización ISODEC 100mm, 55 m2, techo galpón en Montevideo. Total USD 4.200."
+          },
+          "quotation_ref": {
+            "type": "string",
+            "description": "Reference number for the quotation, if applicable",
+            "example": "COT-20260223-001"
+          },
+          "products_discussed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of product SKUs or names discussed",
+            "example": ["ISODEC-EPS-100", "GOTERO-FRONTAL-AL"]
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp. Added server-side if omitted."
+          }
+        }
+      },
+      "ConversationResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": true
+          },
+          "stored_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-02-23T15:00:00+00:00"
+          },
+          "gcs": {
+            "type": "object",
+            "description": "GCS storage metadata"
+          }
+        }
+      },
+      "CorrectionRequest": {
+        "type": "object",
+        "required": ["source_file", "field_path", "old_value", "new_value", "reason"],
+        "properties": {
+          "source_file": {
+            "type": "string",
+            "description": "KB file where the error was found. Must be an authorized file.",
+            "example": "shopify_catalog_v1.json"
+          },
+          "field_path": {
+            "type": "string",
+            "description": "JSON path to the field with the incorrect value",
+            "example": "products[42].weight_kg"
+          },
+          "old_value": {
+            "type": "string",
+            "description": "Current incorrect value",
+            "example": "12.5"
+          },
+          "new_value": {
+            "type": "string",
+            "description": "Corrected value",
+            "example": "11.0"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Explanation of why the correction is needed",
+            "example": "Manufacturer spec sheet updated Feb 2026"
+          },
+          "reported_by": {
+            "type": "string",
+            "description": "Who reported the correction (defaults to panelin_gpt)",
+            "example": "Mauro Portuga"
+          }
+        }
+      },
+      "CorrectionResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": true
+          },
+          "correction_id": {
+            "type": "string",
+            "example": "cor-a1b2c3d4e5f6"
+          },
+          "stored_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "gcs": {
+            "type": "object",
+            "description": "GCS storage metadata"
+          }
+        }
+      },
+      "CustomerSaveRequest": {
+        "type": "object",
+        "required": ["name", "phone"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Customer full name",
+            "example": "Juan Pérez"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Uruguayan mobile phone: 09XXXXXXX (9 digits total, e.g. '09' + 7 digits) or +598XXXXXXXX (12 chars)",
+            "example": "091234567"
+          },
+          "address": {
+            "type": "string",
+            "description": "Work site address",
+            "example": "Av. Rivera 1234"
+          },
+          "city": {
+            "type": "string",
+            "example": "Montevideo"
+          },
+          "department": {
+            "type": "string",
+            "description": "Uruguayan department",
+            "example": "Montevideo"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about the customer or project",
+            "example": "Galpón industrial, estructura metálica"
+          },
+          "last_interaction": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp. Added server-side if omitted."
+          }
+        }
+      },
+      "CustomerSaveResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": true
+          },
+          "customer_id": {
+            "type": "string",
+            "example": "cust-a1b2c3d4e5f6"
+          },
+          "stored_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "gcs": {
+            "type": "object",
+            "description": "GCS storage metadata"
+          }
+        }
+      },
+      "CustomerLookupResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": true
+          },
+          "customers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerRecord"
+            }
+          },
+          "count": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "CustomerRecord": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "last_interaction": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stored_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Invalid or missing X-API-Key header",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "example": {
+              "detail": "Invalid or missing X-API-Key"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Request body or query parameter validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "example": {
+              "detail": "Missing required fields: source_file, reason"
+            }
+          }
+        }
+      },
+      "ServiceUnavailable": {
+        "description": "Service misconfigured (e.g. missing WOLF_API_KEY or KB_GCS_BUCKET)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "example": {
+              "detail": "Service not configured: KB_GCS_BUCKET is missing"
+            }
+          }
+        }
+      }
+    }
+  }
+}
