@@ -1,7 +1,38 @@
+name: CI/CD
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Knowledge Base
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Validate JSON files in knowledge_base
         run: |
-          python -c "
- json_files = [
+          python - <<'PY'
+          import json
+          import sys
+
+          json_files = [
               'bromyros_pricing_master.json',
               'bromyros_pricing_gpt_optimized.json',
               'BMC_Base_Conocimiento_GPT-2.json',
@@ -10,21 +41,21 @@
               'shopify_catalog_v1.json',
               'corrections_log.json'
           ]
-          
+
           errors = []
           for file in json_files:
               try:
                   with open(file, 'r', encoding='utf-8') as f:
                       json.load(f)
-                  print('✓ ' + file + ' is valid')
+                  print('OK: ' + file + ' is valid')
               except Exception as e:
                   errors.append(file + ': ' + str(e))
-          
+
           if errors:
-              print('❌ JSON validation errors:')
+              print('JSON validation errors:')
               for error in errors:
                   print('  - ' + error)
               sys.exit(1)
           else:
-              print('✅ All JSON files are valid')
-          "
+              print('All JSON files are valid')
+          PY
