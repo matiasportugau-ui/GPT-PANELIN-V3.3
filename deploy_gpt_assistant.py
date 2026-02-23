@@ -284,6 +284,31 @@ class AssistantDeployer:
             "Please upgrade the openai Python package in this environment (e.g. `pip install --upgrade openai`) "
             "or verify which OpenAI client you are using."
         )
+    # EXPORT_SEAL
+    def _get_assistants_api(self):
+        """
+        Compat layer for OpenAI assistants API:
+        - prefer: self._get_assistants_api()
+        - fallback: self._get_assistants_api()
+        Raises AttributeError if none available with a helpful message.
+        """
+        beta = getattr(self.client, "beta", None)
+        if beta is not None:
+            a = getattr(beta, "assistants", None) or getattr(beta, "assistant", None)
+            if a is not None:
+                return a
+
+        a = getattr(self.client, "assistants", None) or getattr(self.client, "assistant", None)
+        if a is not None:
+            return a
+
+        raise AttributeError(
+            "OpenAI client does not expose an assistants API (tried beta.assistants and assistants). "
+            "Please upgrade the openai Python package in this environment (e.g. `pip install --upgrade openai`) "
+            "or verify which OpenAI client you are using."
+        )
+
+
 
 
 
@@ -386,7 +411,7 @@ class AssistantDeployer:
 
         if assistant_id:
             try:
-                assistant = self.client.beta.assistants.update(
+                assistant = self._get_assistants_api().update(
                     assistant_id=assistant_id, **params
                 )
                 print(f"  UPDATED assistant: {assistant.id}")
@@ -398,7 +423,7 @@ class AssistantDeployer:
                     raise
 
         # Create new assistant
-        assistant = self.client.beta.assistants.create(**params)
+        assistant = self._get_assistants_api().create(**params)
         print(f"  CREATED assistant: {assistant.id}")
         return assistant.id
 
@@ -409,7 +434,7 @@ class AssistantDeployer:
             return True
 
         try:
-            assistant = self.client.beta.assistants.retrieve(assistant_id)
+            assistant = self._get_assistants_api().retrieve(assistant_id)
         except Exception as e:
             print(f"  VERIFY FAILED: Could not retrieve assistant - {e}")
             return False
@@ -505,7 +530,7 @@ class AssistantDeployer:
                     "file_search": {"vector_store_ids": [vs_id]},
                 }
 
-            self.client.beta.assistants.update(assistant_id, **update_params)
+            self._get_assistants_api().update(assistant_id, **update_params)
             print(f"  Restored assistant {assistant_id}")
         except Exception as e:
             print(f"  ERROR: Rollback failed - {e}")
