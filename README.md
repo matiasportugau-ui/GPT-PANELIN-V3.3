@@ -19,6 +19,12 @@
 - [Knowledge Base](#knowledge-base)
 - [API Integration](#api-integration)
 - [MCP Server](#-mcp-server)
+- [Self-Healing Governance Architecture](#-self-healing-governance-architecture)
+- [Quotation Persistence System](#-quotation-persistence-system)
+- [KB Self-Learning Module](#-kb-self-learning-module)
+- [Backend & Frontend Services](#️-backend--frontend-services)
+- [KB Pipeline](#-kb-pipeline)
+- [Observability](#-observability)
 - [Installation & Deployment](#installation--deployment)
 - [Usage Guide](#usage-guide)
 - [Documentation](#documentation)
@@ -266,6 +272,48 @@ GPT-PANELIN-V3.3/
 ├── CALCULATION ENGINE
 │   ├── quotation_calculator_v3.py               # Python calculation engine v3.1
 │   └── quotation_calculator_v3.cpython-314.pyc  # Compiled bytecode
+│
+├── KB SELF-LEARNING MODULE (v3.4)
+│   └── kb_self_learning/                        # Knowledge base self-learning system
+│       ├── kb_writer_service.py                 # FastAPI service for KB entry creation
+│       ├── approval_workflow.py                 # Human approval workflow engine
+│       ├── config_v3.4.yaml                     # Module configuration
+│       ├── DEPLOYMENT_V3.4.md                   # Deployment guide
+│       ├── ARCHITECTURAL_LIMITATIONS.md         # Known limitations and roadmap
+│       └── tests/                               # Test suite (336 lines)
+│           ├── test_kb_writer_service.py
+│           └── test_approval_workflow.py
+│
+├── BACKEND SERVICE
+│   └── backend/                                 # Flask backend for chat storage (Cloud Run)
+│       ├── main.py                              # Flask app with /chat endpoint
+│       ├── kb_manager.py                        # Knowledge base management utilities
+│       ├── init_db.sql                          # Database migration script (PostgreSQL)
+│       ├── Dockerfile                           # Production Docker image (Python 3.11)
+│       ├── .dockerignore                        # Docker build exclusions
+│       ├── requirements.txt                     # Flask, psycopg2, google-cloud-secretmanager
+│       ├── models/                              # SQLAlchemy data models
+│       └── tests/                              # Backend tests with mocked dependencies
+│
+├── FRONTEND SERVICE
+│   └── frontend/                               # Web chat interface (Flask)
+│       ├── main.py                             # Flask app serving chat UI
+│       ├── Dockerfile                          # Production Docker image (Python 3.11)
+│       ├── .dockerignore                       # Docker build exclusions
+│       ├── requirements.txt                    # Flask dependencies
+│       └── templates/                          # HTML/JS templates
+│           └── chat.html                       # Chat interface (XSS-safe rendering)
+│
+├── KB PIPELINE
+│   └── kb_pipeline/                            # Knowledge base index builder
+│       ├── build_indexes.py                    # Builds hot artifacts from source catalogs
+│       └── README.md                           # Pipeline documentation
+│
+├── OBSERVABILITY
+│   └── observability/                          # Metrics, cost tracking, and alerts
+│       ├── daily_cost_report.py                # GCP daily cost report generator
+│       ├── metrics_schema.json                 # Prometheus/GCP metrics schema
+│       └── threshold_alerts.md                 # Alert threshold configuration guide
 │
 ├── OPENAI ECOSYSTEM HELPERS
 │   └── openai_ecosystem/                        # OpenAI API integration utilities
@@ -1516,6 +1564,167 @@ configure_quotation_store(
 
 ---
 
+## 🧠 KB Self-Learning Module
+
+**Version:** 3.4 | **Status:** ✅ Production Ready (with [known limitations](kb_self_learning/ARCHITECTURAL_LIMITATIONS.md)) | **Location:** `kb_self_learning/`
+
+### Overview
+
+The KB Self-Learning module allows the AI model to **propose new knowledge base entries** through chat interactions, with a human approval workflow before any changes are persisted. It bridges continuous learning with human oversight.
+
+### Core Components
+
+#### KB Writer Service (`kb_self_learning/kb_writer_service.py`)
+
+FastAPI-based service that exposes endpoints for submitting KB entries:
+
+- Accepts structured `KBEntry` payloads (topic, content, confidence score, tags, metadata)
+- Validates entry completeness before queuing for review
+- Uses Pydantic v2 models with strict field constraints
+- Integrates with SQLAlchemy for entry persistence
+
+```python
+# Example KB entry structure
+{
+    "topic": "ISODEC EPS 150mm load-bearing update",
+    "content": "Max autoportancia corrected to 7.5m per supplier bulletin 2026-02",
+    "confidence_score": 0.95,
+    "source": "self_learning",
+    "tags": ["autoportancia", "ISODEC", "EPS"]
+}
+```
+
+#### Approval Workflow (`kb_self_learning/approval_workflow.py`)
+
+Manages the human review pipeline:
+
+- **Status flow**: `pending_approval` → `approved` | `rejected` | `needs_revision`
+- In-memory queue (`pending_queue`) with approval history tracking
+- Per-entry audit trail with reviewer, timestamp, and notes
+
+> ⚠️ **Limitation:** The current implementation uses in-memory state, making it incompatible with multi-replica Kubernetes deployments. See [ARCHITECTURAL_LIMITATIONS.md](kb_self_learning/ARCHITECTURAL_LIMITATIONS.md) for full details and migration path.
+
+### Configuration
+
+`kb_self_learning/config_v3.4.yaml` controls approval thresholds, confidence requirements, and allowed entry types.
+
+### Testing
+
+```bash
+# Run KB self-learning tests
+pytest kb_self_learning/tests/ -v
+```
+
+**Coverage:** `test_kb_writer_service.py` + `test_approval_workflow.py` (336 lines total)
+
+---
+
+## 🖥️ Backend & Frontend Services
+
+### Backend Service (`backend/`)
+
+**Flask application** deployed on Google Cloud Run. Provides chat conversation storage backed by Cloud SQL (PostgreSQL), with secrets managed via Google Cloud Secret Manager.
+
+**Key endpoints:**
+- `POST /chat` — Store and process user messages (5000 character limit enforced)
+- `GET /health` — Health check
+- Database schema managed via `backend/init_db.sql` migration script
+
+**Security features:**
+- Server-side message length validation (400 error for >5000 chars)
+- Credentials injected at runtime from Secret Manager (never hardcoded)
+- Database schema via migration scripts, not application startup
+
+**Running locally:**
+```bash
+cd backend
+pip install -r requirements.txt
+# Requires environment variables: PORT, PROJECT_ID, DB_CONNECTION_NAME, DB_USER, DB_PASSWORD, DB_NAME
+python main.py
+```
+
+**Tests:**
+```bash
+pytest backend/tests/ -v
+```
+
+### Frontend Service (`frontend/`)
+
+**Flask web application** serving the chat interface. Implements the Panelin chat UI with XSS-safe message rendering.
+
+**Security features:**
+- All user-generated content rendered via `textContent` (never `innerHTML`)
+- Message input enforces `maxlength="5000"` on the frontend
+- Matching server-side validation in the backend
+
+**Running locally:**
+```bash
+cd frontend
+pip install -r requirements.txt
+python main.py
+```
+
+---
+
+## 🔁 KB Pipeline
+
+**Location:** `kb_pipeline/` | **Script:** `kb_pipeline/build_indexes.py`
+
+The KB Pipeline builds lightweight **hot artifacts** and provenance metadata from source catalogs, enabling fast MCP tool lookups without loading full catalog files into memory.
+
+### Source Catalogs
+
+- `shopify_catalog_v1.json`
+- `bromyros_pricing_master.json`
+- `bromyros_pricing_gpt_optimized.json`
+
+### Output Artifacts
+
+```
+artifacts/
+├── hot/
+│   ├── shopify_catalog_v1.hot.json            (~470 bytes, 1 row)
+│   ├── bromyros_pricing_master.hot.json        (~32 KB, 96 rows)
+│   └── bromyros_pricing_gpt_optimized.hot.json (~32 KB, 96 rows)
+└── source_manifest.json                        (~1.5 KB)
+```
+
+Each hot record preserves immutable source references (`source_file`, `source_key`, `checksum`) for traceability.
+
+### Rebuild
+
+```bash
+python kb_pipeline/build_indexes.py
+```
+
+The build fails if required fields are missing, duplicate SKUs exist within a catalog, or duplicate source references are detected across catalogs.
+
+---
+
+## 📊 Observability
+
+**Location:** `observability/`
+
+Cost monitoring and alerting infrastructure for the Panelin GCP deployment.
+
+### Components
+
+| File | Description |
+|------|-------------|
+| `daily_cost_report.py` | Generates daily GCP cost summary reports by service |
+| `metrics_schema.json` | Prometheus/GCP Monitoring metrics schema definition |
+| `threshold_alerts.md` | Alert threshold configuration guide and escalation procedures |
+
+### Cost Monitoring
+
+The daily cost report tracks:
+- Cloud Run invocations (backend, frontend, Wolf API)
+- Cloud SQL usage
+- GCS storage and operations
+- Secret Manager access
+
+---
+
 ### Additional Resources
 
 - **Quick Start Guide:** [MCP_QUICK_START.md](MCP_QUICK_START.md) - Get the server running in 3 steps
@@ -1750,8 +1959,8 @@ python .evolucionador/tests/test_optimizer.py
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/matiasportugau-ui/GPT-PANELIN-V3.2.git
-cd GPT-PANELIN-V3.2
+git clone https://github.com/matiasportugau-ui/GPT-PANELIN-V3.3.git
+cd GPT-PANELIN-V3.3
 
 # 2. Create environment file
 cp .env.example .env
@@ -1908,9 +2117,9 @@ Run `validate_gpt_files.py` with Python to verify all files exist and are valid 
 #### 2. Configure GPT in OpenAI
 
 1. Go to OpenAI GPT Builder: https://chat.openai.com/gpts/editor
-2. Create new GPT or edit existing "Panelin 3.3"
+2. Create new GPT or edit existing "Panelin 3.4"
 3. **Configure basic info:**
-   - Name: `Panelin 3.3`
+   - Name: `Panelin 3.4`
    - Description: Use description from [Panelin_GPT_config.json](Panelin_GPT_config.json)
    - Profile image: Upload `bmc_logo.png` (optional)
 
@@ -2211,6 +2420,13 @@ See [PANELIN_TRAINING_GUIDE.md](PANELIN_TRAINING_GUIDE.md) for details.
 | [.evolucionador/README.md](.evolucionador/README.md) | EVOLUCIONADOR system guide | .evolucionador |
 | [docs/README.md](docs/README.md) | Complete documentation hub and index | docs |
 | [mcp/config/mcp_server_config.json](mcp/config/mcp_server_config.json) | MCP server configuration | mcp |
+| [kb_self_learning/ARCHITECTURAL_LIMITATIONS.md](kb_self_learning/ARCHITECTURAL_LIMITATIONS.md) | KB self-learning module limitations and roadmap | kb_self_learning |
+| [kb_self_learning/DEPLOYMENT_V3.4.md](kb_self_learning/DEPLOYMENT_V3.4.md) | KB self-learning deployment guide | kb_self_learning |
+| [background_tasks/README.md](background_tasks/README.md) | Background task processing guide with examples | background_tasks |
+| [kb_pipeline/README.md](kb_pipeline/README.md) | KB pipeline usage and artifact reference | kb_pipeline |
+| [wolf_api/README.md](wolf_api/README.md) | Wolf API quick start and endpoint reference | wolf_api |
+| [wolf_api/DEPLOYMENT.md](wolf_api/DEPLOYMENT.md) | Wolf API complete deployment guide (Cloud Run) | wolf_api |
+| [wolf_api/IAM_SETUP.md](wolf_api/IAM_SETUP.md) | Wolf API IAM permissions and service account setup | wolf_api |
 
 ### Python Modules Documentation
 
@@ -2222,6 +2438,12 @@ See [PANELIN_TRAINING_GUIDE.md](PANELIN_TRAINING_GUIDE.md) for details.
 | `.evolucionador/` | Autonomous evolution agent with 7 validators, 6 optimizers, report generator | 1.0.0 |
 | `mcp/` | MCP server with 18 tools (4 core, 7 background, 4 Wolf API, 2 governance, 1 storage) | 0.3.0 |
 | `panelin_mcp_integration/` | MCP integration clients for OpenAI Responses API and Wolf API wrapper | 0.3.0 |
+| `kb_self_learning/` | Knowledge base self-learning service with human approval workflow (FastAPI) | 3.4 |
+| `backend/` | Flask chat backend for Cloud Run with Cloud SQL and Secret Manager integration | 1.0 |
+| `frontend/` | Flask chat frontend with XSS-safe rendering and input validation | 1.0 |
+| `background_tasks/` | Standalone async task queue with priority, retry, scheduler, and REST API | 1.0.0 |
+| `kb_pipeline/` | KB index builder producing hot artifacts with provenance metadata | 1.0 |
+| `observability/` | GCP cost reporting, Prometheus metrics schema, and alert thresholds | 1.0 |
 
 #### OpenAI Ecosystem Module
 
@@ -2336,6 +2558,80 @@ export WOLF_API_KEY="your_api_key_here"
 - Automatic cleanup with `trap`
 - API key passed via curl config file (not command line)
 - Connection timeout and retry logic to prevent hanging
+
+#### 5. MCP Handler Tests
+**Location:** `mcp/tests/`
+
+```bash
+# Run all MCP tests (from repository root)
+pytest mcp/tests/ -v
+
+# Run specific handler tests
+pytest mcp/tests/test_wolf_kb_write.py -v
+```
+
+**Test Coverage (100+ tests):**
+- ✅ Core tool handlers (pricing, catalog, BOM, errors)
+- ✅ Background task handlers (55 tests)
+- ✅ Wolf API KB write handlers (20+ tests)
+- ✅ Governance handlers (validate/commit corrections)
+- ✅ Quotation persistence handler
+
+#### 6. Wolf API Tests
+**Location:** `wolf_api/tests/`
+
+```bash
+# Run Wolf API tests (from repository root)
+pytest wolf_api/tests/ -v
+```
+
+**Test Coverage (10 tests):**
+- ✅ POST /kb/conversations endpoint
+- ✅ GCS persistence (daily_jsonl and per_event_jsonl modes)
+- ✅ X-API-Key authentication
+- ✅ Error handling and edge cases
+
+#### 7. KB Self-Learning Tests
+**Location:** `kb_self_learning/tests/`
+
+```bash
+# Run KB self-learning tests
+pytest kb_self_learning/tests/ -v
+```
+
+**Test Coverage (336 lines):**
+- ✅ KB writer service entry creation and validation
+- ✅ Approval workflow status transitions
+- ✅ Reviewer notes and audit trail
+
+#### 8. Backend Tests
+**Location:** `backend/tests/`
+
+```bash
+# Run backend tests
+pytest backend/tests/ -v
+```
+
+**Test Coverage (15 tests):**
+- ✅ Chat endpoint validation (5000 char limit)
+- ✅ Keyword extraction
+- ✅ Error cases and edge conditions
+- ✅ Mocked psycopg2/secretmanager (no DB required)
+
+#### 9. Background Task Tests
+**Location:** `background_tasks/tests/`
+
+```bash
+# Run background task tests
+pytest background_tasks/tests/ -v
+```
+
+**Test Coverage:**
+- ✅ Task queue operations (enqueue, dequeue, priority)
+- ✅ Task persistence and recovery
+- ✅ Worker execution and retry logic
+- ✅ Scheduler (interval and daily tasks)
+- ✅ Task cancellation and concurrent execution
 
 ### Continuous Integration
 
