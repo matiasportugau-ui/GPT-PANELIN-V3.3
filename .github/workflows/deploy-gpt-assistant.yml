@@ -211,7 +211,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          python -c "
+          python - <<'PY'
           import json, os, sys
           from openai import OpenAI
 
@@ -246,4 +246,4 @@ jobs:
               sys.exit(1)
 
           print('Verification PASSED')
-          "
+          PY
