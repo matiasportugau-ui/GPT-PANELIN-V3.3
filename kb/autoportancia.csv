@@ -1,0 +1,2 @@
+family,thickness_mm,support_condition,span_m_max,load_kPa,slope_deg_min,slope_deg_max,notes,source
+ISOROOF,50,"2_apoyos_simple",PLACEHOLDER,PLACEHOLDER,PLACEHOLDER,PLACEHOLDER,"Completar con tabla real","PLACEHOLDER_DATASHEET"

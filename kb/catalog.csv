@@ -1,0 +1,12 @@
+sku_id,family,system,product_type,thickness_mm,unit_sale,description,tags,active
+PLACEHOLDER_PANEL_ISOWALL_50,ISOWALL,VERTICAL,panel,50,m2,"Panel muro 50mm (placeholder)","muro;panel",true
+PLACEHOLDER_PANEL_ISOROOF_50,ISOROOF,HORIZONTAL,panel,50,m2,"Panel techo 50mm (placeholder)","techo;panel",true
+PLACEHOLDER_PROFILE_U_50,UNIVERSAL,VERTICAL,profile,50,ml,"Perfil U para panel 50mm (placeholder)","perfil;u",true
+PLACEHOLDER_CORNER_IN_50,UNIVERSAL,VERTICAL,accessory,50,ml,"Esquinero interior 50mm (placeholder)","esquinero;interior",true
+PLACEHOLDER_CORNER_OUT_50,UNIVERSAL,VERTICAL,accessory,50,ml,"Esquinero exterior 50mm (placeholder)","esquinero;exterior",true
+PLACEHOLDER_RIDGE_CAP_50,UNIVERSAL,HORIZONTAL,accessory,50,ml,"Cumbrera 50mm (placeholder)","cumbrera",true
+PLACEHOLDER_DRIP_EDGE_50,UNIVERSAL,HORIZONTAL,accessory,50,ml,"Goterón 50mm (placeholder)","goteron",true
+PLACEHOLDER_FLASHING_50,UNIVERSAL,HORIZONTAL,accessory,50,ml,"Babeta 50mm (placeholder)","babeta",true
+PLACEHOLDER_FASTENER_PANEL,UNIVERSAL,ALL,fastener,,u,"Tornillo/fijación panel (placeholder)","tornillo;fijacion",true
+PLACEHOLDER_SEALANT_NEUTRAL,UNIVERSAL,ALL,sealant,,u,"Sellador neutro (placeholder)","sellador",true
+PLACEHOLDER_PVC_WASHER,UNIVERSAL,HORIZONTAL,accessory,,u,"Tortuga/arandela PVC (placeholder)","pvc;arandela",true

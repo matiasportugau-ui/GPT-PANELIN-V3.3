@@ -1,0 +1,51 @@
+{
+  "version": "PLACEHOLDER-1.0",
+  "rules": [
+    {
+      "envelope_class": "VERTICAL",
+      "family": "ISOWALL",
+      "thickness_mm": 50,
+      "accessories": {
+        "u_profile": "PLACEHOLDER_PROFILE_U_50",
+        "corner_in": "PLACEHOLDER_CORNER_IN_50",
+        "corner_out": "PLACEHOLDER_CORNER_OUT_50",
+        "fastener": "PLACEHOLDER_FASTENER_PANEL",
+        "sealant": "PLACEHOLDER_SEALANT_NEUTRAL"
+      },
+      "synonyms": {
+        "perfil u": "u_profile",
+        "u": "u_profile",
+        "esquinero interior": "corner_in",
+        "esquinero int": "corner_in",
+        "esquinero exterior": "corner_out",
+        "esquinero ext": "corner_out",
+        "tornillo": "fastener",
+        "fijacion": "fastener",
+        "sellador": "sealant"
+      }
+    },
+    {
+      "envelope_class": "HORIZONTAL",
+      "family": "ISOROOF",
+      "thickness_mm": 50,
+      "accessories": {
+        "ridge_cap": "PLACEHOLDER_RIDGE_CAP_50",
+        "drip_edge": "PLACEHOLDER_DRIP_EDGE_50",
+        "flashing": "PLACEHOLDER_FLASHING_50",
+        "fastener": "PLACEHOLDER_FASTENER_PANEL",
+        "sealant": "PLACEHOLDER_SEALANT_NEUTRAL",
+        "pvc_washer": "PLACEHOLDER_PVC_WASHER"
+      },
+      "synonyms": {
+        "cumbrera": "ridge_cap",
+        "goteron": "drip_edge",
+        "goterón": "drip_edge",
+        "babeta": "flashing",
+        "tornillo": "fastener",
+        "sellador": "sealant",
+        "tortuga": "pvc_washer",
+        "arandela pvc": "pvc_washer"
+      }
+    }
+  ]
+}
