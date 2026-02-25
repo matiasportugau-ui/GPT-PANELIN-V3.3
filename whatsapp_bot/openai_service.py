@@ -1,10 +1,10 @@
-"""OpenAI Responses API service for the real estate assistant.
+"""OpenAI Responses API service for the BMC Uruguay panel quotation assistant.
 
 Uses the Responses API (NOT the deprecated Assistants API v2, shutdown Aug 2026):
 - AsyncOpenAI client for non-blocking I/O (Fix C1)
 - gpt-4.1-nano for cost optimization ($0.10/1M input tokens)
 - previous_response_id for prompt caching (75% discount on cached tokens)
-- file_search tool for RAG against the property vector store
+- file_search tool for RAG against the BMC product knowledge base vector store
 - max_num_results=3 to limit RAG context injection (~2400 tokens max)
 - Stale response_id recovery via BadRequestError catch (Fix H4)
 

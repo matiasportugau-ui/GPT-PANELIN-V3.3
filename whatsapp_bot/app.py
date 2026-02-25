@@ -1,4 +1,4 @@
-"""FastAPI application for the WhatsApp Real Estate Bot.
+"""FastAPI application for the BMC Uruguay WhatsApp Bot (Panelin).
 
 Endpoints:
     GET  /webhook         — Meta verification challenge (handshake)
@@ -33,6 +33,9 @@ from .firestore_manager import SessionManager
 from .openai_service import OpenAIService
 from .vector_store_sync import run_nightly_sync
 from .whatsapp_client import WhatsAppClient
+
+# NOTE: panelin_sync provides Wolf API integration (customer persistence,
+# conversation logging) — imported where needed for CRM operations.
 
 logger = logging.getLogger(__name__)
 
@@ -92,8 +95,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Real Estate WhatsApp Bot",
-    description="Cognitive real estate assistant powered by OpenAI + WhatsApp",
+    title="BMC Uruguay WhatsApp Bot",
+    description="Panelin - Technical sales assistant for construction panels powered by OpenAI + WhatsApp",
     version="1.0.0",
     docs_url=None,
     redoc_url=None,
@@ -192,13 +195,13 @@ async def handle_webhook(
 # ── Message Processing (Background Task) ──────────────────────
 
 HANDOFF_MESSAGE = (
-    "Comprendo. He transferido esta conversación a uno de nuestros "
-    "agentes inmobiliarios, quien se pondrá en contacto a la brevedad. "
+    "Comprendo. He transferido esta conversación al equipo técnico "
+    "comercial de BMC Uruguay, quien se pondrá en contacto a la brevedad. "
     "Gracias por su paciencia."
 )
 
 REACTIVATION_MESSAGE = (
-    "La sesión asistida ha concluido. El asistente virtual inmobiliario "
+    "La sesión asistida ha concluido. El asistente Panelin de BMC Uruguay "
     "retoma el canal para futuras consultas. ¿En qué puedo ayudarle?"
 )
 
@@ -252,9 +255,9 @@ async def process_incoming_message(wa_id: str, text_body: str) -> None:
                 await wa_client.send_text(wa_id, result.text)
             await wa_client.send_document(
                 wa_id,
-                "/tmp/catalogo_propiedades.pdf",
-                "Dossier_Inmobiliario.pdf",
-                "Catálogo técnico de propiedades adjunto.",
+                "/app/panelin_reports/output/cotizacion.pdf",
+                "Cotizacion_BMC_Uruguay.pdf",
+                "Cotización técnica BMC Uruguay adjunta.",
             )
         else:
             await wa_client.send_text(wa_id, result.text)
@@ -287,16 +290,16 @@ async def trigger_sync(
     ):
         raise HTTPException(status_code=401, detail="Invalid API key")
 
-    if not settings.inmoenter_feed_url:
+    if not settings.kb_pricing_path:
         raise HTTPException(
-            status_code=503, detail="Inmoenter feed URL not configured"
+            status_code=503, detail="KB pricing path not configured"
         )
 
     stats = await run_nightly_sync(
         openai_api_key=settings.openai_api_key,
         vector_store_id=settings.vector_store_id,
-        feed_url=settings.inmoenter_feed_url,
-        inmoenter_api_key=settings.inmoenter_api_key,
+        pricing_path=settings.kb_pricing_path,
+        kb_path=settings.kb_base_path,
         db=session_manager.db if session_manager else None,
     )
 
