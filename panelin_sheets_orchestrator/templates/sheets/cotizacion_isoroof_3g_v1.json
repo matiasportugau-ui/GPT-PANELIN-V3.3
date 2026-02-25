@@ -1,0 +1,40 @@
+{
+  "template_id": "cotizacion_isoroof_3g_v1",
+  "sheet_name": "ISOROOF_3G",
+  "writes_allowlist": [
+    "ISOROOF_3G!B6",
+    "ISOROOF_3G!F3",
+    "ISOROOF_3G!K1",
+    "ISOROOF_3G!A10:F13",
+    "ISOROOF_3G!D15:D22",
+    "ISOROOF_3G!B25"
+  ],
+  "read_ranges": [
+    "ISOROOF_3G!A1:K30"
+  ],
+  "hints": {
+    "cells": {
+      "cliente_nombre": "ISOROOF_3G!B6",
+      "fecha": "ISOROOF_3G!F3",
+      "autoportancia_m": "ISOROOF_3G!K1",
+      "estructura_tipo": "ISOROOF_3G!B25"
+    },
+    "tables": {
+      "items": {
+        "range": "ISOROOF_3G!A10:F13",
+        "columns": ["Producto", "Largo_m", "Cantidad", "Costo_m2", "Costo_total", "Notas"]
+      },
+      "accesorios_qty": {
+        "range": "ISOROOF_3G!D15:D22",
+        "description": "Cantidades de accesorios. ISOROOF usa caballetes+tornillos (NO varilla/tuercas para madera)."
+      }
+    },
+    "product_info": {
+      "family": "ISOROOF_3G",
+      "core_type": "EPS",
+      "usage": "techo",
+      "available_thicknesses_mm": [30, 50, 80],
+      "notes": "Para estructura de madera: usar caballetes + tornillos T1. Para metal: varilla + tuercas."
+    }
+  }
+}

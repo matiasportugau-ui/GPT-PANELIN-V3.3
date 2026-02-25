@@ -1,0 +1,39 @@
+{
+  "template_id": "cotizacion_isopanel_eps_v1",
+  "sheet_name": "ISOPANEL_PARED",
+  "writes_allowlist": [
+    "ISOPANEL_PARED!B6",
+    "ISOPANEL_PARED!F3",
+    "ISOPANEL_PARED!K1",
+    "ISOPANEL_PARED!A10:F15",
+    "ISOPANEL_PARED!D17:D24"
+  ],
+  "read_ranges": [
+    "ISOPANEL_PARED!A1:K30"
+  ],
+  "hints": {
+    "cells": {
+      "cliente_nombre": "ISOPANEL_PARED!B6",
+      "fecha": "ISOPANEL_PARED!F3",
+      "altura_pared_m": "ISOPANEL_PARED!K1"
+    },
+    "tables": {
+      "items": {
+        "range": "ISOPANEL_PARED!A10:F15",
+        "columns": ["Producto", "Alto_m", "Cantidad", "Costo_m2", "Costo_total", "Notas"]
+      },
+      "accesorios_qty": {
+        "range": "ISOPANEL_PARED!D17:D24",
+        "description": "Cantidades de accesorios pared. Ancho útil ISOPANEL: 1.14m."
+      }
+    },
+    "product_info": {
+      "family": "ISOPANEL_EPS",
+      "core_type": "EPS",
+      "usage": "pared",
+      "available_thicknesses_mm": [50, 100, 150, 200, 250],
+      "useful_width_m": 1.14,
+      "notes": "Paneles de pared: fijación ROUNDUP((paneles × apoyos) × 2), sin fijación de borde."
+    }
+  }
+}

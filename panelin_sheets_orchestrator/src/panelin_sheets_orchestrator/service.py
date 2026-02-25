@@ -2,110 +2,63 @@
 Panelin Sheets Orchestrator – FastAPI service.
 
 Endpoints:
-  POST /v1/fill          – AI-planned write to a Google Sheet (allowlist-validated, idempotent).
-  POST /v1/queue/process – Process PENDING jobs from a queue sheet.
-  GET  /healthz          – Health check.
+  GET  /healthz              – Health check.
+  POST /v1/fill              – AI-planned write to a Google Sheet (allowlist-validated, idempotent).
+  POST /v1/queue/process     – Process PENDING jobs from a queue sheet.
+  POST /v1/read              – Read ranges from a Google Sheet.
+  POST /v1/validate          – Validate dimensions, autoportancia, and compute BOM.
+  GET  /v1/templates         – List available templates.
+  GET  /v1/templates/{id}    – Get a specific template.
+  GET  /v1/jobs/{job_id}     – Get job status (idempotency lookup).
 """
 
 from __future__ import annotations
 
-import base64
 import hashlib
 import hmac
 import json
 import logging
 import os
-from dataclasses import dataclass
+import time
 from typing import Any, Dict, List, Optional
 
-import google.auth
+from fastapi import Depends, FastAPI, Header, HTTPException, Path
 from google.cloud import firestore
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from fastapi import Depends, FastAPI, Header, HTTPException
-from openai import OpenAI
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
 
+from .audit import (
+    audit_fill_request,
+    audit_fill_result,
+    audit_queue_batch,
+    audit_validation_failure,
+)
+from .config import Settings, load_settings
 from .models import (
     FillRequest,
     FillResponse,
+    JobStatusResponse,
     QueueProcessRequest,
     QueueProcessResponse,
-    WritePlan,
+    ReadRequest,
+    ReadResponse,
+    TemplateInfo,
+    TemplateListResponse,
+    ValidateRequest,
+    ValidateResponse,
+)
+from .openai_planner import build_write_plan
+from .sheets_client import SheetsClient
+from .validators import (
+    compute_bom_summary,
+    validate_write_plan_values,
 )
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("panelin.sheets.service")
 
 # ---------------------------------------------------------------------------
-# Config (env-driven)
+# Settings (module-level, reloadable for tests)
 # ---------------------------------------------------------------------------
 
-def _env(name: str, default: Optional[str] = None) -> Optional[str]:
-    v = os.getenv(name, default)
-    return v if v not in ("", None) else None
-
-
-@dataclass(frozen=True)
-class Settings:
-    env: str
-    gcp_project_id: str
-    log_level: str
-
-    openai_model: str
-    openai_api_key: Optional[str]
-    openai_safety_identifier_prefix: str
-
-    panelin_orch_api_key: Optional[str]
-    api_key_header_name: str
-
-    sheets_scopes: List[str]
-
-    idempotency_backend: str
-    firestore_collection: str
-    firestore_database: str
-
-    templates_dir: str
-    queue_template_path: str
-
-
-def load_settings() -> Settings:
-    scopes_raw = _env(
-        "SHEETS_SCOPES", "https://www.googleapis.com/auth/spreadsheets"
-    ) or ""
-    scopes = [s.strip() for s in scopes_raw.split(",") if s.strip()]
-
-    return Settings(
-        env=_env("ENV", "dev") or "dev",
-        gcp_project_id=_env("GCP_PROJECT_ID", "") or "",
-        log_level=_env("LOG_LEVEL", "INFO") or "INFO",
-        openai_model=_env("OPENAI_MODEL", "gpt-4o-mini") or "gpt-4o-mini",
-        openai_api_key=_env("OPENAI_API_KEY"),
-        openai_safety_identifier_prefix=_env(
-            "OPENAI_SAFETY_IDENTIFIER_PREFIX", "panelin-"
-        )
-        or "panelin-",
-        panelin_orch_api_key=_env("PANELIN_ORCH_API_KEY"),
-        api_key_header_name=_env("API_KEY_HEADER_NAME", "X-API-Key") or "X-API-Key",
-        sheets_scopes=scopes,
-        idempotency_backend=_env("IDEMPOTENCY_BACKEND", "memory") or "memory",
-        firestore_collection=_env("FIRESTORE_COLLECTION", "panelin_sheet_jobs")
-        or "panelin_sheet_jobs",
-        firestore_database=_env("FIRESTORE_DATABASE", "(default)") or "(default)",
-        templates_dir=_env("TEMPLATES_DIR", "templates/sheets") or "templates/sheets",
-        queue_template_path=_env(
-            "QUEUE_TEMPLATE_PATH", "templates/queue/queue_v1.example.json"
-        )
-        or "templates/queue/queue_v1.example.json",
-    )
-
-
-SETTINGS = load_settings()
+SETTINGS: Settings = load_settings()
 
 # ---------------------------------------------------------------------------
 # Auth: inbound API key
@@ -127,79 +80,17 @@ def require_api_key(
 
 
 # ---------------------------------------------------------------------------
-# Google Auth – ADC (Cloud Run) + fallback JSON_B64 (local/airgap)
+# Sheets client (lazy singleton)
 # ---------------------------------------------------------------------------
 
-
-def get_google_credentials(scopes: List[str]):
-    b64 = _env("GOOGLE_SA_JSON_B64")
-    if b64:
-        info = json.loads(base64.b64decode(b64).decode("utf-8"))
-        return service_account.Credentials.from_service_account_info(
-            info, scopes=scopes
-        )
-    creds, _ = google.auth.default(scopes=scopes)
-    return creds
+_sheets_client: Optional[SheetsClient] = None
 
 
-def sheets_service():
-    creds = get_google_credentials(SETTINGS.sheets_scopes)
-    return build("sheets", "v4", credentials=creds, cache_discovery=False)
-
-
-# ---------------------------------------------------------------------------
-# Sheets API helpers (retries on transient errors)
-# ---------------------------------------------------------------------------
-
-
-def _is_retryable_http_error(exc: BaseException) -> bool:
-    if not isinstance(exc, HttpError):
-        return False
-    status = getattr(getattr(exc, "resp", None), "status", None)
-    return status in (429, 500, 502, 503, 504)
-
-
-@retry(
-    stop=stop_after_attempt(5),
-    wait=wait_exponential(multiplier=1, min=1, max=20),
-    retry=retry_if_exception_type(HttpError),
-    reraise=True,
-)
-def sheets_batch_get(
-    spreadsheet_id: str, ranges: List[str]
-) -> Dict[str, Any]:
-    svc = sheets_service()
-    return (
-        svc.spreadsheets()
-        .values()
-        .batchGet(spreadsheetId=spreadsheet_id, ranges=ranges)
-        .execute()
-    )
-
-
-@retry(
-    stop=stop_after_attempt(5),
-    wait=wait_exponential(multiplier=1, min=1, max=20),
-    retry=retry_if_exception_type(HttpError),
-    reraise=True,
-)
-def sheets_batch_update(
-    spreadsheet_id: str,
-    data: List[Dict[str, Any]],
-    value_input_option: str = "USER_ENTERED",
-) -> Dict[str, Any]:
-    svc = sheets_service()
-    body = {
-        "valueInputOption": value_input_option,
-        "data": data,
-        "includeValuesInResponse": False,
-    }
-    return (
-        svc.spreadsheets()
-        .values()
-        .batchUpdate(spreadsheetId=spreadsheet_id, body=body)
-        .execute()
-    )
+def get_sheets_client() -> SheetsClient:
+    global _sheets_client
+    if _sheets_client is None:
+        _sheets_client = SheetsClient(SETTINGS)
+    return _sheets_client
 
 
 # ---------------------------------------------------------------------------
@@ -208,8 +99,12 @@ def sheets_batch_update(
 
 
 class IdempotencyStore:
-    def get_done(self, job_id: str) -> Optional[Dict[str, Any]]:
+    def get(self, job_id: str) -> Optional[Dict[str, Any]]:
         raise NotImplementedError
+
+    def get_done(self, job_id: str) -> Optional[Dict[str, Any]]:
+        d = self.get(job_id)
+        return d if d and d.get("status") == "DONE" else None
 
     def start(self, job_id: str, payload_hash: str) -> None:
         raise NotImplementedError
@@ -225,9 +120,8 @@ class MemoryIdempotencyStore(IdempotencyStore):
     def __init__(self) -> None:
         self._db: Dict[str, Dict[str, Any]] = {}
 
-    def get_done(self, job_id: str) -> Optional[Dict[str, Any]]:
-        d = self._db.get(job_id)
-        return d if d and d.get("status") == "DONE" else None
+    def get(self, job_id: str) -> Optional[Dict[str, Any]]:
+        return self._db.get(job_id)
 
     def start(self, job_id: str, payload_hash: str) -> None:
         if job_id in self._db:
@@ -251,12 +145,11 @@ class FirestoreIdempotencyStore(IdempotencyStore):
         self.client = firestore.Client(project=project_id, database=database)
         self.col = self.client.collection(collection)
 
-    def get_done(self, job_id: str) -> Optional[Dict[str, Any]]:
+    def get(self, job_id: str) -> Optional[Dict[str, Any]]:
         doc = self.col.document(job_id).get()
         if not doc.exists:
             return None
-        d = doc.to_dict() or {}
-        return d if d.get("status") == "DONE" else None
+        return doc.to_dict()
 
     def start(self, job_id: str, payload_hash: str) -> None:
         ref = self.col.document(job_id)
@@ -268,7 +161,7 @@ class FirestoreIdempotencyStore(IdempotencyStore):
                 return
             txn.set(ref, {"status": "RUNNING", "payload_hash": payload_hash})
 
-        txn_body  # noqa: B018 – executed by decorator
+        txn_body  # noqa: B018
 
     def done(self, job_id: str, result: Dict[str, Any]) -> None:
         self.col.document(job_id).set({"status": "DONE", **result}, merge=True)
@@ -306,6 +199,24 @@ def load_template(template_id: str) -> Dict[str, Any]:
         return json.load(f)
 
 
+def list_templates() -> List[Dict[str, Any]]:
+    templates_dir = SETTINGS.templates_dir
+    if not os.path.isdir(templates_dir):
+        return []
+    result = []
+    for fname in sorted(os.listdir(templates_dir)):
+        if not fname.endswith(".json"):
+            continue
+        fpath = os.path.join(templates_dir, fname)
+        try:
+            with open(fpath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            result.append(data)
+        except Exception:
+            logger.warning("Failed to load template %s", fpath, exc_info=True)
+    return result
+
+
 def validate_write_ranges(
     writes: List[Dict[str, Any]], allowlist: List[str]
 ) -> None:
@@ -324,129 +235,49 @@ def payload_hash(payload: Dict[str, Any]) -> str:
 
 
 # ---------------------------------------------------------------------------
-# OpenAI: build write plan (Structured Outputs)
-# ---------------------------------------------------------------------------
-
-WRITEPLAN_SCHEMA: Dict[str, Any] = {
-    "type": "object",
-    "additionalProperties": False,
-    "properties": {
-        "job_id": {"type": "string"},
-        "version": {"type": "string"},
-        "writes": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "additionalProperties": False,
-                "properties": {
-                    "range": {"type": "string"},
-                    "values": {
-                        "type": "array",
-                        "items": {
-                            "type": "array",
-                            "items": {"type": "string"},
-                        },
-                    },
-                },
-                "required": ["range", "values"],
-            },
-        },
-        "computed": {"type": "object"},
-        "notes": {"type": "string"},
-    },
-    "required": ["job_id", "version", "writes", "computed", "notes"],
-}
-
-
-def build_write_plan(
-    *,
-    job_id: str,
-    mapping: Dict[str, Any],
-    sheet_snapshot: Dict[str, Any],
-    payload: Dict[str, Any],
-) -> WritePlan:
-    if not SETTINGS.openai_api_key:
-        raise RuntimeError(
-            "OPENAI_API_KEY no configurado (usar Secret Manager en Cloud Run)."
-        )
-
-    client = OpenAI(api_key=SETTINGS.openai_api_key)
-
-    template_context = {
-        "template_id": mapping.get("template_id"),
-        "sheet_name": mapping.get("sheet_name"),
-        "writes_allowlist": mapping.get("writes_allowlist", []),
-        "hints": mapping.get("hints", {}),
-    }
-
-    prompt_user = {
-        "job_id": job_id,
-        "template": template_context,
-        "sheet_snapshot": sheet_snapshot,
-        "payload": payload,
-    }
-
-    safety_id = SETTINGS.openai_safety_identifier_prefix + job_id[:32]
-
-    resp = client.responses.create(
-        model=SETTINGS.openai_model,
-        input=[
-            {
-                "role": "system",
-                "content": (
-                    "Generá un plan de escritura para Google Sheets.\n"
-                    "Reglas:\n"
-                    "- SOLO podés usar rangos en writes_allowlist.\n"
-                    "- NO inventes rangos.\n"
-                    "- NO escribas fórmulas; solo valores.\n"
-                    "- Si falta info, devolvé writes vacío y explicá en notes.\n"
-                ),
-            },
-            {
-                "role": "user",
-                "content": json.dumps(prompt_user, ensure_ascii=False),
-            },
-        ],
-        text={
-            "format": {
-                "type": "json_schema",
-                "name": "panelin_sheet_writeplan",
-                "schema": WRITEPLAN_SCHEMA,
-                "strict": True,
-            }
-        },
-    )
-
-    out_text = getattr(resp, "output_text", None)
-    if not out_text:
-        raise RuntimeError(
-            "OpenAI no devolvió output_text. Revisar versión del SDK."
-        )
-    data = json.loads(out_text)
-    return WritePlan.model_validate(data)
-
-
-# ---------------------------------------------------------------------------
 # FastAPI app
 # ---------------------------------------------------------------------------
 
 app = FastAPI(
     title="Panelin Sheets Orchestrator",
-    version="0.1.0",
+    version="0.2.0",
+    description=(
+        "Microservicio Cloud Run para automatizar el llenado de planillas "
+        "Google Sheets en Panelin v3.3, usando OpenAI Structured Outputs "
+        "con validación de allowlist y reglas de negocio."
+    ),
     docs_url="/docs",
     redoc_url="/redoc",
 )
 
 
+# ── Health ─────────────────────────────────────────────────────────────
+
+
 @app.get("/healthz")
 def healthz():
-    return {"ok": True, "env": SETTINGS.env}
+    return {
+        "ok": True,
+        "env": SETTINGS.env,
+        "version": SETTINGS.service_version,
+    }
+
+
+# ── POST /v1/fill ──────────────────────────────────────────────────────
 
 
 @app.post("/v1/fill", response_model=FillResponse)
 def fill(
     req: FillRequest, _auth: None = Depends(require_api_key)
 ):
+    audit_fill_request(
+        job_id=req.job_id,
+        template_id=req.template_id,
+        spreadsheet_id=req.spreadsheet_id,
+        dry_run=req.dry_run,
+        payload_keys=list(req.payload.keys()),
+    )
+
     done = IDEM_STORE.get_done(req.job_id)
     if done:
         return FillResponse(
@@ -464,26 +295,66 @@ def fill(
         mapping = load_template(req.template_id)
         allowlist: List[str] = mapping.get("writes_allowlist", [])
         read_ranges: List[str] = mapping.get("read_ranges", [])
+        hints: Dict[str, Any] = mapping.get("hints", {})
 
+        sheets = get_sheets_client()
         snapshot = (
-            sheets_batch_get(req.spreadsheet_id, read_ranges)
+            sheets.batch_get(req.spreadsheet_id, read_ranges, job_id=req.job_id)
             if read_ranges
             else {"valueRanges": []}
         )
 
+        bom_data = None
+        payload_data = req.payload
+        if all(k in payload_data for k in ("product_family", "thickness_mm", "length_m", "width_m")):
+            bom_result = compute_bom_summary(
+                product_family=str(payload_data["product_family"]),
+                thickness_mm=int(payload_data["thickness_mm"]),
+                length_m=float(payload_data["length_m"]),
+                width_m=float(payload_data["width_m"]),
+                usage=str(payload_data.get("usage", "techo")),
+                structure=str(payload_data.get("structure", "metal")),
+                safety_margin=SETTINGS.default_safety_margin,
+            )
+            bom_data = bom_result.details
+            if not bom_result.valid:
+                for err in bom_result.errors:
+                    audit_validation_failure(job_id=req.job_id, rule="bom", detail=err)
+
         plan = build_write_plan(
+            settings=SETTINGS,
             job_id=req.job_id,
             mapping=mapping,
             sheet_snapshot=snapshot,
-            payload=req.payload,
+            payload=payload_data,
+            bom_summary=bom_data,
         )
 
         writes = [w.model_dump() for w in plan.writes]
         validate_write_ranges(writes, allowlist)
 
+        value_validation = validate_write_plan_values(writes, hints)
+        if not value_validation.valid:
+            for err in value_validation.errors:
+                audit_validation_failure(job_id=req.job_id, rule="value", detail=err)
+            IDEM_STORE.fail(req.job_id, "; ".join(value_validation.errors))
+            raise HTTPException(
+                status_code=400,
+                detail=f"Validación de valores falló: {'; '.join(value_validation.errors)}",
+            )
+
+        validation_info = None
+        if value_validation.warnings or (bom_data and not all(
+            k in bom_data for k in ("panels_needed",)
+        )):
+            validation_info = {
+                "value_warnings": value_validation.warnings,
+                "bom": bom_data,
+            }
+
         if req.dry_run:
             IDEM_STORE.done(req.job_id, {"total_updated_cells": 0, "dry_run": True})
-            return FillResponse(
+            resp = FillResponse(
                 job_id=req.job_id,
                 status="DRY_RUN",
                 applied=False,
@@ -491,12 +362,30 @@ def fill(
                 total_updated_cells=0,
                 notes=plan.notes,
                 write_plan=plan,
+                validation=validation_info,
             )
+            audit_fill_result(
+                job_id=req.job_id,
+                status="DRY_RUN",
+                writes_count=len(writes),
+                total_updated_cells=0,
+                notes=plan.notes,
+            )
+            return resp
 
-        result = sheets_batch_update(req.spreadsheet_id, writes)
+        result = sheets.batch_update(
+            req.spreadsheet_id, writes, job_id=req.job_id
+        )
         total_cells = int(result.get("totalUpdatedCells", 0))
 
         IDEM_STORE.done(req.job_id, {"total_updated_cells": total_cells})
+        audit_fill_result(
+            job_id=req.job_id,
+            status="DONE",
+            writes_count=len(writes),
+            total_updated_cells=total_cells,
+            notes=plan.notes,
+        )
         return FillResponse(
             job_id=req.job_id,
             status="DONE",
@@ -504,19 +393,26 @@ def fill(
             writes_count=len(writes),
             total_updated_cells=total_cells,
             notes=plan.notes,
+            validation=validation_info,
         )
 
     except HTTPException:
         raise
     except Exception as e:
         IDEM_STORE.fail(req.job_id, str(e))
+        logger.exception("fill failed for job %s", req.job_id)
         raise HTTPException(status_code=500, detail=f"fill_failed: {e}")
+
+
+# ── POST /v1/queue/process ─────────────────────────────────────────────
 
 
 @app.post("/v1/queue/process", response_model=QueueProcessResponse)
 def process_queue(
     req: QueueProcessRequest, _auth: None = Depends(require_api_key)
 ):
+    t0 = time.monotonic()
+
     with open(SETTINGS.queue_template_path, "r", encoding="utf-8") as f:
         qcfg = json.load(f)["queue"]
 
@@ -525,7 +421,10 @@ def process_queue(
     start_row = int(qcfg.get("start_row", 2))
     read_range = f"{sheet_name}!A{start_row}:F"
 
-    batch = sheets_batch_get(q_spreadsheet_id, [read_range])
+    sheets = get_sheets_client()
+    batch = sheets.batch_get(
+        q_spreadsheet_id, [read_range], job_id="queue-batch", use_cache=False
+    )
     rows = (batch.get("valueRanges") or [{}])[0].get("values") or []
 
     processed = succeeded = failed = 0
@@ -602,8 +501,122 @@ def process_queue(
             )
 
     if status_writes:
-        sheets_batch_update(q_spreadsheet_id, status_writes)
+        sheets.batch_update(q_spreadsheet_id, status_writes, job_id="queue-batch")
+
+    elapsed = round((time.monotonic() - t0) * 1000, 2)
+    audit_queue_batch(
+        processed=processed,
+        succeeded=succeeded,
+        failed=failed,
+        duration_ms=elapsed,
+    )
 
     return QueueProcessResponse(
-        processed=processed, succeeded=succeeded, failed=failed
+        processed=processed,
+        succeeded=succeeded,
+        failed=failed,
+        duration_ms=elapsed,
+    )
+
+
+# ── POST /v1/read ──────────────────────────────────────────────────────
+
+
+@app.post("/v1/read", response_model=ReadResponse)
+def read_ranges(
+    req: ReadRequest, _auth: None = Depends(require_api_key)
+):
+    """Read specified ranges from a Google Sheet."""
+    sheets = get_sheets_client()
+    result = sheets.batch_get(
+        req.spreadsheet_id, req.ranges, job_id="read-request"
+    )
+    return ReadResponse(
+        spreadsheet_id=req.spreadsheet_id,
+        value_ranges=result.get("valueRanges", []),
+    )
+
+
+# ── POST /v1/validate ──────────────────────────────────────────────────
+
+
+@app.post("/v1/validate", response_model=ValidateResponse)
+def validate(
+    req: ValidateRequest, _auth: None = Depends(require_api_key)
+):
+    """
+    Validate product dimensions, autoportancia, and compute BOM quantities.
+    Does not require a spreadsheet or OpenAI – pure deterministic calculation.
+    """
+    result = compute_bom_summary(
+        product_family=req.product_family,
+        thickness_mm=req.thickness_mm,
+        length_m=req.length_m,
+        width_m=req.width_m,
+        usage=req.usage,
+        structure=req.structure,
+        safety_margin=req.safety_margin,
+    )
+
+    return ValidateResponse(
+        valid=result.valid,
+        errors=result.errors,
+        warnings=result.warnings,
+        bom_summary=result.details,
+    )
+
+
+# ── GET /v1/templates ──────────────────────────────────────────────────
+
+
+@app.get("/v1/templates", response_model=TemplateListResponse)
+def get_templates(_auth: None = Depends(require_api_key)):
+    """List all available sheet templates."""
+    templates = list_templates()
+    items = [
+        TemplateInfo(
+            template_id=t.get("template_id", ""),
+            sheet_name=t.get("sheet_name", ""),
+            writes_allowlist=t.get("writes_allowlist", []),
+            read_ranges=t.get("read_ranges", []),
+            hints=t.get("hints", {}),
+        )
+        for t in templates
+    ]
+    return TemplateListResponse(templates=items, count=len(items))
+
+
+@app.get("/v1/templates/{template_id}", response_model=TemplateInfo)
+def get_template(
+    template_id: str = Path(...), _auth: None = Depends(require_api_key)
+):
+    """Get a specific template by ID."""
+    t = load_template(template_id)
+    return TemplateInfo(
+        template_id=t.get("template_id", template_id),
+        sheet_name=t.get("sheet_name", ""),
+        writes_allowlist=t.get("writes_allowlist", []),
+        read_ranges=t.get("read_ranges", []),
+        hints=t.get("hints", {}),
+    )
+
+
+# ── GET /v1/jobs/{job_id} ─────────────────────────────────────────────
+
+
+@app.get("/v1/jobs/{job_id}", response_model=JobStatusResponse)
+def get_job_status(
+    job_id: str = Path(...), _auth: None = Depends(require_api_key)
+):
+    """Query the status of a fill job (idempotency store lookup)."""
+    record = IDEM_STORE.get(job_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail=f"Job {job_id} no encontrado.")
+
+    return JobStatusResponse(
+        job_id=job_id,
+        status=record.get("status", "UNKNOWN"),
+        payload_hash=record.get("payload_hash"),
+        total_updated_cells=record.get("total_updated_cells"),
+        error=record.get("error"),
     )

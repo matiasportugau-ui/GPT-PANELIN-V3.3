@@ -1,0 +1,38 @@
+{
+  "template_id": "cotizacion_isodec_pir_v1",
+  "sheet_name": "PIR_TECHO",
+  "writes_allowlist": [
+    "PIR_TECHO!B6",
+    "PIR_TECHO!F3",
+    "PIR_TECHO!K1",
+    "PIR_TECHO!A10:F14",
+    "PIR_TECHO!D16:D23"
+  ],
+  "read_ranges": [
+    "PIR_TECHO!A1:K30"
+  ],
+  "hints": {
+    "cells": {
+      "cliente_nombre": "PIR_TECHO!B6",
+      "fecha": "PIR_TECHO!F3",
+      "autoportancia_m": "PIR_TECHO!K1"
+    },
+    "tables": {
+      "items": {
+        "range": "PIR_TECHO!A10:F14",
+        "columns": ["Producto", "Largo_m", "Cantidad", "Costo_m2", "Costo_total", "Notas"]
+      },
+      "accesorios_qty": {
+        "range": "PIR_TECHO!D16:D23",
+        "description": "Cantidades de accesorios. Fórmulas en columnas adyacentes."
+      }
+    },
+    "product_info": {
+      "family": "ISODEC_PIR",
+      "core_type": "PIR",
+      "usage": "techo",
+      "available_thicknesses_mm": [50, 80, 120],
+      "fire_resistant": true
+    }
+  }
+}

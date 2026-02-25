@@ -2,13 +2,33 @@ openapi: "3.1.0"
 info:
   title: Panelin Sheets Orchestrator
   description: |
-    Microservicio Cloud Run para llenar planillas Google Sheets
-    con un plan de escritura generado por OpenAI (Structured Outputs),
-    validado contra una allowlist de rangos y ejecutado vía
-    `spreadsheets.values.batchUpdate`.
-  version: "0.1.0"
+    Microservicio Cloud Run para automatizar el llenado de planillas Google Sheets
+    en Panelin v3.3.
+
+    Usa OpenAI Structured Outputs para generar planes de escritura validados contra
+    una allowlist de rangos, con reglas de negocio Panelin (autoportancia, BOM,
+    precios con IVA incluido) y trazabilidad completa.
+
+    ## Autenticación
+    Todas las rutas `/v1/*` requieren header `X-API-Key` (mismo patrón que Wolf API).
+
+    ## Templates
+    Cada template define:
+    - `writes_allowlist`: rangos donde se permite escribir (nunca fórmulas)
+    - `read_ranges`: rangos a leer como contexto para OpenAI
+    - `hints`: metadata de celdas para guiar la generación del plan
+
+    ## Familias de producto soportadas
+    - ISODEC EPS (techos) – 100, 150, 200, 250mm
+    - ISODEC PIR (techos resistentes al fuego) – 50, 80, 120mm
+    - ISOROOF 3G (techos livianos) – 30, 50, 80mm
+    - ISOPANEL EPS (paredes) – 50, 100, 150, 200, 250mm
+    - ISOWALL PIR (fachadas) – 50, 80mm
+    - ISOFRIG PIR (cámaras frigoríficas) – 40-200mm
+  version: "0.2.0"
   contact:
     name: BMC Uruguay / Panelin
+
 servers:
   - url: https://panelin-sheets-orchestrator-HASH.run.app
     description: Cloud Run (prod)
@@ -32,11 +52,21 @@ paths:
                     type: boolean
                   env:
                     type: string
+                  version:
+                    type: string
 
   /v1/fill:
     post:
       operationId: fillSheet
       summary: Generate a write plan via OpenAI and apply it to a Google Sheet
+      description: |
+        1. Loads template (allowlist, hints, read_ranges)
+        2. Reads current sheet state via batchGet
+        3. If payload contains product specs, precomputes BOM
+        4. Calls OpenAI Responses API (Structured Outputs) for write plan
+        5. Validates plan ranges against allowlist and values against business rules
+        6. Writes via batchUpdate (or returns plan if dry_run=true)
+        7. Records job in idempotency store
       security:
         - apiKey: []
       requestBody:
@@ -53,16 +83,128 @@ paths:
               schema:
                 $ref: "#/components/schemas/FillResponse"
         "400":
-          description: Template not found or disallowed range
+          description: Template not found, disallowed range, or formula detected
         "401":
           description: Missing or invalid X-API-Key
         "500":
           description: Server error
 
+  /v1/read:
+    post:
+      operationId: readSheet
+      summary: Read specified ranges from a Google Sheet
+      security:
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReadRequest"
+      responses:
+        "200":
+          description: Sheet data returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadResponse"
+        "401":
+          description: Missing or invalid X-API-Key
+
+  /v1/validate:
+    post:
+      operationId: validateBOM
+      summary: Validate product dimensions, autoportancia, and compute BOM quantities
+      description: |
+        Pure deterministic validation – no Google Sheets or OpenAI calls.
+        Checks:
+        - Autoportancia (self-bearing span) against product/thickness limits
+        - Dimension bounds (length 0.5-14m, width 0.1-100m)
+        - Computes panel count, supports, fixing points, rods, nuts
+      security:
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateRequest"
+      responses:
+        "200":
+          description: Validation result with BOM summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidateResponse"
+        "401":
+          description: Missing or invalid X-API-Key
+
+  /v1/templates:
+    get:
+      operationId: listTemplates
+      summary: List all available sheet templates
+      security:
+        - apiKey: []
+      responses:
+        "200":
+          description: Template list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplateListResponse"
+
+  /v1/templates/{template_id}:
+    get:
+      operationId: getTemplate
+      summary: Get a specific template by ID
+      security:
+        - apiKey: []
+      parameters:
+        - name: template_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Template details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplateInfo"
+        "400":
+          description: Template not found
+
+  /v1/jobs/{job_id}:
+    get:
+      operationId: getJobStatus
+      summary: Query the status of a fill job (idempotency lookup)
+      security:
+        - apiKey: []
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobStatusResponse"
+        "404":
+          description: Job not found
+
   /v1/queue/process:
     post:
       operationId: processQueue
       summary: Process PENDING jobs from a queue spreadsheet
+      description: |
+        Reads PENDING jobs from a queue sheet, processes each via /v1/fill,
+        and updates status (RUNNING → DONE/ERROR) in the queue sheet.
+        Designed to be invoked by Cloud Scheduler.
       security:
         - apiKey: []
       requestBody:
@@ -104,12 +246,13 @@ components:
           description: Google Sheets spreadsheet ID
         payload:
           type: object
-          description: Data to fill into the sheet
+          description: |
+            Data to fill into the sheet.
+            If includes product_family, thickness_mm, length_m, width_m → BOM is precomputed.
           default: {}
         dry_run:
           type: boolean
           default: false
-          description: If true, generate plan but do not write
 
     FillResponse:
       type: object
@@ -129,6 +272,9 @@ components:
           type: string
         write_plan:
           $ref: "#/components/schemas/WritePlan"
+        validation:
+          type: object
+          description: BOM and value validation details (if applicable)
 
     WritePlan:
       type: object
@@ -158,6 +304,121 @@ components:
             type: array
             items: {}
 
+    ReadRequest:
+      type: object
+      required: [spreadsheet_id, ranges]
+      properties:
+        spreadsheet_id:
+          type: string
+        ranges:
+          type: array
+          items:
+            type: string
+          minItems: 1
+
+    ReadResponse:
+      type: object
+      properties:
+        spreadsheet_id:
+          type: string
+        value_ranges:
+          type: array
+          items:
+            type: object
+
+    ValidateRequest:
+      type: object
+      required: [product_family, thickness_mm, length_m, width_m]
+      properties:
+        product_family:
+          type: string
+          description: "e.g. ISODEC_EPS, ISOROOF_3G, ISOPANEL_EPS"
+        thickness_mm:
+          type: integer
+          minimum: 30
+          maximum: 250
+        length_m:
+          type: number
+          exclusiveMinimum: 0
+        width_m:
+          type: number
+          exclusiveMinimum: 0
+        usage:
+          type: string
+          enum: [techo, pared, camara]
+          default: techo
+        structure:
+          type: string
+          enum: [metal, hormigon]
+          default: metal
+        safety_margin:
+          type: number
+          minimum: 0
+          maximum: 0.5
+          default: 0.15
+
+    ValidateResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        errors:
+          type: array
+          items:
+            type: string
+        warnings:
+          type: array
+          items:
+            type: string
+        bom_summary:
+          type: object
+          description: |
+            Computed BOM quantities: panels_needed, supports, area_m2,
+            fixing_points, rods_varilla_3_8, nuts_tuercas, etc.
+
+    TemplateInfo:
+      type: object
+      properties:
+        template_id:
+          type: string
+        sheet_name:
+          type: string
+        writes_allowlist:
+          type: array
+          items:
+            type: string
+        read_ranges:
+          type: array
+          items:
+            type: string
+        hints:
+          type: object
+
+    TemplateListResponse:
+      type: object
+      properties:
+        templates:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemplateInfo"
+        count:
+          type: integer
+
+    JobStatusResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+          enum: [RUNNING, DONE, ERROR]
+        payload_hash:
+          type: string
+        total_updated_cells:
+          type: integer
+        error:
+          type: string
+
     QueueProcessRequest:
       type: object
       properties:
@@ -176,3 +437,5 @@ components:
           type: integer
         failed:
           type: integer
+        duration_ms:
+          type: number
