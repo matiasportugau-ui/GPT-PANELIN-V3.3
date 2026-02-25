@@ -1,0 +1,9 @@
+name: horizontal_autoportancia_missing
+input:
+  envelope_class: HORIZONTAL
+  panel_family: ISOROOF
+  thickness_mm: 50
+  area_m2: 80
+  span_m: 4
+expect:
+  hard_stop: "Falta información de autoportancia para este caso. No se emite cotización formal sin verificación"

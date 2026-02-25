@@ -1,0 +1,8 @@
+name: horizontal_span_missing
+input:
+  envelope_class: HORIZONTAL
+  panel_family: ISOROOF
+  thickness_mm: 50
+  area_m2: 80
+expect:
+  hard_stop: "Falta dato crítico: luz (span_m)"
