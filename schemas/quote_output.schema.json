@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/quote_output.schema.json",
+  "title": "Panelin Quote Output",
+  "type": "object",
+  "required": ["meta", "iva_mode", "currency", "subsystems", "totals"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["quote_id", "created_at", "engine_version"],
+      "properties": {
+        "quote_id": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "engine_version": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "iva_mode": { "type": "string", "enum": ["incluido", "discriminado"] },
+    "currency": { "type": "string" },
+    "subsystems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["envelope_class", "inputs", "line_items", "subtotal"],
+        "properties": {
+          "envelope_class": { "type": "string", "enum": ["VERTICAL", "HORIZONTAL"] },
+          "inputs": { "type": "object" },
+          "line_items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["sku_id", "description", "qty", "unit"],
+              "properties": {
+                "sku_id": { "type": "string" },
+                "description": { "type": "string" },
+                "qty": { "type": "number" },
+                "unit": { "type": "string" },
+                "unit_price": { "type": ["number", "null"] },
+                "net": { "type": ["number", "null"] },
+                "iva_rate": { "type": ["number", "null"] },
+                "iva_amount": { "type": ["number", "null"] },
+                "gross": { "type": ["number", "null"] },
+                "trace": {
+                  "type": "object",
+                  "properties": {
+                    "rule_id": { "type": "string" },
+                    "formula": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "subtotal": {
+            "type": "object",
+            "properties": {
+              "net": { "type": ["number", "null"] },
+              "iva": { "type": ["number", "null"] },
+              "gross": { "type": ["number", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "totals": {
+      "type": "object",
+      "required": ["net", "iva", "gross"],
+      "properties": {
+        "net": { "type": ["number", "null"] },
+        "iva": { "type": ["number", "null"] },
+        "gross": { "type": ["number", "null"] }
+      }
+    },
+    "hard_stops": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
