@@ -1,0 +1,31 @@
+{
+  "template_id": "cotizacion_isodec_eps_v1",
+  "sheet_name": "EPS_100",
+  "writes_allowlist": [
+    "EPS_100!B6",
+    "EPS_100!F3",
+    "EPS_100!K1",
+    "EPS_100!A10:F12",
+    "EPS_100!D14:D21"
+  ],
+  "read_ranges": [
+    "EPS_100!A1:K25"
+  ],
+  "hints": {
+    "cells": {
+      "cliente_nombre": "EPS_100!B6",
+      "fecha": "EPS_100!F3",
+      "autopotancia_m": "EPS_100!K1"
+    },
+    "tables": {
+      "items": {
+        "range": "EPS_100!A10:F12",
+        "columns": ["Producto", "Largo_m", "Cantidad", "Costo_m2", "Costo_total", "Notas"]
+      },
+      "accesorios_qty": {
+        "range": "EPS_100!D14:D21",
+        "description": "Solo cantidades (mantener fórmulas en columnas adyacentes)."
+      }
+    }
+  }
+}

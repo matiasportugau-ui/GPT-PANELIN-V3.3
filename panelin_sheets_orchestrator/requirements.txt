@@ -1,0 +1,9 @@
+# Panelin Sheets Orchestrator – production dependencies
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic>=2.9.0
+openai>=1.55.0
+google-api-python-client>=2.150.0
+google-auth>=2.35.0
+google-cloud-firestore>=2.19.0
+tenacity>=9.0.0

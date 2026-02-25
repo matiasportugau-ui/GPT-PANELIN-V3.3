@@ -1,0 +1,178 @@
+openapi: "3.1.0"
+info:
+  title: Panelin Sheets Orchestrator
+  description: |
+    Microservicio Cloud Run para llenar planillas Google Sheets
+    con un plan de escritura generado por OpenAI (Structured Outputs),
+    validado contra una allowlist de rangos y ejecutado vía
+    `spreadsheets.values.batchUpdate`.
+  version: "0.1.0"
+  contact:
+    name: BMC Uruguay / Panelin
+servers:
+  - url: https://panelin-sheets-orchestrator-HASH.run.app
+    description: Cloud Run (prod)
+  - url: http://localhost:8080
+    description: Local dev
+
+paths:
+  /healthz:
+    get:
+      operationId: healthz
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  env:
+                    type: string
+
+  /v1/fill:
+    post:
+      operationId: fillSheet
+      summary: Generate a write plan via OpenAI and apply it to a Google Sheet
+      security:
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FillRequest"
+      responses:
+        "200":
+          description: Sheet filled successfully (or dry-run plan returned)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FillResponse"
+        "400":
+          description: Template not found or disallowed range
+        "401":
+          description: Missing or invalid X-API-Key
+        "500":
+          description: Server error
+
+  /v1/queue/process:
+    post:
+      operationId: processQueue
+      summary: Process PENDING jobs from a queue spreadsheet
+      security:
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueueProcessRequest"
+      responses:
+        "200":
+          description: Queue batch processed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueueProcessResponse"
+        "401":
+          description: Missing or invalid X-API-Key
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    FillRequest:
+      type: object
+      required: [job_id, template_id, spreadsheet_id]
+      properties:
+        job_id:
+          type: string
+          description: Unique job identifier for idempotency
+        template_id:
+          type: string
+          description: Template name (without .json extension)
+        spreadsheet_id:
+          type: string
+          description: Google Sheets spreadsheet ID
+        payload:
+          type: object
+          description: Data to fill into the sheet
+          default: {}
+        dry_run:
+          type: boolean
+          default: false
+          description: If true, generate plan but do not write
+
+    FillResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+          enum: [DONE, DRY_RUN]
+        applied:
+          type: boolean
+        writes_count:
+          type: integer
+        total_updated_cells:
+          type: integer
+        notes:
+          type: string
+        write_plan:
+          $ref: "#/components/schemas/WritePlan"
+
+    WritePlan:
+      type: object
+      properties:
+        job_id:
+          type: string
+        version:
+          type: string
+        writes:
+          type: array
+          items:
+            $ref: "#/components/schemas/WriteEntry"
+        computed:
+          type: object
+        notes:
+          type: string
+
+    WriteEntry:
+      type: object
+      required: [range, values]
+      properties:
+        range:
+          type: string
+        values:
+          type: array
+          items:
+            type: array
+            items: {}
+
+    QueueProcessRequest:
+      type: object
+      properties:
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+
+    QueueProcessResponse:
+      type: object
+      properties:
+        processed:
+          type: integer
+        succeeded:
+          type: integer
+        failed:
+          type: integer
