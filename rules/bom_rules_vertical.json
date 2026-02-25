@@ -1,57 +1,104 @@
 {
-  "version": "PLACEHOLDER-1.0",
+  "version": "1.0.0-migrated",
+  "source": "bom_rules.json v1.0.0",
   "envelope_class": "VERTICAL",
-  "rules": [
-    {
-      "rule_id": "V-PANEL-AREA-001",
-      "description": "Panel: cantidad = area_m2",
-      "triggers": { "panel_family": "ISOWALL" },
-      "items": [
-        {
-          "sku_id": "PLACEHOLDER_PANEL_ISOWALL_50",
-          "qty_formula": "area_m2",
-          "unit": "m2",
-          "rounding": { "mode": "ceil", "decimals": 2 }
-        }
-      ]
-    },
-    {
-      "rule_id": "V-ACCESSORIES-BASIC-001",
-      "description": "Accesorios base VERTICAL (placeholder, ajustar factores)",
-      "triggers": { "panel_family": "ISOWALL" },
-      "items": [
-        {
-          "sku_id": "PLACEHOLDER_PROFILE_U_50",
-          "qty_formula": "perimeter_m",
-          "unit": "ml",
-          "rounding": { "mode": "ceil", "decimals": 2 }
-        },
-        {
-          "sku_id": "PLACEHOLDER_CORNER_IN_50",
-          "qty_formula": "corner_in_m",
-          "unit": "ml",
-          "rounding": { "mode": "ceil", "decimals": 2 }
-        },
-        {
-          "sku_id": "PLACEHOLDER_CORNER_OUT_50",
-          "qty_formula": "corner_out_m",
-          "unit": "ml",
-          "rounding": { "mode": "ceil", "decimals": 2 }
-        },
-        {
-          "sku_id": "PLACEHOLDER_FASTENER_PANEL",
-          "qty_formula": "area_m2 * fasteners_per_m2",
-          "unit": "u",
-          "rounding": { "mode": "ceil", "decimals": 0 }
-        },
-        {
-          "sku_id": "PLACEHOLDER_SEALANT_NEUTRAL",
-          "qty_formula": "sealant_units",
-          "unit": "u",
-          "rounding": { "mode": "ceil", "decimals": 0 }
-        }
+  "conventions": {
+    "currency": "USD",
+    "iva": { "included": true, "rate": 0.22 },
+    "rounding": "ceil",
+    "units": { "area": "m2", "length": "ml", "quantity": "unid", "sealant": "tubo" }
+  },
+  "systems": {
+    "pared_isopanel_eps": {
+      "rule_id": "V-ISOPANEL-EPS",
+      "name": "Pared/Fachada con ISOPANEL EPS",
+      "product_ref": "ISOPANEL_EPS",
+      "ancho_util_m": 1.14,
+      "fixation_system": "varilla_tuerca",
+      "thicknesses": [50, 100, 150, 200],
+      "formulas": {
+        "area_m2": "largo_m * alto_m",
+        "paneles_necesarios": "ceil(largo_m / 1.14)",
+        "perfil_u_inferior_piezas": "ceil(largo_m / 3.0)",
+        "perfil_u_superior_piezas": "ceil(largo_m / 3.0)",
+        "perfil_angular_piezas": "ceil((alto_m * esquinas) / 3.0)",
+        "fijaciones_por_panel": "ceil(alto_m / 0.6) * 2",
+        "fijaciones_total": "paneles * fijaciones_por_panel",
+        "silicona_tubos": "ceil(juntas_ml / 8)",
+        "cinta_butilo_rollos": "ceil(juntas_ml / 22.5)"
+      },
+      "items_bom": [
+        { "tipo": "panel", "ref": "ISOPANEL_EPS", "unit": "m2", "formula": "area_m2" },
+        { "tipo": "perfil_u", "ref": "accessories_catalog->perfil->espesor_mm", "unit": "unid", "formula": "perfil_u_inferior + perfil_u_superior" },
+        { "tipo": "varilla", "ref": "varilla_3_8", "unit": "unid", "formula": "varilla_cantidad" },
+        { "tipo": "tuerca", "ref": "tuerca_3_8", "unit": "unid", "formula": "tuercas" },
+        { "tipo": "arandela_carrocero", "ref": "arandela_carrocero_3_8", "unit": "unid", "formula": "fijaciones_total" },
+        { "tipo": "tortuga_pvc", "ref": "tortuga_pvc", "unit": "unid", "formula": "fijaciones_total" },
+        { "tipo": "silicona", "ref": "silicona_neutra", "unit": "tubo", "formula": "silicona_tubos" },
+        { "tipo": "cinta_butilo", "ref": "cinta_butilo", "unit": "rollo", "formula": "cinta_butilo_rollos" }
       ],
-      "required_inputs": ["area_m2", "perimeter_m", "corner_in_m", "corner_out_m", "fasteners_per_m2", "sealant_units"]
+      "required_inputs": ["largo_m", "alto_m", "espesor_mm"]
+    },
+    "pared_isowall_pir": {
+      "rule_id": "V-ISOWALL-PIR",
+      "name": "Pared/Fachada con ISOWALL PIR",
+      "product_ref": "ISOWALL_PIR",
+      "ancho_util_m": 1.1,
+      "fixation_system": "varilla_tuerca",
+      "thicknesses": [50, 80],
+      "inherits_from": "pared_isopanel_eps",
+      "differences": {
+        "ancho_util_m": 1.1,
+        "safety_note": "Recomendado para industrias y proyectos con requerimientos de resistencia al fuego"
+      },
+      "required_inputs": ["largo_m", "alto_m", "espesor_mm"]
+    },
+    "pared_isofrig_pir": {
+      "rule_id": "V-ISOFRIG-PIR",
+      "name": "Cámara Frigorífica con ISOFRIG PIR",
+      "product_ref": "ISOFRIG_PIR",
+      "ancho_util_m": 1.1,
+      "fixation_system": "varilla_tuerca",
+      "thicknesses": [40, 60, 80, 100, 150, 200],
+      "inherits_from": "pared_isopanel_eps",
+      "differences": {
+        "ancho_util_m": 1.1,
+        "specific_profiles": "Usar perfiles ISOFRIG específicos del accessories_catalog",
+        "note": "Para cámaras frigoríficas, el cálculo incluye techo y paredes. Considerar puerta frigorífica."
+      },
+      "required_inputs": ["largo_m", "alto_m", "espesor_mm"]
     }
-  ]
+  },
+  "fixation_kits": {
+    "metal": {
+      "description": "Fijación a estructura metálica",
+      "per_fixation_point": {
+        "varilla_3_8": { "qty": 0.25, "note": "1 varilla de 1m = 4 puntos" },
+        "tuerca_3_8": { "qty": 2 },
+        "arandela_carrocero_3_8": { "qty": 1 },
+        "arandela_plana_3_8": { "qty": 1 },
+        "tortuga_pvc": { "qty": 1 }
+      }
+    },
+    "hormigon": {
+      "description": "Fijación a estructura de hormigón",
+      "per_fixation_point": {
+        "varilla_3_8": { "qty": 0.25 },
+        "tuerca_3_8": { "qty": 1 },
+        "taco_expansivo_3_8": { "qty": 1 },
+        "arandela_carrocero_3_8": { "qty": 1 },
+        "tortuga_pvc": { "qty": 1 }
+      }
+    },
+    "madera_isoroof": {
+      "description": "Fijación a madera para ISOROOF 3G",
+      "per_fixation_point": {
+        "caballete": { "qty": 1 },
+        "tornillo_aguja_5": { "qty": 1 }
+      },
+      "profile_fixation": {
+        "tornillo_t1": { "every_cm": 30 }
+      }
+    }
+  }
 }

@@ -1,9 +1,9 @@
 {
-  "version": "PLACEHOLDER-1.0",
+  "version": "1.0.0-migrated",
   "validations": [
     {
       "id": "H-P0-SPAN-001",
-      "description": "P0: exigir span_m para techo",
+      "description": "P0: exigir span_m (luz) para techo",
       "p0_hard_stop": true,
       "when": { "envelope_class": "HORIZONTAL" },
       "required_fields": ["span_m"],
@@ -16,6 +16,39 @@
       "when": { "envelope_class": "HORIZONTAL" },
       "requires_autoportancia_match": true,
       "hard_stop_message": "Falta información de autoportancia para este caso. No se emite cotización formal sin verificación"
+    },
+    {
+      "id": "H-P0-AUTOP-002",
+      "description": "P0: validar que span no exceda autoportancia máxima",
+      "p0_hard_stop": false,
+      "when": { "envelope_class": "HORIZONTAL" },
+      "check": "span_m <= autoportancia.span_m_max",
+      "on_fail": "Sugerir espesor mayor o apoyo adicional. La luz de {span_m}m excede la autoportancia del panel de {espesor_mm}mm (máx {span_m_max}m)"
+    },
+    {
+      "id": "H-DIMS-001",
+      "description": "Dimensiones positivas y área > 0",
+      "checks": [
+        { "field": "largo_m", "op": ">", "value": 0 },
+        { "field": "ancho_m", "op": ">", "value": 0 },
+        { "field": "area_m2", "op": ">", "value": 0 }
+      ]
+    },
+    {
+      "id": "H-SLOPE-001",
+      "description": "Pendiente mínima de techo: 7%",
+      "when": { "envelope_class": "HORIZONTAL" },
+      "checks": [
+        { "field": "pendiente_pct", "op": ">=", "value": 7, "soft": true }
+      ],
+      "warning_message": "La pendiente mínima recomendada es 7%. Verificar diseño."
+    },
+    {
+      "id": "H-FAMILY-001",
+      "description": "Familia de panel debe ser HORIZONTAL",
+      "checks": [
+        { "field": "panel_family", "op": "in", "value": ["ISODEC", "ISOROOF"] }
+      ]
     }
   ]
 }
