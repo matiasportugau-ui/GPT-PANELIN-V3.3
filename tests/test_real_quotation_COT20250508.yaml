@@ -54,7 +54,11 @@ input:
       cantidad: 4
 
 expect:
-  hard_stop: null
+  hard_stop: "Falta información de autoportancia para este caso. No se emite cotización formal sin verificación"
+  note: >
+    This quotation was issued in production despite span exceeding autoportancia (6.01m > 4.0m).
+    The hard-stop is correct per validation rules. In production, the operator overrode it.
+    The costeo/financial data below is from the actual PDF for reference validation.
   total_m2: 132.57
   subtotal_usd: 8317.65
   iva_usd: 1829.88

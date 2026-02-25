@@ -83,6 +83,13 @@ def evaluate_hard_stop(ctx: TestContext, test_input: dict) -> str | None:
     if envelope == "HORIZONTAL" or envelope == "UNIT_COMPLETE":
         horiz_input = test_input if envelope == "HORIZONTAL" else test_input.get("horizontal", {})
 
+        # v6 format: derive span_m from panels[].largo_m (max length)
+        if "span_m" not in horiz_input and "panels" in horiz_input:
+            panels = horiz_input["panels"]
+            if panels:
+                max_largo = max(p.get("largo_m", 0) for p in panels)
+                horiz_input = {**horiz_input, "span_m": max_largo}
+
         for v in ctx.validations_h.get("validations", []):
             if not v.get("p0_hard_stop"):
                 continue
