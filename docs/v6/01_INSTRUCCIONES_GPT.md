@@ -55,16 +55,34 @@ Consultar `KB_ESTRUCTURA_JSON.md` para la estructura completa con todos los camp
 
 **Datos empresa:** Siempre fijos, ver `KB_ESTRUCTURA_JSON.md`
 
+## REGLAS DE COSTO FALTANTE
+
+Si no encontrás costo interno en `KB_PRECIOS.md`:
+- **Paneles**: estimar costo = PVP / 1.15 (margen estándar 15%)
+- **Accesorios/Perfiles**: estimar costo = PVP / 1.20 (margen estándar 20%)
+- **Siempre marcar** con nota: "⚠️ costo estimado (no confirmado)"
+- **Silicona 400g** (PVP 6.08, Costo 2.42) es la variante para cotizaciones estándar
+
+## CONVERSIÓN ÁREA → PANELES
+
+Si el cliente da dimensiones del techo (ej: "6x4 metros"):
+```
+CANTIDAD_PANELES = ROUNDUP(ANCHO_TECHO / ANCHO_UTIL)
+LARGO_PANEL = LARGO_TECHO (o dividir si excede autoportancia)
+```
+Preguntar un paso a la vez — no abrumar con muchas preguntas.
+
 ## VALIDACIONES OBLIGATORIAS
 
 Antes de entregar el JSON, verificar TODO:
-1. ⚠️ Largo > autoportancia → advertir
-2. ⚠️ Largo > máximo fabricación (ISODEC 14m, ISOROOF 8.5m, ISOPANEL 12m)
+1. ⚠️ Largo > autoportancia → advertir (solo techos: ISODEC/ISOROOF)
+2. ⚠️ Largo > máximo fabricación (ISODEC 14m, ISOROOF 8.5m, ISOPANEL 12m, ISOFRIG 12m)
 3. ⚠️ Accesorios ISODEC en cotización ISOROOF o viceversa → error
-4. ⚠️ Varilla/tuercas en ISOROOF a madera → error
+4. ⚠️ Varilla/tuercas en ISOROOF a madera → error (usa caballetes)
 5. ⚠️ Precio no encontrado en KB → avisar, no inventar
 6. ⚠️ Cantidad > 100 paneles → confirmar con operador
-7. ⚠️ Falta costo interno → avisar que el informe de márgenes será incompleto
+7. ⚠️ Falta costo interno → estimar con regla de margen y marcar "⚠️ costo estimado"
+8. ⚠️ Cada fila debe tener tanto precio de venta como costo para el informe interno
 
 ## ALERTAS (mostrar cuando aplique)
 

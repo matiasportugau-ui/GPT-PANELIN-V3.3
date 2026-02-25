@@ -108,7 +108,7 @@ Solo incluir los accesorios que el proyecto NECESITA. No todos llevan canalón, 
   "largo_m": 3.03,
   "cantidad": 6,
   "precio_ml": 6.60,
-  "costo_ml": 4.31
+  "costo_ml": 5.50
 }
 ```
 
@@ -189,6 +189,7 @@ Usar esta lista base. El ÚNICO campo variable es la autoportancia en el primer 
 | Producto | Valor de "seccion" |
 |----------|--------------------|
 | ISOROOF 3G / Plus / Foil | "Paneles Aislantes 3G" |
+| ISOROOF Colonial | "Paneles ISOROOF Colonial" |
 | ISODEC EPS | "Paneles ISODEC EPS" |
 | ISODEC PIR | "Paneles ISODEC PIR" |
 | ISOPANEL EPS | "Paneles ISOPANEL" |
@@ -207,6 +208,7 @@ Usar esta lista base. El ÚNICO campo variable es la autoportancia en el primer 
 - `"ISOPANEL EPS - 100mm"`
 - `"ISOWALL PIR - 80mm"`
 - `"ISOFRIG SL - 80mm"`
+- `"ISOROOF Colonial - 40mm"`
 
 ### Accesorios ISOROOF
 - `"Gotero Frontal Simple XX mm"` (XX = espesor)

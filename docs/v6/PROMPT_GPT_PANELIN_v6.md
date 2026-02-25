@@ -276,7 +276,7 @@ VARILLAS = ROUNDUP(PUNTOS / 4)
 
 ### Tuercas
 ```
-TUERCAS = VARILLAS × 2
+TUERCAS = PUNTOS_FIJACION × 2
 ```
 
 ### Gotero Frontal

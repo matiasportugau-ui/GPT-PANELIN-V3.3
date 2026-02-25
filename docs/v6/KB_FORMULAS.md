@@ -17,10 +17,11 @@ TOTAL_M2 = Σ (LARGO_m × ANCHO_UTIL_m × CANTIDAD) para cada fila
 ### Ancho útil por producto
 | Producto | Ancho útil |
 |----------|------------|
-| ISOROOF 3G / Plus / Foil | 1.00m |
+| ISOROOF 3G / Plus / Foil / Colonial | 1.00m |
 | ISODEC EPS / PIR | 1.12m |
 | ISOPANEL EPS | 1.10m |
 | ISOWALL PIR | 1.10m |
+| ISOFRIG SL | 1.10m |
 
 ---
 
@@ -30,8 +31,12 @@ TOTAL_M2 = Σ (LARGO_m × ANCHO_UTIL_m × CANTIDAD) para cada fila
 | Producto | 30mm | 40mm | 50mm | 80mm | 100mm | 120mm | 150mm | 200mm | 250mm |
 |----------|------|------|------|------|-------|-------|-------|-------|-------|
 | ISOROOF 3G | 2.8m | 3.0m | 3.3m | 4.0m | — | — | — | — | — |
+| ISOROOF Plus | — | — | — | 4.0m | — | — | — | — | — |
+| ISOROOF Foil | 2.8m | — | 3.3m | — | — | — | — | — | — |
 | ISODEC EPS | — | — | — | — | 5.5m | — | 7.5m | 9.1m | 10.4m |
 | ISODEC PIR | — | — | 3.5m | 5.5m | — | 7.6m | — | — | — |
+
+**NOTA:** ISOPANEL/ISOWALL/ISOFRIG son productos de pared — NO aplica autoportancia. La validación de autoportancia solo aplica para productos de techo (ISODEC/ISOROOF).
 
 ### Cálculo de apoyos intermedios
 ```
@@ -58,7 +63,8 @@ Si LARGO > AUTOPORTANCIA → se necesitan apoyos intermedios (correas adicionale
 
 ### Gotero Frontal
 ```
-CANTIDAD_BARRAS = ROUNDUP(CANTIDAD_PANELES × FACTOR_DESPERDICIO / LARGO_BARRA)
+ML_FRENTE = CANTIDAD_PANELES × ANCHO_UTIL × FACTOR_DESPERDICIO
+CANTIDAD_BARRAS = ROUNDUP(ML_FRENTE / LARGO_BARRA)
 Largo estándar barra: 3.03m
 ```
 
@@ -70,7 +76,10 @@ Largo estándar barra: 3.00m
 
 ### Cumbrera
 ```
-CANTIDAD_BARRAS = ROUNDUP(CANTIDAD_PANELES × FACTOR_DESPERDICIO × 2 / 2)
+ML_CUMBRERA = ANCHO_CUBIERTA_M
+CANTIDAD_BARRAS = ROUNDUP(ML_CUMBRERA / 3.03)
+Largo estándar barra: 3.03m (ISODEC) / 3.00m (ISOROOF)
+Nota: si hay dos aguas, multiplicar por 2
 ```
 
 ### Perfil Aluminio 5852 (solo ISODEC)
@@ -81,7 +90,9 @@ Largo estándar barra: 6.80m
 
 ### Babeta (atornillar o empotrar)
 ```
-CANTIDAD_BARRAS = ROUNDUP((CANT × DESP) + (LARGO × 2))
+ML_BABETA = (CANT × DESP) + (LARGO × 2)
+CANTIDAD_BARRAS = ROUNDUP(ML_BABETA / 3.00)
+Largo estándar barra: 3.00m
 ```
 
 ### Canalón
@@ -91,8 +102,9 @@ CANTIDAD_BARRAS = ROUNDUP(CANTIDAD_PANELES × FACTOR_DESPERDICIO / 3)
 
 ### Soporte de Canalón
 ```
-CANTIDAD_BARRAS = ROUNDUP((CANT_TOTAL + 1) × 0.4 / 3)
-Regla: 1 soporte cada 3m, mínimo 1
+ML_CANALON = CANT_BARRAS_CANALON × LARGO_BARRA_CANALON
+SOPORTES = max(1, ROUNDUP(ML_CANALON / 3))
+Regla: 1 soporte cada 3m de canalón, mínimo 1
 ```
 
 ---
@@ -157,8 +169,11 @@ TORNILLOS_T1 = TOTAL_BARRAS_PERFILES × 20
 | ISODEC PIR | 14.0m |
 | ISOROOF 3G | 8.5m |
 | ISOROOF Plus | 8.5m |
+| ISOROOF Foil | 8.5m |
+| ISOROOF Colonial | 8.5m |
 | ISOPANEL EPS | 12.0m |
 | ISOWALL PIR | 12.0m |
+| ISOFRIG SL | 12.0m |
 
 ---
 

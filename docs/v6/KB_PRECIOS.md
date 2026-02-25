@@ -60,9 +60,13 @@ Factor desperdicio: 1.00 (sin desperdicio)
 | 50mm | 36.74 | 31.95 | 3.3m |
 
 ### ISOROOF Colonial
-| Espesor | PVP/m² | Costo/m² |
-|---------|--------|----------|
-| 40mm | 62.07 | 53.97 |
+- Ancho útil: 1.00m | Largo máx: 8.5m
+- Mismo sistema fijación que ISOROOF 3G
+- **Nota:** Producto especial — cotizar solo con autorización del supervisor
+
+| Espesor | PVP/m² | Costo/m² | Autoportancia |
+|---------|--------|----------|---------------|
+| 40mm | 62.07 | 53.97 | 3.0m (ref. ISOROOF 3G 40mm) |
 
 ### ISOPANEL EPS (Paredes y Fachadas)
 - Ancho útil: 1.10m | Largo máx: 12m
