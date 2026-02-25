@@ -1,7 +1,7 @@
 name: horizontal_autoportancia_missing
 input:
   envelope_class: HORIZONTAL
-  panel_family: ISOROOF
+  panel_family: ISOROOF_3G
   thickness_mm: 50
   area_m2: 80
   span_m: 4

@@ -1,10 +1,10 @@
 name: horizontal_span_ok
 input:
   envelope_class: HORIZONTAL
-  panel_family: ISOROOF
+  panel_family: ISOROOF_3G
   thickness_mm: 50
   area_m2: 80
-  span_m: 4
+  span_m: 3
   ridge_m: 12
   drip_edge_m: 30
   flashing_m: 10
@@ -15,7 +15,7 @@ expect:
   hard_stop: null
   requires_autoportancia_match: true
   includes_skus:
-    - PLACEHOLDER_PANEL_ISOROOF_50
-    - PLACEHOLDER_RIDGE_CAP_50
-    - PLACEHOLDER_DRIP_EDGE_50
-    - PLACEHOLDER_FASTENER_PANEL
+    - IROOF50
+    - CUMROOF3M
+    - GL50
+    - Bromplast

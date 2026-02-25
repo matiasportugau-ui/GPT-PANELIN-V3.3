@@ -12,6 +12,6 @@ input:
 expect:
   hard_stop: null
   includes_skus:
-    - PLACEHOLDER_PANEL_ISOWALL_50
-    - PLACEHOLDER_PROFILE_U_50
-    - PLACEHOLDER_FASTENER_PANEL
+    - IW50
+    - PU50MM
+    - Bromplast

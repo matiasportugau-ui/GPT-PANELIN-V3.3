@@ -2,8 +2,8 @@ name: unit_complete_subtotals
 input:
   envelope_class: UNIT_COMPLETE
   vertical:
-    panel_family: ISOWALL
-    thickness_mm: 50
+    panel_family: ISOPANEL
+    thickness_mm: 100
     area_m2: 100
     perimeter_m: 60
     corner_in_m: 10
@@ -11,10 +11,10 @@ input:
     fasteners_per_m2: 6
     sealant_units: 4
   horizontal:
-    panel_family: ISOROOF
+    panel_family: ISOROOF_3G
     thickness_mm: 50
     area_m2: 80
-    span_m: 4
+    span_m: 3
     ridge_m: 12
     drip_edge_m: 30
     flashing_m: 10
