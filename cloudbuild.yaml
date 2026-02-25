@@ -75,12 +75,54 @@ steps:
       - '--ingress=internal-and-cloud-load-balancing'
       - '--set-env-vars=BACKEND_SERVICE_URL=https://backend-service-<hash>-uc.a.run.app'
 
+  # Step 5: Build and push whatsapp-bot service image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-whatsapp-bot'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/whatsapp-bot:$COMMIT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/whatsapp-bot:latest'
+      - './whatsapp_bot'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-whatsapp-bot'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/whatsapp-bot'
+
+  # Step 6: Deploy whatsapp-bot to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-whatsapp-bot'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'whatsapp-bot'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/whatsapp-bot:$COMMIT_SHA'
+      - '--platform=managed'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+      - '--service-account=cloud-run-service-account@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--min-instances=0'
+      - '--max-instances=100'
+      - '--memory=256Mi'
+      - '--cpu=1'
+      - '--timeout=60'
+      - '--concurrency=80'
+      - '--set-env-vars=LOG_LEVEL=INFO'
+      - '--update-secrets=VERIFY_TOKEN=whatsapp-verify-token:latest,META_APP_SECRET=meta-app-secret:latest,WHATSAPP_TOKEN=whatsapp-token:latest,PHONE_NUMBER_ID=whatsapp-phone-id:latest,OPENAI_API_KEY=openai-api-key:latest,VECTOR_STORE_ID=openai-vector-store-id:latest,INMOENTER_API_KEY=inmoenter-api-key:latest,INMOENTER_FEED_URL=inmoenter-feed-url:latest,SYNC_API_KEY=sync-api-key:latest'
+
 # Output images to Artifact Registry
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:$COMMIT_SHA'
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:latest'
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:$COMMIT_SHA'
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:latest'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/whatsapp-bot:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/whatsapp-bot:latest'
 
 # Substitutions for Cloud Build variables
 substitutions:
