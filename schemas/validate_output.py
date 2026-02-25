@@ -21,21 +21,39 @@ except ImportError:
     HAS_JSONSCHEMA = False
 
 SCHEMA_PATH = Path(__file__).parent / "quote_output.schema.json"
+SCHEMA_V6_PATH = Path(__file__).parent / "quote_output_v6.schema.json"
 
 
-def load_schema() -> dict:
-    with open(SCHEMA_PATH, encoding="utf-8") as f:
+def load_schema(version: str = "auto") -> dict:
+    if version == "v6":
+        path = SCHEMA_V6_PATH
+    elif version == "v1":
+        path = SCHEMA_PATH
+    else:
+        path = SCHEMA_PATH
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+
+def detect_schema_version(data: dict) -> str:
+    """Auto-detect whether data follows v1 or v6 schema."""
+    if "paneles" in data or "empresa" in data:
+        return "v6"
+    if "meta" in data or "subsystems" in data:
+        return "v1"
+    return "v1"
 
 
 def validate_quote(quote_data: dict, schema: dict = None) -> list[str]:
     """
     Validate a quote output dict against the schema.
+    Auto-detects v1 vs v6 format if no schema provided.
 
     Returns a list of error messages (empty if valid).
     """
     if schema is None:
-        schema = load_schema()
+        version = detect_schema_version(quote_data)
+        schema = load_schema(version)
 
     if HAS_JSONSCHEMA:
         validator = jsonschema.Draft202012Validator(schema)
@@ -46,6 +64,26 @@ def validate_quote(quote_data: dict, schema: dict = None) -> list[str]:
         ]
 
     errors = []
+
+    # v6 format validation
+    if "paneles" in quote_data:
+        for field in ("empresa", "cotizacion", "cliente", "paneles", "accesorios", "anclaje", "traslado", "comentarios"):
+            if field not in quote_data:
+                errors.append(f"Missing required field: '{field}'")
+        for i, p in enumerate(quote_data.get("paneles", [])):
+            for pf in ("nombre", "seccion", "largo_m", "cantidad", "ancho_util_m", "precio_m2", "costo_m2"):
+                if pf not in p:
+                    errors.append(f"paneles[{i}]: missing '{pf}'")
+        for i, a in enumerate(quote_data.get("accesorios", [])):
+            for af in ("nombre", "largo_m", "cantidad", "precio_ml", "costo_ml"):
+                if af not in a:
+                    errors.append(f"accesorios[{i}]: missing '{af}'")
+        for i, a in enumerate(quote_data.get("anclaje", [])):
+            for af in ("nombre", "cantidad", "precio_unit", "costo_real"):
+                if af not in a:
+                    errors.append(f"anclaje[{i}]: missing '{af}'")
+        return errors
+
     for field in schema.get("required", []):
         if field not in quote_data:
             errors.append(f"Missing required field: '{field}'")
