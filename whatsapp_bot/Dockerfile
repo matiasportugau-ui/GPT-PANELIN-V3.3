@@ -8,7 +8,7 @@
 FROM python:3.11-slim
 
 LABEL maintainer="GPT-PANELIN Team"
-LABEL description="WhatsApp Bot - Real Estate Assistant with OpenAI + Firestore"
+LABEL description="BMC Uruguay WhatsApp Bot - Panel Quotation Assistant with OpenAI + Firestore"
 
 WORKDIR /app
 

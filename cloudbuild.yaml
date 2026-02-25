@@ -113,7 +113,7 @@ steps:
       - '--timeout=60'
       - '--concurrency=80'
       - '--set-env-vars=LOG_LEVEL=INFO'
-      - '--update-secrets=VERIFY_TOKEN=whatsapp-verify-token:latest,META_APP_SECRET=meta-app-secret:latest,WHATSAPP_TOKEN=whatsapp-token:latest,PHONE_NUMBER_ID=whatsapp-phone-id:latest,OPENAI_API_KEY=openai-api-key:latest,VECTOR_STORE_ID=openai-vector-store-id:latest,INMOENTER_API_KEY=inmoenter-api-key:latest,INMOENTER_FEED_URL=inmoenter-feed-url:latest,SYNC_API_KEY=sync-api-key:latest'
+      - '--update-secrets=VERIFY_TOKEN=whatsapp-verify-token:latest,META_APP_SECRET=meta-app-secret:latest,WHATSAPP_TOKEN=whatsapp-token:latest,PHONE_NUMBER_ID=whatsapp-phone-id:latest,OPENAI_API_KEY=openai-api-key:latest,VECTOR_STORE_ID=openai-vector-store-id:latest,WOLF_API_KEY=wolf-api-key:latest,WOLF_API_URL=wolf-api-url:latest,SYNC_API_KEY=sync-api-key:latest'
 
 # Output images to Artifact Registry
 images:
