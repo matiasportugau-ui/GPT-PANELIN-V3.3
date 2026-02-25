@@ -1,23 +1,22 @@
-"""OpenAI Vector Store synchronization with Inmoenter property feed.
+"""OpenAI Vector Store synchronization with BMC Uruguay product knowledge base.
 
-Sync strategy: Delta-based with Firestore index (Fix H5)
-1. Fetch current property feed from Inmoenter XML
-2. Transform to text documents
+Sync strategy: Delta-based with Firestore index
+1. Load products from JSON knowledge base files (pricing + core KB)
+2. Transform to embedding-optimized text documents
 3. Load existing file index from Firestore (avoids N+1 API calls)
 4. Compute delta: new files to upload, stale files to delete
-5. Execute uploads and deletions
+5. Execute uploads and deletions via AsyncOpenAI
 6. Save updated index to Firestore
 7. Report statistics
 
-Uses AsyncOpenAI (Fix C1) for non-blocking file operations.
-Firestore index db parameter is optional (Fix cross-#2) — falls
-back to API-based listing if db is not provided.
+Data sources:
+- bromyros_pricing_master.json: Product SKUs, families, pricing
+- BMC_Base_Conocimiento_GPT-2.json: Detailed specs, autoportancia, BOM context
 
 Cost impact:
 - Vector store storage: $0.10/GB/day, first 1GB FREE
-- 1000 properties × ~500 bytes = ~500KB → well under free tier
-- Delta sync avoids re-uploading unchanged properties
-- Firestore index eliminates N+1 OpenAI API calls for delta detection
+- ~100 products × ~500 bytes = ~50KB → well under free tier
+- Delta sync avoids re-uploading unchanged products
 """
 
 import io
@@ -26,10 +25,11 @@ from dataclasses import dataclass
 
 from openai import AsyncOpenAI
 
-from .inmoenter_sync import (
-    Property,
-    fetch_property_feed,
-    transform_properties_to_documents,
+from .panelin_sync import (
+    Product,
+    load_products_from_kb,
+    load_products_from_pricing,
+    transform_products_to_documents,
 )
 
 logger = logging.getLogger(__name__)
@@ -46,14 +46,11 @@ class SyncStats:
     removed: int = 0
     unchanged: int = 0
     errors: int = 0
-    total_properties: int = 0
+    total_products: int = 0
 
 
 def _load_index_from_firestore(db) -> dict[str, str]:
-    """Load {filename: file_id} mapping from Firestore.
-
-    Returns empty dict if index doesn't exist yet (first sync).
-    """
+    """Load {filename: file_id} mapping from Firestore."""
     try:
         doc = db.collection(INDEX_COLLECTION).document(INDEX_DOCUMENT).get()
         if doc.exists:
@@ -77,11 +74,7 @@ async def _list_files_from_api(
     client: AsyncOpenAI,
     vector_store_id: str,
 ) -> dict[str, str]:
-    """Fallback: list files from OpenAI API when Firestore index unavailable.
-
-    WARNING: This is O(N) API calls where N = number of files in vector store.
-    Use Firestore index whenever possible.
-    """
+    """Fallback: list files from OpenAI API when Firestore index unavailable."""
     existing: dict[str, str] = {}
     try:
         vs_files = await client.vector_stores.files.list(
@@ -98,34 +91,76 @@ async def _list_files_from_api(
     return existing
 
 
+def load_all_products(
+    pricing_path: str = "bromyros_pricing_master.json",
+    kb_path: str = "BMC_Base_Conocimiento_GPT-2.json",
+) -> list[Product]:
+    """Load products from all BMC knowledge base sources.
+
+    Merges products from pricing master and core KB, deduplicating
+    by SKU (KB version takes precedence for richer data).
+
+    Args:
+        pricing_path: Path to bromyros_pricing_master.json.
+        kb_path: Path to BMC_Base_Conocimiento_GPT-2.json.
+
+    Returns:
+        Merged, deduplicated list of Product objects.
+    """
+    # Load from both sources
+    pricing_products = load_products_from_pricing(pricing_path)
+    kb_products = load_products_from_kb(kb_path)
+
+    # Deduplicate: KB products take precedence (richer data)
+    seen_skus: set[str] = set()
+    merged: list[Product] = []
+
+    for prod in kb_products:
+        if prod.sku and prod.sku not in seen_skus:
+            seen_skus.add(prod.sku)
+            merged.append(prod)
+
+    for prod in pricing_products:
+        if prod.sku and prod.sku not in seen_skus:
+            seen_skus.add(prod.sku)
+            merged.append(prod)
+
+    logger.info(
+        "Merged products: %d from KB + %d from pricing = %d unique",
+        len(kb_products),
+        len(pricing_products),
+        len(merged),
+    )
+    return merged
+
+
 async def sync_vector_store(
     client: AsyncOpenAI,
     vector_store_id: str,
-    properties: list[Property],
+    products: list[Product],
     db=None,
 ) -> SyncStats:
-    """Synchronize vector store with current property list.
+    """Synchronize vector store with current BMC product list.
 
-    Uses Firestore-based index for O(1) delta detection (Fix H5).
+    Uses Firestore-based index for O(1) delta detection.
     Falls back to API-based listing if db is not provided.
 
     Args:
         client: Initialized AsyncOpenAI client.
         vector_store_id: Target vector store ID.
-        properties: Current list of properties from feed.
+        products: Current list of products from KB.
         db: Optional Firestore client for index storage.
 
     Returns:
         SyncStats with operation counts.
     """
-    stats = SyncStats(total_properties=len(properties))
-    documents = transform_properties_to_documents(properties)
+    stats = SyncStats(total_products=len(products))
+    documents = transform_products_to_documents(products)
 
-    # Map property IDs to document content
     new_docs = {filename: content for filename, content in documents}
     new_filenames = set(new_docs.keys())
 
-    # Load existing file index (Firestore preferred, API fallback)
+    # Load existing file index
     if db:
         existing_files = _load_index_from_firestore(db)
     else:
@@ -138,10 +173,9 @@ async def sync_vector_store(
     to_remove = existing_filenames - new_filenames
     stats.unchanged = len(new_filenames & existing_filenames)
 
-    # Track uploaded file IDs for index update
     uploaded_ids: dict[str, str] = {}
 
-    # Upload new files
+    # Upload new product files
     for filename in to_add:
         content = new_docs[filename]
         try:
@@ -160,7 +194,7 @@ async def sync_vector_store(
             logger.exception("Failed to upload %s", filename)
             stats.errors += 1
 
-    # Delete removed files (prevents hallucination of sold properties)
+    # Delete removed products (prevents AI from quoting discontinued items)
     for filename in to_remove:
         file_id = existing_files[filename]
         try:
@@ -186,11 +220,8 @@ async def sync_vector_store(
 
     logger.info(
         "Vector store sync: added=%d removed=%d unchanged=%d errors=%d total=%d",
-        stats.added,
-        stats.removed,
-        stats.unchanged,
-        stats.errors,
-        stats.total_properties,
+        stats.added, stats.removed, stats.unchanged,
+        stats.errors, stats.total_products,
     )
     return stats
 
@@ -198,31 +229,29 @@ async def sync_vector_store(
 async def run_nightly_sync(
     openai_api_key: str,
     vector_store_id: str,
-    feed_url: str,
-    inmoenter_api_key: str,
+    pricing_path: str = "bromyros_pricing_master.json",
+    kb_path: str = "BMC_Base_Conocimiento_GPT-2.json",
     db=None,
 ) -> SyncStats:
-    """Run the complete nightly sync pipeline.
+    """Run the complete nightly sync pipeline for BMC products.
 
-    Orchestrates: fetch feed → transform → sync vector store.
+    Orchestrates: load KB files → merge → transform → sync vector store.
     Called by Cloud Scheduler via POST /sync endpoint.
 
     Args:
         openai_api_key: OpenAI API key.
         vector_store_id: Target vector store ID.
-        feed_url: Inmoenter XML feed URL.
-        inmoenter_api_key: Inmoenter API key.
+        pricing_path: Path to bromyros_pricing_master.json.
+        kb_path: Path to BMC_Base_Conocimiento_GPT-2.json.
         db: Optional Firestore client for index storage.
 
     Returns:
         SyncStats with operation counts.
     """
-    # Step 1: Fetch property feed
-    properties = await fetch_property_feed(feed_url, inmoenter_api_key)
-    if not properties:
-        logger.warning("No properties fetched from feed — skipping sync")
+    products = load_all_products(pricing_path, kb_path)
+    if not products:
+        logger.warning("No products loaded from KB — skipping sync")
         return SyncStats()
 
-    # Step 2: Sync vector store
     client = AsyncOpenAI(api_key=openai_api_key)
-    return await sync_vector_store(client, vector_store_id, properties, db=db)
+    return await sync_vector_store(client, vector_store_id, products, db=db)
