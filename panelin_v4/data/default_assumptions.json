@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "description": "Default assumptions for Panelin v4.0. Used when data is missing in pre-quotation mode. Every assumption is explicitly declared in the output.",
+    "fecha": "2026-02-25"
+  },
+  "span_defaults": {
+    "residencial": 1.5,
+    "galpon": 2.0,
+    "industrial": 2.5,
+    "default": 1.5,
+    "nota": "Span in meters between supports. Used only when span_m is not provided AND mode != formal."
+  },
+  "pendiente_defaults": {
+    "techo_isodec": 7,
+    "techo_isoroof": 7,
+    "default": 7,
+    "nota": "Minimum slope percentage."
+  },
+  "structure_defaults": {
+    "techo": "metal",
+    "pared": "metal",
+    "camara": "hormigon",
+    "nota": "Default structure type when not specified."
+  },
+  "flete_defaults": {
+    "montevideo_usd": 280,
+    "interior_usd": 350,
+    "maldonado_usd": 320,
+    "default_usd": 280,
+    "nota": "Reference shipping cost in USD. Always declared as estimate."
+  },
+  "sre_thresholds": {
+    "level_3_max": 30,
+    "level_2_max": 60,
+    "level_1_max": 85,
+    "block_above": 85,
+    "nota": "SRE score ranges: 0-30=Formal, 31-60=Conditioned, 61-85=Commercial, 86+=Technical Block"
+  },
+  "sai_minimum": {
+    "formal": 95,
+    "pre_cotizacion": 80,
+    "informativo": 60,
+    "nota": "Minimum SAI score required per quotation mode."
+  },
+  "iva": {
+    "tasa": 0.22,
+    "default_mode": "incluido",
+    "nota": "IVA 22% already included in catalog prices. NEVER add IVA on top."
+  },
+  "autoportancia_safety_margin": 0.0,
+  "autoportancia_safety_margin_nota": "Use exact nominal values from manufacturer table (no safety margin by default)."
+}
