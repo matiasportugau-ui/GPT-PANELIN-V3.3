@@ -12,7 +12,7 @@ firebase-admin>=6.5.0
 httpx>=0.27.0
 requests>=2.31.0
 
-# XML parsing for Inmoenter feeds
+# XML/JSON parsing utilities
 lxml>=5.0.0
 
 # Utilities

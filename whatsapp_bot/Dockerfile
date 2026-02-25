@@ -1,5 +1,5 @@
 # ==============================================================================
-# WhatsApp Bot - Cognitive Real Estate Assistant
+# WhatsApp Bot - BMC Uruguay Panel Quotation Assistant (Panelin)
 # Dockerfile for Google Cloud Run deployment
 # ==============================================================================
 # Fix C2: Maintains package structure for relative imports

@@ -112,4 +112,4 @@ class TestEscalationDetection:
         assert not OpenAIService.detect_escalation_intent("Busco una casa")
         assert not OpenAIService.detect_escalation_intent("¿Cuánto cuesta?")
         assert not OpenAIService.detect_escalation_intent("Hola buenos días")
-        assert not OpenAIService.detect_escalation_intent("Quiero ver propiedades")
+        assert not OpenAIService.detect_escalation_intent("Quiero ver paneles para techo")

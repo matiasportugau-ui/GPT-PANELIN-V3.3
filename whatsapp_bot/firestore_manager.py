@@ -5,7 +5,7 @@ Schema (collection: 'sessions', document ID: wa_id):
     last_response_id: str    — OpenAI Response ID for conversation chaining
     ai_active: bool          — True = AI handles, False = human agent handles
     last_interaction: datetime — UTC timestamp of last activity
-    lead_id: str | None      — Inmoenter CRM lead ID (optional)
+    lead_id: str | None      — Wolf API customer ID (optional)
 
 Concurrency: Uses Firestore transactions to prevent race conditions
 when multiple webhooks arrive simultaneously for the same user.
@@ -178,7 +178,7 @@ class SessionManager:
         })
 
     def update_lead_id(self, wa_id: str, lead_id: str) -> None:
-        """Store the Inmoenter CRM lead ID for cross-referencing."""
+        """Store the Wolf API customer ID for cross-referencing."""
         self._db.collection(COLLECTION_NAME).document(wa_id).update({
             "lead_id": lead_id,
         })
