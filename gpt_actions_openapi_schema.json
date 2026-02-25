@@ -39,7 +39,7 @@
     },
     "/kb/conversations": {
       "post": {
-        "operationId": "persistConversation",
+        "operationId": "persist_conversation",
         "summary": "Persist conversation summary to Knowledge Base",
         "description": "Saves a conversation summary and optional quotation reference to GCS as JSONL. Requires X-API-Key header.",
         "requestBody": {

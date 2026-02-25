@@ -274,7 +274,7 @@ async def ready():
     return {"status": "ready"}
 
 
-@app.post("/kb/conversations", status_code=200)
+@app.post("/kb/conversations", status_code=200, operation_id="persist_conversation")
 async def kb_conversations(
     body: Dict[str, Any],
     _: None = Security(_require_api_key)
