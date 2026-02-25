@@ -13,3 +13,8 @@ ISOPANEL_EPS,50,2_apoyos_simple,3.0,,10.0,,,Pendiente min 7% para techos,bom_rul
 ISOPANEL_EPS,100,2_apoyos_simple,5.5,,12.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
 ISOPANEL_EPS,150,2_apoyos_simple,7.5,,14.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
 ISOPANEL_EPS,200,2_apoyos_simple,9.1,,16.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISOROOF_3G,40,2_apoyos_simple,3.0,,,,,Pendiente min 7% para techos,KB_PRECIOS_v6
+ISOROOF_Plus,80,2_apoyos_simple,4.0,,,,,Pendiente min 7% para techos,KB_PRECIOS_v6
+ISOROOF_Foil,30,2_apoyos_simple,2.8,,,,,Pendiente min 7% para techos,KB_PRECIOS_v6
+ISOROOF_Foil,50,2_apoyos_simple,3.3,,,,,Pendiente min 7% para techos,KB_PRECIOS_v6
+ISOROOF_Colonial,40,2_apoyos_simple,3.0,,,,,Pendiente min 7% - ref ISOROOF 3G,KB_PRECIOS_v6
