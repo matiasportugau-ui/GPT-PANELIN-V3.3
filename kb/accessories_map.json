@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "version": "1.0",
+    "purpose": "Mapeo declarativo de accesorios por familia y envolvente. Puede devolver opciones múltiples (ambiguo) para forzar selección."
+  },
+  "map": {
+    "ISOROOF": {
+      "HORIZONTAL": {
+        "ridge_cap_sku_options": [
+          "RIDGE_CAP_{PANEL_FAMILY}_M"
+        ],
+        "drip_edge_sku_options": [
+          "DRIP_EDGE_{PANEL_FAMILY}_M"
+        ],
+        "flashing_sku_options": [
+          "FLASHING_{PANEL_FAMILY}_M",
+          "FLASHING_{PANEL_FAMILY}_M_ALT"
+        ],
+        "fastener_sku": "FASTENER_SELF_DRILL_UNIT",
+        "pvc_washer_sku": "PVC_WASHER_UNIT",
+        "sealant_sku": "SEALANT_CARTRIDGE_UNIT"
+      },
+      "VERTICAL": {
+        "corner_profile_sku_options": [
+          "CORNER_PROFILE_{PANEL_FAMILY}_M"
+        ],
+        "j_channel_sku_options": [
+          "J_CHANNEL_{PANEL_FAMILY}_M"
+        ],
+        "flashing_sku_options": [
+          "FLASHING_{PANEL_FAMILY}_M"
+        ],
+        "fastener_sku": "FASTENER_SELF_DRILL_UNIT",
+        "pvc_washer_sku": "PVC_WASHER_UNIT",
+        "sealant_sku": "SEALANT_CARTRIDGE_UNIT"
+      }
+    }
+  }
+}

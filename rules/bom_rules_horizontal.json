@@ -1,0 +1,64 @@
+{
+  "meta": { "version": "1.0", "envelope_class": "HORIZONTAL" },
+  "parameters": {
+    "panel_waste_factor": 1.07,
+    "fasteners_per_m2_default": 7,
+    "washers_per_m2_default": 7
+  },
+  "lines": [
+    {
+      "id": "PANELS",
+      "sku_tpl": "PANEL_{panel_family}_{thickness_mm}_M2",
+      "unit": "m2",
+      "qty_expr": "area_m2 * panel_waste_factor",
+      "rounding": { "mode": "round", "decimals": 2 }
+    },
+    {
+      "id": "RIDGE_CAP",
+      "sku_tpl": "RIDGE_CAP_{panel_family}_M",
+      "unit": "m",
+      "qty_expr": "ridge_m",
+      "rounding": { "mode": "ceil", "decimals": 2 },
+      "optional_if_missing_input": true
+    },
+    {
+      "id": "DRIP_EDGE",
+      "sku_tpl": "DRIP_EDGE_{panel_family}_M",
+      "unit": "m",
+      "qty_expr": "drip_edge_m",
+      "rounding": { "mode": "ceil", "decimals": 2 },
+      "optional_if_missing_input": true
+    },
+    {
+      "id": "FLASHING",
+      "sku_tpl": "FLASHING_{panel_family}_M",
+      "unit": "m",
+      "qty_expr": "flashing_m",
+      "rounding": { "mode": "ceil", "decimals": 2 },
+      "optional_if_missing_input": true,
+      "may_be_ambiguous_via_accessories_map": true
+    },
+    {
+      "id": "FASTENERS",
+      "sku": "FASTENER_SELF_DRILL_UNIT",
+      "unit": "unit",
+      "qty_expr": "area_m2 * (fasteners_per_m2 ?? fasteners_per_m2_default)",
+      "rounding": { "mode": "ceil", "decimals": 0 }
+    },
+    {
+      "id": "PVC_WASHERS",
+      "sku": "PVC_WASHER_UNIT",
+      "unit": "unit",
+      "qty_expr": "area_m2 * (pvc_washers_per_m2 ?? washers_per_m2_default)",
+      "rounding": { "mode": "ceil", "decimals": 0 }
+    },
+    {
+      "id": "SEALANT",
+      "sku": "SEALANT_CARTRIDGE_UNIT",
+      "unit": "unit",
+      "qty_expr": "sealant_units",
+      "rounding": { "mode": "ceil", "decimals": 0 },
+      "optional_if_missing_input": true
+    }
+  ]
+}

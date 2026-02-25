@@ -1,0 +1,12 @@
+{
+  "meta": { "version": "1.0", "envelope_class": "VERTICAL" },
+  "required_fields": ["iva_mode", "currency", "envelope_class", "panel_family", "thickness_mm", "area_m2"],
+  "numeric_non_negative": ["area_m2", "corner_m", "j_channel_m", "flashing_m", "fasteners_per_m2", "pvc_washers_per_m2", "sealant_units"],
+  "hard_stops": [
+    {
+      "code": "MISSING_REQUIRED_FIELD",
+      "when": "missing_any(required_fields)",
+      "message_tpl": "Falta dato crítico: {field}"
+    }
+  ]
+}

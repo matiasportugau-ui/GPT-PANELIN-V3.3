@@ -1,0 +1,3 @@
+panel_family,thickness_mm,span_m_max,load_class,status,notes
+ISOROOF,50,3.0,STD,PLACEHOLDER,Completar tabla real (hard-stop si no matchea en HORIZONTAL)
+ISOROOF,80,4.0,STD,PLACEHOLDER,Completar tabla real (hard-stop si no matchea en HORIZONTAL)

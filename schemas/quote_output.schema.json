@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://panelin.local/schemas/quote_output.schema.json",
+  "title": "Panelin Quote Output",
+  "type": "object",
+  "required": ["meta", "request", "bom", "totals"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["version", "generated_at"],
+      "properties": {
+        "version": { "type": "string" },
+        "generated_at": { "type": "string" }
+      }
+    },
+    "request": {
+      "type": "object",
+      "required": ["currency", "iva_mode", "envelope_class", "panel_family", "thickness_mm", "area_m2"],
+      "properties": {
+        "currency": { "type": "string" },
+        "iva_mode": { "type": "string", "enum": ["incluido", "excluido"] },
+        "envelope_class": { "type": "string", "enum": ["VERTICAL", "HORIZONTAL", "UNIT_COMPLETE"] },
+        "panel_family": { "type": "string" },
+        "thickness_mm": { "type": "integer" },
+        "area_m2": { "type": "number" },
+        "span_m": { "type": ["number", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "bom": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sku", "description", "unit", "qty"],
+        "properties": {
+          "sku": { "type": "string" },
+          "description": { "type": "string" },
+          "unit": { "type": "string" },
+          "qty": { "type": "number" },
+          "unit_price": { "type": ["number", "null"] },
+          "line_total": { "type": ["number", "null"] }
+        }
+      }
+    },
+    "totals": {
+      "type": "object",
+      "required": ["subtotal", "tax", "total"],
+      "properties": {
+        "subtotal": { "type": ["number", "null"] },
+        "tax": { "type": ["number", "null"] },
+        "total": { "type": ["number", "null"] }
+      }
+    },
+    "hard_stops": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

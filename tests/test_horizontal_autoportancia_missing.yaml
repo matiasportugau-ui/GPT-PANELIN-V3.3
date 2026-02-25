@@ -1,0 +1,13 @@
+name: horizontal_autoportancia_missing
+request:
+  iva_mode: incluido
+  currency: ARS
+  envelope_class: HORIZONTAL
+  panel_family: ISOROOF
+  thickness_mm: 120
+  area_m2: 80
+  span_m: 6
+expect:
+  hard_stops_contains_all:
+    - "Falta información de autoportancia para este caso. No se emite cotización formal sin verificación"
+notes: "thickness_mm 120 no matchea tabla placeholder."

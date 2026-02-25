@@ -1,0 +1,10 @@
+sku,name,category,unit,pack_qty,is_placeholder,notes
+PANEL_{PANEL_FAMILY}_{THICKNESS_MM}_M2,Panel aislante {PANEL_FAMILY} {THICKNESS_MM}mm,panels,m2,1,true,SKU plantilla: reemplazar por SKUs reales
+RIDGE_CAP_{PANEL_FAMILY}_M,Cumbrera {PANEL_FAMILY},accessories,m,1,true,
+DRIP_EDGE_{PANEL_FAMILY}_M,Goterón {PANEL_FAMILY},accessories,m,1,true,
+FLASHING_{PANEL_FAMILY}_M,Zinguería/Remate {PANEL_FAMILY},accessories,m,1,true,
+CORNER_PROFILE_{PANEL_FAMILY}_M,Esquinero {PANEL_FAMILY},accessories,m,1,true,Usado típico en VERTICAL
+J_CHANNEL_{PANEL_FAMILY}_M,Canal J {PANEL_FAMILY},accessories,m,1,true,Usado típico en VERTICAL
+FASTENER_SELF_DRILL_UNIT,Tornillo autoperforante,consumables,unit,1,true,
+PVC_WASHER_UNIT,Arandela PVC,consumables,unit,1,true,
+SEALANT_CARTRIDGE_UNIT,Silicona/Poliuretano cartucho,consumables,unit,1,true,
