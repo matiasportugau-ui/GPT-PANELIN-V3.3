@@ -1,0 +1,59 @@
+tipo,producto,espesor_mm,pvp_unidad,costo_unidad,unidad,ancho_util_m,autoportancia_m,largo_max_m,fijacion,desperdicio
+panel,ISODEC EPS,100,37.76,32.83,m2,1.12,5.5,14.0,varilla_3_8,1.12
+panel,ISODEC EPS,150,42.48,36.94,m2,1.12,7.5,14.0,varilla_3_8,1.12
+panel,ISODEC EPS,200,47.63,41.42,m2,1.12,9.1,14.0,varilla_3_8,1.12
+panel,ISODEC EPS,250,52.36,45.53,m2,1.12,10.4,14.0,varilla_3_8,1.12
+panel,ISODEC PIR,50,41.83,36.37,m2,1.12,3.5,14.0,varilla_3_8,1.12
+panel,ISODEC PIR,80,42.99,37.38,m2,1.12,5.5,14.0,varilla_3_8,1.12
+panel,ISODEC PIR,120,51.38,44.68,m2,1.12,7.6,14.0,varilla_3_8,1.12
+panel,ISOROOF 3G,30,39.95,34.74,m2,1.00,2.8,8.5,caballete,1.00
+panel,ISOROOF 3G,40,40.72,35.41,m2,1.00,3.0,8.5,caballete,1.00
+panel,ISOROOF 3G,50,44.00,38.26,m2,1.00,3.3,8.5,caballete,1.00
+panel,ISOROOF 3G,80,51.73,44.98,m2,1.00,4.0,8.5,caballete,1.00
+panel,ISOROOF Plus,80,58.82,51.15,m2,1.00,4.0,8.5,caballete,1.00
+panel,ISOROOF Foil,30,32.41,28.18,m2,1.00,2.8,8.5,caballete,1.00
+panel,ISOROOF Foil,50,36.74,31.95,m2,1.00,3.3,8.5,caballete,1.00
+panel,ISOROOF Colonial,40,62.07,53.97,m2,1.00,3.0,8.5,caballete,1.00
+panel,ISOPANEL EPS,50,41.88,36.42,m2,1.10,,12.0,varilla_3_8,
+panel,ISOPANEL EPS,100,46.00,40.00,m2,1.10,,12.0,varilla_3_8,
+panel,ISOPANEL EPS,150,51.50,44.78,m2,1.10,,12.0,varilla_3_8,
+panel,ISOPANEL EPS,200,57.00,49.57,m2,1.10,,12.0,varilla_3_8,
+panel,ISOPANEL EPS,250,62.50,54.35,m2,1.10,,12.0,varilla_3_8,
+panel,ISOWALL PIR,50,44.80,38.95,m2,1.10,,12.0,varilla_3_8,
+panel,ISOWALL PIR,80,53.42,46.45,m2,1.10,,12.0,varilla_3_8,
+panel,ISOFRIG SL,40,41.71,36.27,m2,1.10,,12.0,varilla_3_8,1.10
+panel,ISOFRIG SL,60,47.40,41.22,m2,1.10,,12.0,varilla_3_8,1.10
+panel,ISOFRIG SL,80,52.29,45.47,m2,1.10,,12.0,varilla_3_8,1.10
+panel,ISOFRIG SL,100,58.01,50.44,m2,1.10,,12.0,varilla_3_8,1.10
+panel,ISOFRIG SL,120,69.33,60.29,m2,1.10,,12.0,varilla_3_8,1.10
+panel,ISOFRIG SL,150,70.38,61.20,m2,1.10,,12.0,varilla_3_8,1.10
+panel,ISOFRIG SL,180,86.33,75.07,m2,1.10,,12.0,varilla_3_8,1.10
+accesorio,Gotero Frontal ISODEC 100mm,,5.22,4.31,ml,,,,,
+accesorio,Gotero Lateral ISODEC 100mm,,6.92,5.77,ml,,,,,
+accesorio,Perfil Aluminio 5852,,9.30,7.75,ml,,,,,
+accesorio,Cumbrera ISODEC,,7.86,6.48,ml,,,,,
+accesorio,Babeta Atornillar,,4.06,3.39,ml,,,,,
+accesorio,Babeta Empotrar,,4.06,3.39,ml,,,,,
+accesorio,Canalón ISODEC 100mm,,23.18,19.13,ml,,,,,
+accesorio,Soporte Canalón ISODEC,,5.31,4.43,ml,,,,,
+accesorio,Gotero Frontal Simple ISOROOF,,6.60,5.50,ml,,,,,
+accesorio,Gotero Lateral ISOROOF,,9.48,7.90,ml,,,,,
+accesorio,Cumbrera Roof 3G,,13.20,11.00,ml,,,,,
+accesorio,Canalón Doble 80mm,,27.81,23.18,ml,,,,,
+accesorio,Soporte Canalón ISOROOF,,4.23,3.53,ml,,,,,
+accesorio,Limahoya estándar,,7.40,6.17,ml,,,,,
+fijacion,Silicona Neutra (400g),,6.08,2.42,u,,,,,
+fijacion,Varilla Roscada 3/8,,2.43,1.15,u,,,,,
+fijacion,Varilla Roscada 5/16,,1.90,0.90,u,,,,,
+fijacion,Tuerca Galv 3/8,,0.15,0.03,u,,,,,
+fijacion,Tuerca Galv 5/16,,0.12,0.02,u,,,,,
+fijacion,Arandela Carrocero,,2.00,0.29,u,,,,,
+fijacion,Arandela Plana,,0.24,0.03,u,,,,,
+fijacion,Arandela Polipropileno,,1.60,0.60,u,,,,,
+fijacion,Remache POP,,0.06,0.025,u,,,,,
+fijacion,Membrana Auto-adhesiva,,36.20,24.10,u,,,,,
+fijacion,Espuma PU Expansiva,,10.40,5.63,u,,,,,
+fijacion,Taco Expansivo 3/8,,0.53,0.33,u,,,,,
+fijacion,Caballete Roof,,0.63,0.30,u,,,,,
+fijacion,Tornillo Aguja,,0.78,0.35,u,,,,,
+fijacion,Tornillo T1,,0.06,0.025,u,,,,,
