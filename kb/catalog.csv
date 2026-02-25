@@ -1,12 +1,138 @@
 sku_id,family,system,product_type,thickness_mm,unit_sale,description,tags,active
-PLACEHOLDER_PANEL_ISOWALL_50,ISOWALL,VERTICAL,panel,50,m2,"Panel muro 50mm (placeholder)","muro;panel",true
-PLACEHOLDER_PANEL_ISOROOF_50,ISOROOF,HORIZONTAL,panel,50,m2,"Panel techo 50mm (placeholder)","techo;panel",true
-PLACEHOLDER_PROFILE_U_50,UNIVERSAL,VERTICAL,profile,50,ml,"Perfil U para panel 50mm (placeholder)","perfil;u",true
-PLACEHOLDER_CORNER_IN_50,UNIVERSAL,VERTICAL,accessory,50,ml,"Esquinero interior 50mm (placeholder)","esquinero;interior",true
-PLACEHOLDER_CORNER_OUT_50,UNIVERSAL,VERTICAL,accessory,50,ml,"Esquinero exterior 50mm (placeholder)","esquinero;exterior",true
-PLACEHOLDER_RIDGE_CAP_50,UNIVERSAL,HORIZONTAL,accessory,50,ml,"Cumbrera 50mm (placeholder)","cumbrera",true
-PLACEHOLDER_DRIP_EDGE_50,UNIVERSAL,HORIZONTAL,accessory,50,ml,"Goterón 50mm (placeholder)","goteron",true
-PLACEHOLDER_FLASHING_50,UNIVERSAL,HORIZONTAL,accessory,50,ml,"Babeta 50mm (placeholder)","babeta",true
-PLACEHOLDER_FASTENER_PANEL,UNIVERSAL,ALL,fastener,,u,"Tornillo/fijación panel (placeholder)","tornillo;fijacion",true
-PLACEHOLDER_SEALANT_NEUTRAL,UNIVERSAL,ALL,sealant,,u,"Sellador neutro (placeholder)","sellador",true
-PLACEHOLDER_PVC_WASHER,UNIVERSAL,HORIZONTAL,accessory,,u,"Tortuga/arandela PVC (placeholder)","pvc;arandela",true
+6805,UNIVERSAL,ALL,fastener,,u,Arandela Plana Hierro Galv. 3/8,arandela;ESTANDAR,true
+6805,ISODEC,HORIZONTAL,fastener,,u,Arandela Carrocero 3/8 Galv.,arandela_carrocero;PIR / EPS,true
+Cab. Roj,ISOROOF,HORIZONTAL,fastener,,u,"Caballete Rojo Teja, Gris y blanco- (Arandela Trapezoidal)",arandela_trapezoidal;PIR,true
+6828,ISODEC,HORIZONTAL,accessory,,ml,Babeta ISODEC de Adosar,babeta_adosar;PIR / EPS,true
+BBAL,ISOROOF,HORIZONTAL,accessory,,ml,Babeta de Atornillar Lateral,babeta_adosar;BABETAS PREPINTADOS,true
+BBAS3G,ISOROOF,HORIZONTAL,accessory,,ml,Babeta de Atornillar Superior 3G,babeta_adosar;BABETAS PREPINTADOS,true
+6865,ISODEC,HORIZONTAL,accessory,,ml,Babeta ISODEC de empotrar,babeta_empotrar;PIR / EPS,true
+BBAL,ISOROOF,HORIZONTAL,accessory,,ml,Babeta de Empotrar Lateral,babeta_empotrar;BABETAS PREPINTADOS,true
+BBESUP,ISOROOF,HORIZONTAL,accessory,,ml,Babeta de Empotrar Superior 3G,babeta_empotrar;BABETAS PREPINTADOS,true
+CD30,ISOROOF,HORIZONTAL,accessory,30,ml,"Canalón Doble roof 30mm / base 150mm + tapas + agujero + bajada / 3,03 m",canalon;CANALÓN PREPINTADO,true
+CD50,ISOROOF,HORIZONTAL,accessory,50,ml,"Canalón Doble roof 50mm / base 150mm + tapas + agujero + bajada / 3,03 m",canalon;CANALÓN PREPINTADO,true
+CD80,ISOROOF,HORIZONTAL,accessory,80,ml,"Canalón Doble roof 80mm / base 150mm + tapas + agujero + bajada / 3,03 m",canalon;CANALÓN PREPINTADO,true
+6801,ISODEC,HORIZONTAL,accessory,100,ml,Canalón Estandar 100 mm,canalon;EPS,true
+6802,ISODEC,HORIZONTAL,accessory,150,ml,Canalón Estandar 150 mm,canalon;EPS,true
+6803,ISODEC,HORIZONTAL,accessory,200,ml,Canalón Estandar 200 mm,canalon;EPS,true
+6804,ISODEC,HORIZONTAL,accessory,250,ml,Canalón Estandar 250 mm,canalon;EPS,true
+CAN.ISDC120,ISODEC,HORIZONTAL,accessory,120,ml,Canalón Isodec 120mm ISODEC PIR,canalon;PIR,true
+CAN.ISDC120,ISODEC,HORIZONTAL,accessory,50,ml,Canalón Isodec 50mm ISODEC PIR,canalon;PIR,true
+CAN.ISDC120,ISODEC,HORIZONTAL,accessory,80,ml,Canalón Isodec 80mm ISODEC PIR,canalon;PIR,true
+6805,ISODEC,HORIZONTAL,accessory,,ml,Soporte de Canalón de 3 m,canalon;PIR / EPS,true
+SOPCAN3M,ISOROOF,HORIZONTAL,accessory,,ml,Soporte para Canalón Isoroof (3m),canalon;CANALÓN PREPINTADO,true
+C.But.,UNIVERSAL,ALL,sealant,,u,Cinta Butilo 2mm x 15mm x 22.5m lineales,cinta_butilo;Butilo,true
+CUMROOF3M,ISOROOF,HORIZONTAL,accessory,,ml,Cumbrera Roof 3G de 3 m,cumbrera;CUMBRERAS PREPINTADO,true
+CUMROOF3M,ISOROOF,HORIZONTAL,accessory,,ml,"Cumbrera Roof COLONIAL - 2,2 m (2 piezas de 1,1m)",cumbrera;CUMBRERAS PREPINTADO,true
+6847,ISODEC,HORIZONTAL,accessory,,ml,Perfil Cumbrera,cumbrera;PIR / EPS,true
+6805,ISODEC,HORIZONTAL,accessory,,u,Embudo,embudo;PIR / EPS,true
+GFS30,ISOROOF,HORIZONTAL,accessory,30,ml,Gotero Frontal Simple 30mm Prep.,gotero_frontal;GOTERO FRONTAL PREPINTADO,true
+GFS50,ISOROOF,HORIZONTAL,accessory,50,ml,Gotero Frontal Simple 50mm Prep.,gotero_frontal;GOTERO FRONTAL PREPINTADO,true
+GFS80,ISOROOF,HORIZONTAL,accessory,80,ml,Gotero Frontal Simple 80mm Prep.,gotero_frontal;GOTERO FRONTAL PREPINTADO,true
+GFCGR30,ISOROOF,HORIZONTAL,accessory,30 - 40 - 50 - 80 - 100,ml,Gotero frontal con greca  1 x panel  30 - 40 - 50 - 80 - 100 mm,gotero_frontal;GOTERO FRONTAL PREPINTADO,true
+6838,ISODEC,HORIZONTAL,accessory,100,ml,"Perf. Ch. Gotero Frontal 100mm - (3,03m)",gotero_frontal;EPS/PIR,true
+GF120DC,ISODEC,HORIZONTAL,accessory,120,ml,"Perf. Ch. Gotero Frontal 120mm - ISODEC PIR  - (3,03m)",gotero_frontal;PIR,true
+6839,ISODEC,HORIZONTAL,accessory,150,ml,"Perf. Ch. Gotero Frontal 150mm - (3,03m)",gotero_frontal;EPS,true
+6840,ISODEC,HORIZONTAL,accessory,200,ml,"Perf. Ch. Gotero Frontal 200mm - (3,03m)",gotero_frontal;EPS,true
+6841,ISODEC,HORIZONTAL,accessory,250,ml,"Perf. Ch. Gotero Frontal 250mm - (3,03m)",gotero_frontal;EPS,true
+GF80DC,ISODEC,HORIZONTAL,accessory,50,ml,"Perf. Ch. Gotero Frontal 50mm - ISODEC PIR  - (3,03m)",gotero_frontal;PIR,true
+GF120DC,ISODEC,HORIZONTAL,accessory,80,ml,"Perf. Ch. Gotero Frontal 80mm - ISODEC PIR  - (3,03m)",gotero_frontal;PIR,true
+GLDCAM50,ISOROOF,HORIZONTAL,accessory,50,ml,Gotero Lateral   CAMARA  50mm  Prep.,gotero_lateral;GOTERO LATERAL PREPINTADO,true
+GLDCAM80,ISOROOF,HORIZONTAL,accessory,80,ml,Gotero Lateral  CAMARA  80mm  Prep.,gotero_lateral;GOTERO LATERAL PREPINTADO,true
+GL30,ISOROOF,HORIZONTAL,accessory,30,ml,Gotero Lateral 30mm  Prep.,gotero_lateral;GOTERO LATERAL PREPINTADO,true
+GL40,ISOROOF,HORIZONTAL,accessory,40,ml,Gotero Lateral 40mm  Prep.,gotero_lateral;GOTERO LATERAL PREPINTADO,true
+GL50,ISOROOF,HORIZONTAL,accessory,50,ml,Gotero Lateral 50mm  Prep.,gotero_lateral;GOTERO LATERAL PREPINTADO,true
+GL80,ISOROOF,HORIZONTAL,accessory,80,ml,Gotero Lateral 80mm  Prep.,gotero_lateral;GOTERO LATERAL PREPINTADO,true
+6842,ISODEC,HORIZONTAL,accessory,100,ml,Perf. Ch. Gotero Lateral 100mm - (3m),gotero_lateral;EPS,true
+GL120DC,ISODEC,HORIZONTAL,accessory,120,ml,Perf. Ch. Gotero Lateral 120mm - ISODEC PIR  - (3m),gotero_lateral;PIR,true
+6843,ISODEC,HORIZONTAL,accessory,150,ml,Perf. Ch. Gotero Lateral 150mm - (3m),gotero_lateral;EPS,true
+6844,ISODEC,HORIZONTAL,accessory,200,ml,Perf. Ch. Gotero Lateral 200mm - (3m),gotero_lateral;EPS,true
+6845,ISODEC,HORIZONTAL,accessory,250,ml,Perf. Ch. Gotero Lateral 250mm - (3m),gotero_lateral;EPS,true
+GL80DC,ISODEC,HORIZONTAL,accessory,50,ml,Perf. Ch. Gotero Lateral 50mm - ISODEC PIR  - (3m),gotero_lateral;PIR,true
+GL80DC,ISODEC,HORIZONTAL,accessory,80,ml,Perf. Ch. Gotero Lateral 80mm - ISODEC PIR  - (3m),gotero_lateral;PIR,true
+6845,ISODEC,HORIZONTAL,accessory,100,ml,Perfil Ch. Gotero Lateral Cámara 100 mm - (3m),gotero_lateral;EPS,true
+6845,ISODEC,HORIZONTAL,accessory,150,ml,Perfil Ch. Gotero Lateral Cámara 150 mm - (3m),gotero_lateral;EPS,true
+6845,ISODEC,HORIZONTAL,accessory,200,ml,Perfil Ch. Gotero Lateral Cámara 200 mm - (3m),gotero_lateral;EPS,true
+6845,ISODEC,HORIZONTAL,accessory,250,ml,Perfil Ch. Gotero Lateral Cámara 250 mm - (3m),gotero_lateral;EPS,true
+GSDECAM50,ISODEC,HORIZONTAL,accessory,50,ml,Gotero Superior  -  DE CAMARA  50mm,gotero_superior;GOTERO FRONTAL PREPINTADO,true
+GSDECAM80,ISODEC,HORIZONTAL,accessory,80,ml,Gotero Superior  -  DE CAMARA  80mm,gotero_superior;GOTERO FRONTAL PREPINTADO,true
+GFSUP30,ISOROOF,HORIZONTAL,accessory,30,ml,Gotero Superior 30mm Prep.,gotero_superior;GOTERO FRONTAL PREPINTADO,true
+GFSUP40,ISOROOF,HORIZONTAL,accessory,40,ml,Gotero Superior 40mm Prep.,gotero_superior;GOTERO FRONTAL PREPINTADO,true
+GFSUP50,ISOROOF,HORIZONTAL,accessory,50,ml,Gotero Superior 50mm Prep.,gotero_superior;GOTERO FRONTAL PREPINTADO,true
+GFSUP80,ISOROOF,HORIZONTAL,accessory,80,ml,Gotero Superior 80mm Prep.,gotero_superior;GOTERO FRONTAL PREPINTADO,true
+6805,UNIVERSAL,ALL,accessory,,u,Rollo Membrana Autoadhesiva (30 cm x 10 m) DENVERFITA,membrana;ESTANDAR,true
+6805,UNIVERSAL,ALL,other,,u,1mx1mx1cm (Paquetes de 60 uds),otro;ESTANDAR,true
+6805,UNIVERSAL,ALL,other,,u,1mx1mx2cm  (Paquetes de 30 uds),otro;ESTANDAR,true
+6805,UNIVERSAL,ALL,other,,u,1mx1mx3cm (Paquetes de 20 uds),otro;ESTANDAR,true
+6805,UNIVERSAL,ALL,other,,u,1mx1mx5cm (Paquetes de 12 uds),otro;ESTANDAR,true
+6805,UNIVERSAL,ALL,other,,u,3x1x5cm (Paquetes de 12 uds),otro;ESTANDAR,true
+6805,UNIVERSAL,ALL,other,,u,"EPS, Cat. II",otro;ESTANDAR,true
+PLECHU98,ISODEC;ISOPANEL;ISOROOF,ALL,other,,u,"ISODEC (EPS) - 2,3m min.",otro;Estandar,true
+6805,UNIVERSAL,ALL,other,,u,autotrabante  (Paquetes de 12 uds),otro;ESTANDAR,true
+PLECHU98,ISODEC;ISOPANEL;ISOROOF,ALL,profile,,ml,"PERFIL ALU 2195 U 100 / 6,8m",perfil;Estandar,true
+PU250MM,ISODEC;ISOPANEL;ISOROOF,ALL,profile,,ml,"Perfil Alu 5852 Anodizado de 6,8 m de largo",perfil;Estandar,true
+PU100MM,ISOFRIG;ISOPANEL;ISOWALL,VERTICAL,profile,100,ml,Perfil Ch. Blanco U 100 mm x 35 mm / 3 m,perfil;EPS,true
+PU150MM,ISOPANEL,VERTICAL,profile,150,ml,Perfil Ch. Blanco U 150 mm x 35 mm / 3 m,perfil;EPS,true
+PU200MM,ISOPANEL,VERTICAL,profile,200,ml,Perfil Ch. Blanco U 200 mm x 35 mm / 3 m,perfil;EPS,true
+PU250MM,ISOPANEL,VERTICAL,profile,250,ml,Perfil Ch. Blanco U 250 mm x 35 mm / 3 m,perfil;EPS,true
+PU50MM,ISOFRIG,VERTICAL,profile,40,ml,Perfil Ch. Blanco U 40 mm x 35 mm ISOFRIG / 3 m,perfil;PIR,true
+PU50MM,ISOPANEL;ISOWALL,VERTICAL,profile,50,ml,Perfil Ch. Blanco U 50 mm x 35 mm / 3 m (ISOWALL - ISOPANEL),perfil;PIR / EPS,true
+PU50MM,ISOFRIG,VERTICAL,profile,60,ml,Perfil Ch. Blanco U 60 mm x 35 mm ISOFRIG / 3 m,perfil;PIR,true
+PU50MM,ISOWALL,VERTICAL,profile,80,ml,Perfil Ch. Blanco U 80 mm x 35 mm ISOWALL / 3 m,perfil;PIR,true
+PU250MM,ISODEC;ISOPANEL,ALL,profile,,ml,Perfil Chapa Blanca K2,perfil;Estandar,true
+PU250MM,ISODEC;ISOPANEL,ALL,profile,100,ml,Perfil Chapa Blanco G2 100 / 3 m,perfil;EPS,true
+PU250MM,ISODEC;ISOPANEL,ALL,profile,150,ml,Perfil Chapa Blanco G2 150 / 3 m,perfil;EPS,true
+PU250MM,ISODEC;ISOPANEL,ALL,profile,200,ml,Perfil Chapa Blanco G2 200 / 3 m,perfil;EPS,true
+PU250MM,ISODEC;ISOPANEL,ALL,profile,250,ml,Perfil Chapa Blanco G2 250 / 3 m,perfil;EPS,true
+PU250MM,ISODEC;ISOPANEL;ISOROOF,ALL,profile,,ml,Perfil K2 sin repliegue para Siliconar (Ángulo interior),perfil;Estandar,true
+PU250MM,ISODEC;ISOPANEL,ALL,profile,,ml,Plegado G4 40 mm x 40 mm (Exterior),plegado;Estandar,true
+PLEGU148,ISODEC;ISOPANEL,ALL,profile,,ml,Plegado Galv. Tipo U 148 mm / 2 m de largo,plegado;Estandar,true
+PLECHU98,ISODEC;ISOPANEL,ALL,profile,,ml,Plegado Galv. Tipo U 98 mm / 2 m de largo,plegado;Estandar,true
+Bromplast,UNIVERSAL,ALL,sealant,,u,Bromplast 8 - Silicona Neutra  X 600,silicona;Estandar,true
+Bromplast,UNIVERSAL,ALL,sealant,,u,Pistola de Silicona,silicona;Estandar,true
+6805,UNIVERSAL,ALL,sealant,,u,Pistola de Silicona,silicona;ESTANDAR,true
+6805,UNIVERSAL,ALL,fastener,,u,Taco Expansivo Sorex 3/8,taco;ESTANDAR,true
+6805,ISODEC,HORIZONTAL,fastener,,u,Arandela Bca. de Polipropileno (Totuga Blanca),tortuga_pvc;PIR / EPS,true
+6805,ISODEC,HORIZONTAL,fastener,,u,Arandela Bca. de Polipropileno GRIS (Totuga GRIS),tortuga_pvc;PIR / EPS,true
+6805,UNIVERSAL,ALL,fastener,,u,Tuerca BSW 3/8 Galv.,tuerca;ESTANDAR,true
+6825,ISODEC,HORIZONTAL,accessory,,ml,Vaina ISODEC Sist 2000,vaina;PIR / EPS,true
+6805,UNIVERSAL,ALL,fastener,,u,Varilla Roscada BSW 3/8 de 1 m,varilla;ESTANDAR,true
+IAGRO30,ISOROOF,HORIZONTAL,panel,30,m2,Isoroof FOIL 30 mm - Color Gris-Rojo,panel;PIR,true
+IAGRO50,ISOROOF,HORIZONTAL,panel,50,m2,Isoroof FOIL 50 mm - Color Rojo-Gris,panel;PIR,true
+IROOF30,ISOROOF,HORIZONTAL,panel,30,m2,Isoroof 30 mm Terracota o Gris,panel;PIR,true
+IROOF40,ISOROOF,HORIZONTAL,panel,40,m2,Isoroof 40 mm Terracota o Gris,panel;PIR,true
+IROOF50,ISOROOF,HORIZONTAL,panel,50,m2,Isoroof 50 mm Terracota o Gris,panel;PIR,true
+IROOF80,ISOROOF,HORIZONTAL,panel,80,m2,Isoroof 80 mm - Gris - Rojo,panel;PIR,true
+IROOF100,ISOROOF,HORIZONTAL,panel,100,m2,Isoroof 100 mm - Gris - Rojo,panel;PIR,true
+IROOF50-PLS,ISOROOF,HORIZONTAL,panel,50,m2,Isoroof Plus 50 mm - Gris - Rojo (MINIMO 800 M2),panel;PIR,true
+IROOF80-PLS,ISOROOF,HORIZONTAL,panel,80,m2,Isoroof Plus 80 mm - Gris - Rojo,panel;PIR,true
+C.But.,Sellador,VERTICAL,panel,Estandar,m2,Cinta Butilo 2mm x 15mm x 22.5m lineales,panel;Butilo ,true
+Cab. Roj,ISOROOF,HORIZONTAL,panel,Estandar,m2,"Caballete Rojo Teja, Gris y blanco- (Arandela Trapezoidal)",panel;PIR,true
+Bromplast,Estandar,VERTICAL,panel,Estandar,m2,Bromplast 8 - Silicona Neutra  X 600,panel;Estandar,true
+GFCGR30,ISOROOF,HORIZONTAL,panel,30,m2,Gotero frontal con greca  1 x panel  30 - 40 - 50 - 80 - 100 mm,panel;GOTERO FRONTAL PREPINTADO,true
+BBAS3G,ISOROOF,HORIZONTAL,panel,Estandar,m2,Babeta de Atornillar Superior 3G,panel;BABETAS PREPINTADOS,true
+BBESUP,ISOROOF,HORIZONTAL,panel,Estandar,m2,Babeta de Empotrar Superior 3G,panel;BABETAS PREPINTADOS,true
+BBAL,ISOROOF,HORIZONTAL,panel,Estandar,m2,Babeta de Atornillar Lateral,panel;BABETAS PREPINTADOS,true
+SOPCAN3M,ISOROOF,HORIZONTAL,panel,Estandar,m2,Soporte para Canalón Isoroof (3m),panel;CANALÓN PREPINTADO,true
+CUMROOF3M,ISOROOF,HORIZONTAL,panel,Estandar,m2,Cumbrera Roof 3G de 3 m,panel;CUMBRERAS PREPINTADO,true
+IW50,ISOWALL,VERTICAL,panel,50,m2,Isowall 50 mm PIR - GRIS / Blanco,panel;PIR,true
+IW80,ISOWALL,VERTICAL,panel,80,m2,Isowall 80 mm,panel;PIR,true
+IW100,ISOWALL,VERTICAL,panel,100,m2,Isowall 100 mm,panel;PIR,true
+IF40 ,ISOFRIG,VERTICAL,panel,40,m2,IsoFrig 40 mm,panel;PIR,true
+IF60 - IFSL60,ISOFRIG,VERTICAL,panel,60,m2,IsoFrig - Sala Limpia 60 mm,panel;PIR,true
+IF80 - IFSL80,ISOFRIG,VERTICAL,panel,80,m2,IsoFrig - Sala Limpia 80 mm,panel;PIR,true
+IF100 - IFSL100,ISOFRIG,VERTICAL,panel,100,m2,IsoFrig - Sala Limpia 100 mm,panel;PIR,true
+IF150 - IFSL150,ISOFRIG,VERTICAL,panel,150,m2,IsoFrig - Sala Limpia 150 mm,panel;PIR,true
+ISD50EPS,ISOPANEL,VERTICAL,panel,50,m2,ISOPANEL EPS 50 mm,panel;EPS,true
+ISD100EPS,ISOPANEL,VERTICAL,panel,100,m2,ISOPANEL EPS 100 mm,panel;EPS,true
+ISD150EPS,ISOPANEL,VERTICAL,panel,150,m2,ISOPANEL EPS 150 mm,panel;EPS,true
+ISD200EPS,ISOPANEL,VERTICAL,panel,200,m2,ISOPANEL EPS 200 mm,panel;EPS,true
+ISD250EPS,ISOPANEL,VERTICAL,panel,250,m2,ISOPANEL EPS 250mm,panel;EPS,true
+PLEGU148,ISOPANEL / ISODEC,VERTICAL,panel,Estandar,m2,Plegado Galv. Tipo U 148 mm / 2 m de largo,panel;Estandar ,true
+PLECHU98,ISOPANEL / ISODEC,VERTICAL,panel,Estandar,m2,Plegado Galv. Tipo U 98 mm / 2 m de largo,panel;Estandar ,true
+ISD50PIR,ISODEC,HORIZONTAL,panel,Estandar,m2,ISODEC 50mm PIR (EVITAR ESTE ESPESOR),panel;PIR,true
+ISD80PIR,ISODEC,HORIZONTAL,panel,80,m2,ISODEC 80mm PIR,panel;PIR,true
+6847,ISODEC,HORIZONTAL,panel,Estandar,m2,Perfil Cumbrera,panel;PIR / EPS ,true
+6828,ISODEC,HORIZONTAL,panel,Estandar,m2,Babeta ISODEC de Adosar,panel;PIR / EPS ,true
+6865,ISODEC,HORIZONTAL,panel,Estandar,m2,Babeta ISODEC de empotrar,panel;PIR / EPS ,true
+6825,ISODEC,HORIZONTAL,panel,Estandar,m2,Vaina ISODEC Sist 2000,panel;PIR / EPS ,true
+6805,ISODEC,HORIZONTAL,panel,Estandar,m2,Soporte de Canalón de 3 m,panel;PIR / EPS ,true
