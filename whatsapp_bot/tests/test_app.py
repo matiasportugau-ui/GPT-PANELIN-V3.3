@@ -22,7 +22,7 @@ async def client(mock_wa_client, mock_openai_service, mock_session_manager):
         mock_settings.verify_token = "test-verify-token"
         mock_settings.meta_app_secret = "test-app-secret"
         mock_settings.sync_api_key = "test-sync-key"
-        mock_settings.inmoenter_feed_url = ""
+        mock_settings.kb_pricing_path = ""
         mock_settings.log_level = "WARNING"
 
         from whatsapp_bot.app import app

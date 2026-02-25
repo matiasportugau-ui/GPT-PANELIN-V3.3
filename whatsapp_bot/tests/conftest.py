@@ -22,6 +22,8 @@ os.environ.setdefault("PHONE_NUMBER_ID", "123456789")
 os.environ.setdefault("OPENAI_API_KEY", "test-openai-key")
 os.environ.setdefault("VECTOR_STORE_ID", "vs_test123")
 os.environ.setdefault("SYNC_API_KEY", "test-sync-key")
+os.environ.setdefault("WOLF_API_KEY", "test-wolf-key")
+os.environ.setdefault("WOLF_API_URL", "https://panelin-api-test.run.app")
 
 # ── Mock firebase_admin ──────────────────────────────────────
 _mock_firebase = MagicMock()
@@ -80,7 +82,7 @@ def mock_openai_service():
     service = MagicMock()
     service.send_message = AsyncMock(
         return_value=ResponseResult(
-            text="Tenemos un ático en Marbella por 285.000 EUR.",
+            text="El ISODEC EPS 100mm tiene un precio de USD 46.07/m² + IVA 22%.",
             response_id="resp_abc123",
             should_send_pdf=False,
         )
@@ -129,7 +131,7 @@ def sample_webhook_payload():
                                     "timestamp": "1234567890",
                                     "type": "text",
                                     "text": {
-                                        "body": "Busco un ático en la costa"
+                                        "body": "Necesito cotizar paneles para techo de 10x5m"
                                     },
                                 }
                             ],

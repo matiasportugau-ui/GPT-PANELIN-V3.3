@@ -36,12 +36,12 @@ class TestOpenAIService:
     async def test_send_first_message(self, service):
         """First message: no previous_response_id."""
         service._client.responses.create = AsyncMock(
-            return_value=MockResponse("Tenemos áticos en Marbella.")
+            return_value=MockResponse("El ISODEC EPS 100mm cuesta USD 46.07/m² + IVA.")
         )
 
-        result = await service.send_message("Busco un ático")
+        result = await service.send_message("Necesito paneles para techo")
 
-        assert result.text == "Tenemos áticos en Marbella."
+        assert result.text == "El ISODEC EPS 100mm cuesta USD 46.07/m² + IVA."
         assert result.response_id == "resp_test123"
         assert result.should_send_pdf is False
         # Verify no previous_response_id was passed
@@ -52,10 +52,10 @@ class TestOpenAIService:
     async def test_send_continuation(self, service):
         """Continuation: includes previous_response_id for caching."""
         service._client.responses.create = AsyncMock(
-            return_value=MockResponse("Sí, tiene terraza de 20m².")
+            return_value=MockResponse("El ISODEC EPS 100mm tiene autoportancia de 5.5m.")
         )
 
-        await service.send_message("¿Tiene terraza?", "resp_previous")
+        await service.send_message("Cual es la autoportancia?", "resp_previous")
 
         call_kwargs = service._client.responses.create.call_args[1]
         assert call_kwargs["previous_response_id"] == "resp_previous"
@@ -64,14 +64,14 @@ class TestOpenAIService:
     async def test_pdf_trigger_detected(self, service):
         """Response containing [SEND_PDF] token should set flag."""
         service._client.responses.create = AsyncMock(
-            return_value=MockResponse("[SEND_PDF] Aquí tiene el catálogo.")
+            return_value=MockResponse("[SEND_PDF] Aqui tiene su cotizacion.")
         )
 
-        result = await service.send_message("Envíame el dossier")
+        result = await service.send_message("Envieme la cotizacion en PDF")
 
         assert result.should_send_pdf is True
         assert "[SEND_PDF]" not in result.text
-        assert "catálogo" in result.text
+        assert "cotizacion" in result.text
 
     @pytest.mark.asyncio
     async def test_api_error_graceful_degradation(self, service):
