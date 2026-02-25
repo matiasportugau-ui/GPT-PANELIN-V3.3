@@ -1,0 +1,12 @@
+name: horizontal_span_missing
+request:
+  iva_mode: incluido
+  currency: ARS
+  envelope_class: HORIZONTAL
+  panel_family: ISOROOF
+  thickness_mm: 50
+  area_m2: 80
+  span_m: null
+expect:
+  hard_stops_contains_all:
+    - "Falta dato crítico: luz (span_m)"

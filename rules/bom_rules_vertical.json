@@ -1,0 +1,63 @@
+{
+  "meta": { "version": "1.0", "envelope_class": "VERTICAL" },
+  "parameters": {
+    "panel_waste_factor": 1.05,
+    "fasteners_per_m2_default": 6,
+    "washers_per_m2_default": 6
+  },
+  "lines": [
+    {
+      "id": "PANELS",
+      "sku_tpl": "PANEL_{panel_family}_{thickness_mm}_M2",
+      "unit": "m2",
+      "qty_expr": "area_m2 * panel_waste_factor",
+      "rounding": { "mode": "round", "decimals": 2 }
+    },
+    {
+      "id": "CORNER_PROFILES",
+      "sku_tpl": "CORNER_PROFILE_{panel_family}_M",
+      "unit": "m",
+      "qty_expr": "corner_m",
+      "rounding": { "mode": "ceil", "decimals": 2 },
+      "optional_if_missing_input": true
+    },
+    {
+      "id": "J_CHANNEL",
+      "sku_tpl": "J_CHANNEL_{panel_family}_M",
+      "unit": "m",
+      "qty_expr": "j_channel_m",
+      "rounding": { "mode": "ceil", "decimals": 2 },
+      "optional_if_missing_input": true
+    },
+    {
+      "id": "FLASHING",
+      "sku_tpl": "FLASHING_{panel_family}_M",
+      "unit": "m",
+      "qty_expr": "flashing_m",
+      "rounding": { "mode": "ceil", "decimals": 2 },
+      "optional_if_missing_input": true
+    },
+    {
+      "id": "FASTENERS",
+      "sku": "FASTENER_SELF_DRILL_UNIT",
+      "unit": "unit",
+      "qty_expr": "area_m2 * (fasteners_per_m2 ?? fasteners_per_m2_default)",
+      "rounding": { "mode": "ceil", "decimals": 0 }
+    },
+    {
+      "id": "PVC_WASHERS",
+      "sku": "PVC_WASHER_UNIT",
+      "unit": "unit",
+      "qty_expr": "area_m2 * (pvc_washers_per_m2 ?? washers_per_m2_default)",
+      "rounding": { "mode": "ceil", "decimals": 0 }
+    },
+    {
+      "id": "SEALANT",
+      "sku": "SEALANT_CARTRIDGE_UNIT",
+      "unit": "unit",
+      "qty_expr": "sealant_units",
+      "rounding": { "mode": "ceil", "decimals": 0 },
+      "optional_if_missing_input": true
+    }
+  ]
+}

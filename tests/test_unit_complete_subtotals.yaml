@@ -1,0 +1,20 @@
+name: unit_complete_subtotals
+request:
+  iva_mode: incluido
+  currency: ARS
+  envelope_class: UNIT_COMPLETE
+  vertical:
+    panel_family: ISOROOF
+    thickness_mm: 50
+    area_m2: 30
+    corner_m: 10
+  horizontal:
+    panel_family: ISOROOF
+    thickness_mm: 50
+    area_m2: 60
+    span_m: 4
+    ridge_m: 12
+expect:
+  hard_stops_contains_any:
+    - "No tengo esa información en mi base de conocimiento"
+notes: "Valida estructura; en modo real debería devolver subtotales vertical/horizontal."

@@ -1,0 +1,17 @@
+{
+  "meta": { "version": "1.0", "envelope_class": "HORIZONTAL" },
+  "required_fields": ["iva_mode", "currency", "envelope_class", "panel_family", "thickness_mm", "area_m2", "span_m"],
+  "numeric_non_negative": ["area_m2", "span_m", "ridge_m", "drip_edge_m", "flashing_m", "fasteners_per_m2", "pvc_washers_per_m2", "sealant_units"],
+  "hard_stops": [
+    {
+      "code": "MISSING_SPAN",
+      "when": "is_null(span_m)",
+      "message": "Falta dato crítico: luz (span_m)"
+    },
+    {
+      "code": "AUTO_PORTANCIA_NO_MATCH",
+      "when": "autoportancia_match == false",
+      "message": "Falta información de autoportancia para este caso. No se emite cotización formal sin verificación"
+    }
+  ]
+}

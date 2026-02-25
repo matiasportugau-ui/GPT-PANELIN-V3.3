@@ -1,0 +1,18 @@
+name: vertical_basic
+request:
+  iva_mode: incluido
+  currency: ARS
+  envelope_class: VERTICAL
+  panel_family: ISOROOF
+  thickness_mm: 50
+  area_m2: 20
+  corner_m: 8
+  j_channel_m: 0
+  flashing_m: 5
+  fasteners_per_m2: 6
+  pvc_washers_per_m2: 6
+  sealant_units: 1
+expect:
+  hard_stops_contains_any:
+    - "No tengo esa información en mi base de conocimiento"
+notes: "En starter kit los precios están vacíos, por eso este test espera hard-stop de pricing."
