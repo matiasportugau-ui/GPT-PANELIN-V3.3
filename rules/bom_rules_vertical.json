@@ -1,0 +1,57 @@
+{
+  "version": "PLACEHOLDER-1.0",
+  "envelope_class": "VERTICAL",
+  "rules": [
+    {
+      "rule_id": "V-PANEL-AREA-001",
+      "description": "Panel: cantidad = area_m2",
+      "triggers": { "panel_family": "ISOWALL" },
+      "items": [
+        {
+          "sku_id": "PLACEHOLDER_PANEL_ISOWALL_50",
+          "qty_formula": "area_m2",
+          "unit": "m2",
+          "rounding": { "mode": "ceil", "decimals": 2 }
+        }
+      ]
+    },
+    {
+      "rule_id": "V-ACCESSORIES-BASIC-001",
+      "description": "Accesorios base VERTICAL (placeholder, ajustar factores)",
+      "triggers": { "panel_family": "ISOWALL" },
+      "items": [
+        {
+          "sku_id": "PLACEHOLDER_PROFILE_U_50",
+          "qty_formula": "perimeter_m",
+          "unit": "ml",
+          "rounding": { "mode": "ceil", "decimals": 2 }
+        },
+        {
+          "sku_id": "PLACEHOLDER_CORNER_IN_50",
+          "qty_formula": "corner_in_m",
+          "unit": "ml",
+          "rounding": { "mode": "ceil", "decimals": 2 }
+        },
+        {
+          "sku_id": "PLACEHOLDER_CORNER_OUT_50",
+          "qty_formula": "corner_out_m",
+          "unit": "ml",
+          "rounding": { "mode": "ceil", "decimals": 2 }
+        },
+        {
+          "sku_id": "PLACEHOLDER_FASTENER_PANEL",
+          "qty_formula": "area_m2 * fasteners_per_m2",
+          "unit": "u",
+          "rounding": { "mode": "ceil", "decimals": 0 }
+        },
+        {
+          "sku_id": "PLACEHOLDER_SEALANT_NEUTRAL",
+          "qty_formula": "sealant_units",
+          "unit": "u",
+          "rounding": { "mode": "ceil", "decimals": 0 }
+        }
+      ],
+      "required_inputs": ["area_m2", "perimeter_m", "corner_in_m", "corner_out_m", "fasteners_per_m2", "sealant_units"]
+    }
+  ]
+}

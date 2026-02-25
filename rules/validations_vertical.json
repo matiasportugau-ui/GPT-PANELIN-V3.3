@@ -1,0 +1,12 @@
+{
+  "version": "PLACEHOLDER-1.0",
+  "validations": [
+    {
+      "id": "V-UNITS-001",
+      "description": "Unidades positivas y área > 0",
+      "checks": [
+        { "field": "area_m2", "op": ">", "value": 0 }
+      ]
+    }
+  ]
+}

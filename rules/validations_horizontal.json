@@ -1,0 +1,21 @@
+{
+  "version": "PLACEHOLDER-1.0",
+  "validations": [
+    {
+      "id": "H-P0-SPAN-001",
+      "description": "P0: exigir span_m para techo",
+      "p0_hard_stop": true,
+      "when": { "envelope_class": "HORIZONTAL" },
+      "required_fields": ["span_m"],
+      "hard_stop_message": "Falta dato crítico: luz (span_m)"
+    },
+    {
+      "id": "H-P0-AUTOP-001",
+      "description": "P0: exigir registro de autoportancia aplicable",
+      "p0_hard_stop": true,
+      "when": { "envelope_class": "HORIZONTAL" },
+      "requires_autoportancia_match": true,
+      "hard_stop_message": "Falta información de autoportancia para este caso. No se emite cotización formal sin verificación"
+    }
+  ]
+}
