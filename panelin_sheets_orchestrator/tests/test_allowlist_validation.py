@@ -1,11 +1,11 @@
-"""Tests for allowlist validation logic."""
+"""Tests for allowlist validation and path traversal protection."""
 
 from __future__ import annotations
 
 import pytest
 from fastapi import HTTPException
 
-from panelin_sheets_orchestrator.service import validate_write_ranges
+from panelin_sheets_orchestrator.service import validate_write_ranges, load_template
 
 
 class TestValidateWriteRanges:
@@ -40,3 +40,25 @@ class TestValidateWriteRanges:
         writes = [{"values": [["v"]]}]
         with pytest.raises(HTTPException):
             validate_write_ranges(writes, ["Sheet1!A1"])
+
+
+class TestPathTraversal:
+    def test_path_traversal_dotdot(self):
+        with pytest.raises(HTTPException) as exc_info:
+            load_template("../../etc/passwd")
+        assert exc_info.value.status_code == 400
+        assert "inválido" in exc_info.value.detail.lower()
+
+    def test_path_traversal_slash(self):
+        with pytest.raises(HTTPException) as exc_info:
+            load_template("foo/bar")
+        assert exc_info.value.status_code == 400
+
+    def test_path_traversal_backslash(self):
+        with pytest.raises(HTTPException) as exc_info:
+            load_template("foo\\bar")
+        assert exc_info.value.status_code == 400
+
+    def test_valid_template_id(self):
+        t = load_template("cotizacion_isodec_eps_v1")
+        assert t["template_id"] == "cotizacion_isodec_eps_v1"

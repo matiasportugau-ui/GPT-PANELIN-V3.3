@@ -48,3 +48,34 @@ class TestSnapshotCache:
         cache.put("key1", {"v": 1})
         cache.put("key1", {"v": 2})
         assert cache.get("key1") == {"v": 2}
+
+    def test_max_entries_eviction(self):
+        """Cache should evict oldest entry when max_entries is reached."""
+        cache = SnapshotCache(ttl_seconds=60, max_entries=3)
+        cache.put("a", {"v": 1})
+        time.sleep(0.001)
+        cache.put("b", {"v": 2})
+        time.sleep(0.001)
+        cache.put("c", {"v": 3})
+        assert len(cache) == 3
+
+        cache.put("d", {"v": 4})
+        assert len(cache) == 3
+        assert cache.get("a") is None
+        assert cache.get("d") == {"v": 4}
+
+    def test_max_entries_no_eviction_on_update(self):
+        """Updating existing key should not trigger eviction."""
+        cache = SnapshotCache(ttl_seconds=60, max_entries=2)
+        cache.put("a", {"v": 1})
+        cache.put("b", {"v": 2})
+        cache.put("a", {"v": 99})
+        assert len(cache) == 2
+        assert cache.get("a") == {"v": 99}
+        assert cache.get("b") == {"v": 2}
+
+    def test_len(self):
+        cache = SnapshotCache(ttl_seconds=60)
+        assert len(cache) == 0
+        cache.put("a", {"v": 1})
+        assert len(cache) == 1

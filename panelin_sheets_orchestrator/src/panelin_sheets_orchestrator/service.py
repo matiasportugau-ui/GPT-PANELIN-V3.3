@@ -24,6 +24,7 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Path
 from google.cloud import firestore
+from google.cloud.firestore_v1 import transactional as firestore_transactional
 
 from .audit import (
     audit_fill_request,
@@ -84,12 +85,15 @@ def require_api_key(
 # ---------------------------------------------------------------------------
 
 _sheets_client: Optional[SheetsClient] = None
+_sheets_client_settings_id: Optional[int] = None
 
 
 def get_sheets_client() -> SheetsClient:
-    global _sheets_client
-    if _sheets_client is None:
+    global _sheets_client, _sheets_client_settings_id
+    current_id = id(SETTINGS)
+    if _sheets_client is None or _sheets_client_settings_id != current_id:
         _sheets_client = SheetsClient(SETTINGS)
+        _sheets_client_settings_id = current_id
     return _sheets_client
 
 
@@ -154,14 +158,14 @@ class FirestoreIdempotencyStore(IdempotencyStore):
     def start(self, job_id: str, payload_hash: str) -> None:
         ref = self.col.document(job_id)
 
-        @self.client.transaction()
+        @firestore_transactional
         def txn_body(txn):
             snap = ref.get(transaction=txn)
             if snap.exists:
                 return
             txn.set(ref, {"status": "RUNNING", "payload_hash": payload_hash})
 
-        txn_body  # noqa: B018
+        txn_body(self.client.transaction())
 
     def done(self, job_id: str, result: Dict[str, Any]) -> None:
         self.col.document(job_id).set({"status": "DONE", **result}, merge=True)
@@ -190,12 +194,23 @@ IDEM_STORE: IdempotencyStore = _build_idempotency_store()
 
 
 def load_template(template_id: str) -> Dict[str, Any]:
-    path = os.path.join(SETTINGS.templates_dir, f"{template_id}.json")
-    if not os.path.exists(path):
+    safe_id = os.path.basename(template_id)
+    if safe_id != template_id or ".." in template_id or "/" in template_id or "\\" in template_id:
+        raise HTTPException(
+            status_code=400, detail="template_id inválido: caracteres no permitidos."
+        )
+    path = os.path.join(SETTINGS.templates_dir, f"{safe_id}.json")
+    resolved = os.path.realpath(path)
+    templates_root = os.path.realpath(SETTINGS.templates_dir)
+    if not resolved.startswith(templates_root):
+        raise HTTPException(
+            status_code=400, detail="template_id inválido: path traversal detectado."
+        )
+    if not os.path.exists(resolved):
         raise HTTPException(
             status_code=400, detail=f"Template no encontrado: {template_id}"
         )
-    with open(path, "r", encoding="utf-8") as f:
+    with open(resolved, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -344,9 +359,7 @@ def fill(
             )
 
         validation_info = None
-        if value_validation.warnings or (bom_data and not all(
-            k in bom_data for k in ("panels_needed",)
-        )):
+        if value_validation.warnings or bom_data:
             validation_info = {
                 "value_warnings": value_validation.warnings,
                 "bom": bom_data,
@@ -401,7 +414,10 @@ def fill(
     except Exception as e:
         IDEM_STORE.fail(req.job_id, str(e))
         logger.exception("fill failed for job %s", req.job_id)
-        raise HTTPException(status_code=500, detail=f"fill_failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"fill_failed: error interno procesando job {req.job_id}",
+        )
 
 
 # ── POST /v1/queue/process ─────────────────────────────────────────────

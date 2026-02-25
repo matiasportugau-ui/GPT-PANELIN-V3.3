@@ -27,6 +27,17 @@ from .models import WritePlan
 
 logger = logging.getLogger("panelin.sheets.planner")
 
+_openai_client: Optional[OpenAI] = None
+_openai_client_key: Optional[str] = None
+
+
+def _get_openai_client(api_key: str) -> OpenAI:
+    global _openai_client, _openai_client_key
+    if _openai_client is None or _openai_client_key != api_key:
+        _openai_client = OpenAI(api_key=api_key)
+        _openai_client_key = api_key
+    return _openai_client
+
 
 WRITEPLAN_SCHEMA: Dict[str, Any] = {
     "type": "object",
@@ -153,7 +164,7 @@ def build_write_plan(
             "OPENAI_API_KEY no configurado (usar Secret Manager en Cloud Run)."
         )
 
-    client = OpenAI(api_key=settings.openai_api_key)
+    client = _get_openai_client(settings.openai_api_key)
 
     template_context = {
         "template_id": mapping.get("template_id"),

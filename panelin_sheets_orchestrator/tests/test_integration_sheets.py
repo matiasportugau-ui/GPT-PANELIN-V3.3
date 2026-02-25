@@ -24,6 +24,17 @@ def _fresh_idempotency():
     svc.IDEM_STORE = original
 
 
+@pytest.fixture(autouse=True)
+def _reset_openai_cache():
+    """Reset the cached OpenAI client between tests."""
+    import panelin_sheets_orchestrator.openai_planner as planner
+    planner._openai_client = None
+    planner._openai_client_key = None
+    yield
+    planner._openai_client = None
+    planner._openai_client_key = None
+
+
 @pytest.fixture()
 def client():
     return TestClient(app)
@@ -46,20 +57,23 @@ MOCK_WRITE_PLAN_JSON = json.dumps({
 })
 
 
+def _mock_openai_response(plan_json: str) -> MagicMock:
+    mock_resp = MagicMock()
+    mock_resp.output_text = plan_json
+    mock_resp.usage = None
+    mock_client = MagicMock()
+    mock_client.responses.create.return_value = mock_resp
+    return mock_client
+
+
 class TestFillDryRun:
     @patch("panelin_sheets_orchestrator.service.get_sheets_client")
-    @patch("panelin_sheets_orchestrator.openai_planner.OpenAI")
-    def test_dry_run_returns_plan(self, mock_openai_cls, mock_get_sheets, client):
+    @patch("panelin_sheets_orchestrator.openai_planner._get_openai_client")
+    def test_dry_run_returns_plan(self, mock_get_oai, mock_get_sheets, client):
         mock_sheets = MagicMock()
         mock_sheets.batch_get.return_value = {"valueRanges": []}
         mock_get_sheets.return_value = mock_sheets
-
-        mock_resp = MagicMock()
-        mock_resp.output_text = MOCK_WRITE_PLAN_JSON
-        mock_resp.usage = None
-        mock_client = MagicMock()
-        mock_client.responses.create.return_value = mock_resp
-        mock_openai_cls.return_value = mock_client
+        mock_get_oai.return_value = _mock_openai_response(MOCK_WRITE_PLAN_JSON)
 
         with patch.dict(
             "os.environ",
@@ -90,19 +104,13 @@ class TestFillDryRun:
 
 class TestFillApply:
     @patch("panelin_sheets_orchestrator.service.get_sheets_client")
-    @patch("panelin_sheets_orchestrator.openai_planner.OpenAI")
-    def test_apply_writes_to_sheet(self, mock_openai_cls, mock_get_sheets, client):
+    @patch("panelin_sheets_orchestrator.openai_planner._get_openai_client")
+    def test_apply_writes_to_sheet(self, mock_get_oai, mock_get_sheets, client):
         mock_sheets = MagicMock()
         mock_sheets.batch_get.return_value = {"valueRanges": []}
         mock_sheets.batch_update.return_value = {"totalUpdatedCells": 2}
         mock_get_sheets.return_value = mock_sheets
-
-        mock_resp = MagicMock()
-        mock_resp.output_text = MOCK_WRITE_PLAN_JSON
-        mock_resp.usage = None
-        mock_client = MagicMock()
-        mock_client.responses.create.return_value = mock_resp
-        mock_openai_cls.return_value = mock_client
+        mock_get_oai.return_value = _mock_openai_response(MOCK_WRITE_PLAN_JSON)
 
         with patch.dict(
             "os.environ",
@@ -133,19 +141,14 @@ class TestFillApply:
 
 class TestFillWithBOM:
     @patch("panelin_sheets_orchestrator.service.get_sheets_client")
-    @patch("panelin_sheets_orchestrator.openai_planner.OpenAI")
-    def test_fill_with_bom_data(self, mock_openai_cls, mock_get_sheets, client):
+    @patch("panelin_sheets_orchestrator.openai_planner._get_openai_client")
+    def test_fill_with_bom_data(self, mock_get_oai, mock_get_sheets, client):
         """When payload includes product_family/thickness/length/width, BOM is precomputed."""
         mock_sheets = MagicMock()
         mock_sheets.batch_get.return_value = {"valueRanges": []}
         mock_get_sheets.return_value = mock_sheets
-
-        mock_resp = MagicMock()
-        mock_resp.output_text = MOCK_WRITE_PLAN_JSON
-        mock_resp.usage = None
-        mock_client = MagicMock()
-        mock_client.responses.create.return_value = mock_resp
-        mock_openai_cls.return_value = mock_client
+        mock_oai_client = _mock_openai_response(MOCK_WRITE_PLAN_JSON)
+        mock_get_oai.return_value = mock_oai_client
 
         with patch.dict(
             "os.environ",
@@ -164,7 +167,7 @@ class TestFillWithBOM:
                         "cliente": "BOM Test",
                         "product_family": "ISODEC_EPS",
                         "thickness_mm": 100,
-                        "length_m": 5.0,
+                        "length_m": 4.0,
                         "width_m": 10.0,
                         "usage": "techo",
                         "structure": "metal",
@@ -175,15 +178,15 @@ class TestFillWithBOM:
             )
 
         assert resp.status_code == 200
-        call_args = mock_client.responses.create.call_args
+        call_args = mock_oai_client.responses.create.call_args
         user_content = json.loads(call_args.kwargs["input"][1]["content"])
         assert "bom_precomputed" in user_content
 
 
 class TestFillRejectsFormulas:
     @patch("panelin_sheets_orchestrator.service.get_sheets_client")
-    @patch("panelin_sheets_orchestrator.openai_planner.OpenAI")
-    def test_formula_in_plan_rejected(self, mock_openai_cls, mock_get_sheets, client):
+    @patch("panelin_sheets_orchestrator.openai_planner._get_openai_client")
+    def test_formula_in_plan_rejected(self, mock_get_oai, mock_get_sheets, client):
         mock_sheets = MagicMock()
         mock_sheets.batch_get.return_value = {"valueRanges": []}
         mock_get_sheets.return_value = mock_sheets
@@ -197,12 +200,7 @@ class TestFillRejectsFormulas:
             "computed": {"panels_needed": "0", "supports": "0", "area_m2": "0", "fixing_points": "0"},
             "notes": "",
         })
-        mock_resp = MagicMock()
-        mock_resp.output_text = bad_plan
-        mock_resp.usage = None
-        mock_client = MagicMock()
-        mock_client.responses.create.return_value = mock_resp
-        mock_openai_cls.return_value = mock_client
+        mock_get_oai.return_value = _mock_openai_response(bad_plan)
 
         with patch.dict(
             "os.environ",
@@ -229,19 +227,13 @@ class TestFillRejectsFormulas:
 
 class TestIdempotency:
     @patch("panelin_sheets_orchestrator.service.get_sheets_client")
-    @patch("panelin_sheets_orchestrator.openai_planner.OpenAI")
-    def test_duplicate_job_returns_cached(self, mock_openai_cls, mock_get_sheets, client):
+    @patch("panelin_sheets_orchestrator.openai_planner._get_openai_client")
+    def test_duplicate_job_returns_cached(self, mock_get_oai, mock_get_sheets, client):
         mock_sheets = MagicMock()
         mock_sheets.batch_get.return_value = {"valueRanges": []}
         mock_sheets.batch_update.return_value = {"totalUpdatedCells": 1}
         mock_get_sheets.return_value = mock_sheets
-
-        mock_resp = MagicMock()
-        mock_resp.output_text = MOCK_WRITE_PLAN_JSON
-        mock_resp.usage = None
-        mock_client = MagicMock()
-        mock_client.responses.create.return_value = mock_resp
-        mock_openai_cls.return_value = mock_client
+        mock_get_oai.return_value = _mock_openai_response(MOCK_WRITE_PLAN_JSON)
 
         with patch.dict(
             "os.environ",
@@ -269,19 +261,13 @@ class TestIdempotency:
             assert "Idempotencia" in resp2.json()["notes"]
 
     @patch("panelin_sheets_orchestrator.service.get_sheets_client")
-    @patch("panelin_sheets_orchestrator.openai_planner.OpenAI")
-    def test_job_status_after_fill(self, mock_openai_cls, mock_get_sheets, client):
+    @patch("panelin_sheets_orchestrator.openai_planner._get_openai_client")
+    def test_job_status_after_fill(self, mock_get_oai, mock_get_sheets, client):
         mock_sheets = MagicMock()
         mock_sheets.batch_get.return_value = {"valueRanges": []}
         mock_sheets.batch_update.return_value = {"totalUpdatedCells": 2}
         mock_get_sheets.return_value = mock_sheets
-
-        mock_resp = MagicMock()
-        mock_resp.output_text = MOCK_WRITE_PLAN_JSON
-        mock_resp.usage = None
-        mock_client = MagicMock()
-        mock_client.responses.create.return_value = mock_resp
-        mock_openai_cls.return_value = mock_client
+        mock_get_oai.return_value = _mock_openai_response(MOCK_WRITE_PLAN_JSON)
 
         with patch.dict(
             "os.environ",

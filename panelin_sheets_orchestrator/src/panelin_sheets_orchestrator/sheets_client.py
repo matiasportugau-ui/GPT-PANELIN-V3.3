@@ -4,8 +4,9 @@ Google Sheets API client with caching, retries, and structured audit logging.
 Features:
 - ADC (Application Default Credentials) on Cloud Run
 - Fallback to base64-encoded service account JSON for local/airgap
-- Exponential backoff on 429/5xx via tenacity
-- In-memory snapshot cache with configurable TTL
+- Exponential backoff ONLY on retryable errors (429/5xx) via tenacity
+- In-memory snapshot cache with configurable TTL and max size
+- Cached credentials and API service object
 - Batch operations (batchGet / batchUpdate)
 - Audit logging for every API call
 """
@@ -15,6 +16,7 @@ from __future__ import annotations
 import base64
 import json
 import logging
+import threading
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -24,7 +26,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from tenacity import (
     retry,
-    retry_if_exception_type,
+    retry_if_exception,
     stop_after_attempt,
     wait_exponential,
 )
@@ -34,8 +36,11 @@ from .config import Settings
 
 logger = logging.getLogger("panelin.sheets.client")
 
+_DEFAULT_MAX_CACHE_ENTRIES = 256
 
-def _is_retryable(exc: BaseException) -> bool:
+
+def _is_retryable_http_error(exc: BaseException) -> bool:
+    """Only retry on rate-limit (429) or server errors (5xx)."""
     if not isinstance(exc, HttpError):
         return False
     status = getattr(getattr(exc, "resp", None), "status", None)
@@ -43,62 +48,92 @@ def _is_retryable(exc: BaseException) -> bool:
 
 
 class SnapshotCache:
-    """Simple TTL cache for sheet snapshots to avoid redundant reads."""
+    """TTL cache for sheet snapshots with max size eviction (LRU-style)."""
 
-    def __init__(self, ttl_seconds: int = 300) -> None:
+    def __init__(self, ttl_seconds: int = 300, max_entries: int = _DEFAULT_MAX_CACHE_ENTRIES) -> None:
         self._ttl = ttl_seconds
+        self._max_entries = max_entries
         self._store: Dict[str, Tuple[float, Dict[str, Any]]] = {}
+        self._lock = threading.Lock()
 
     def get(self, key: str) -> Optional[Dict[str, Any]]:
-        entry = self._store.get(key)
-        if entry is None:
-            return None
-        ts, data = entry
-        if time.monotonic() - ts > self._ttl:
-            del self._store[key]
-            return None
-        return data
+        with self._lock:
+            entry = self._store.get(key)
+            if entry is None:
+                return None
+            ts, data = entry
+            if time.monotonic() - ts > self._ttl:
+                del self._store[key]
+                return None
+            return data
 
     def put(self, key: str, data: Dict[str, Any]) -> None:
-        self._store[key] = (time.monotonic(), data)
+        with self._lock:
+            if len(self._store) >= self._max_entries and key not in self._store:
+                oldest_key = min(self._store, key=lambda k: self._store[k][0])
+                del self._store[oldest_key]
+            self._store[key] = (time.monotonic(), data)
 
     def invalidate(self, spreadsheet_id: str) -> None:
-        keys_to_remove = [k for k in self._store if k.startswith(spreadsheet_id)]
-        for k in keys_to_remove:
-            del self._store[k]
+        with self._lock:
+            keys_to_remove = [k for k in self._store if k.startswith(spreadsheet_id)]
+            for k in keys_to_remove:
+                del self._store[k]
 
     def clear(self) -> None:
-        self._store.clear()
+        with self._lock:
+            self._store.clear()
+
+    def __len__(self) -> int:
+        return len(self._store)
 
 
 class SheetsClient:
-    """High-level Google Sheets API client."""
+    """High-level Google Sheets API client with cached credentials."""
 
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
-        self._cache = SnapshotCache(ttl_seconds=settings.sheets_cache_ttl_seconds)
-        self._max_retries = settings.sheets_max_retries
+        self._cache = SnapshotCache(
+            ttl_seconds=settings.sheets_cache_ttl_seconds,
+            max_entries=_DEFAULT_MAX_CACHE_ENTRIES,
+        )
+        self._lock = threading.Lock()
+        self._service = None
+        self._creds = None
 
     def _get_credentials(self):
+        if self._creds is not None and not getattr(self._creds, "expired", True):
+            return self._creds
+
         from .config import _env
 
         b64 = _env("GOOGLE_SA_JSON_B64")
         if b64:
             info = json.loads(base64.b64decode(b64).decode("utf-8"))
-            return service_account.Credentials.from_service_account_info(
+            self._creds = service_account.Credentials.from_service_account_info(
                 info, scopes=self._settings.sheets_scopes
             )
-        creds, _ = google.auth.default(scopes=self._settings.sheets_scopes)
-        return creds
+        else:
+            self._creds, _ = google.auth.default(scopes=self._settings.sheets_scopes)
+        return self._creds
 
-    def _build_service(self):
-        creds = self._get_credentials()
-        return build("sheets", "v4", credentials=creds, cache_discovery=False)
+    def _get_service(self):
+        with self._lock:
+            if self._service is None:
+                creds = self._get_credentials()
+                self._service = build("sheets", "v4", credentials=creds, cache_discovery=False)
+            return self._service
+
+    def _reset_service(self) -> None:
+        """Reset the cached service (e.g., after credential refresh)."""
+        with self._lock:
+            self._service = None
+            self._creds = None
 
     @retry(
         stop=stop_after_attempt(5),
         wait=wait_exponential(multiplier=1, min=1, max=20),
-        retry=retry_if_exception_type(HttpError),
+        retry=retry_if_exception(_is_retryable_http_error),
         reraise=True,
     )
     def batch_get(
@@ -117,7 +152,7 @@ class SheetsClient:
                 return cached
 
         t0 = time.monotonic()
-        svc = self._build_service()
+        svc = self._get_service()
         result = (
             svc.spreadsheets()
             .values()
@@ -140,7 +175,7 @@ class SheetsClient:
     @retry(
         stop=stop_after_attempt(5),
         wait=wait_exponential(multiplier=1, min=1, max=20),
-        retry=retry_if_exception_type(HttpError),
+        retry=retry_if_exception(_is_retryable_http_error),
         reraise=True,
     )
     def batch_update(
@@ -152,7 +187,7 @@ class SheetsClient:
         value_input_option: str = "USER_ENTERED",
     ) -> Dict[str, Any]:
         t0 = time.monotonic()
-        svc = self._build_service()
+        svc = self._get_service()
         body = {
             "valueInputOption": value_input_option,
             "data": data,
@@ -201,7 +236,7 @@ class SheetsClient:
     ) -> Dict[str, Any]:
         """Fetch spreadsheet metadata (title, sheets list, locale)."""
         t0 = time.monotonic()
-        svc = self._build_service()
+        svc = self._get_service()
         result = (
             svc.spreadsheets()
             .get(

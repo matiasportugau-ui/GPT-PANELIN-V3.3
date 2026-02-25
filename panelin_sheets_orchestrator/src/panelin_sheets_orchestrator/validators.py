@@ -254,7 +254,7 @@ def validate_write_plan_values(
 ) -> ValidationResult:
     """
     Validate the values in a write plan against template hint metadata.
-    Checks dates, numeric ranges, and text length.
+    Checks ALL cells for formulas (not just the first), validates dates, etc.
     """
     result = ValidationResult(valid=True)
     cell_hints = template_hints.get("cells", {})
@@ -265,22 +265,25 @@ def validate_write_plan_values(
         values = w.get("values", [[]])
         hint_name = hint_map.get(range_str)
 
-        if not values or not values[0]:
+        if not values:
             continue
 
-        first_val = str(values[0][0]) if values[0] else ""
+        for row_idx, row in enumerate(values):
+            for col_idx, cell in enumerate(row):
+                cell_str = str(cell) if cell is not None else ""
 
+                if cell_str.startswith("="):
+                    result.add_error(
+                        f"Rango {range_str}[{row_idx},{col_idx}]: valor contiene "
+                        f"fórmula ('{cell_str[:30]}...'). Solo se permiten valores planos."
+                    )
+
+        first_val = str(values[0][0]) if values[0] else ""
         if hint_name and "fecha" in hint_name.lower():
             if not any(re.match(pat, first_val) for pat in DATE_PATTERNS):
                 result.add_warning(
                     f"Valor en {range_str} ('{first_val}') no parece una fecha válida."
                 )
-
-        if first_val.startswith("="):
-            result.add_error(
-                f"Rango {range_str}: valor contiene fórmula ('{first_val[:30]}...'). "
-                f"Solo se permiten valores planos."
-            )
 
     return result
 

@@ -201,8 +201,27 @@ class TestWritePlanValues:
         assert not result.valid
         assert "fórmula" in result.errors[0].lower()
 
+    def test_formula_in_non_first_cell_rejected(self):
+        """Formulas in any cell position must be caught, not just [0][0]."""
+        writes = [{"range": "A1:C2", "values": [
+            ["ok", "fine", "=SUM(X1:X9)"],
+            ["also ok", "=VLOOKUP()", "safe"],
+        ]}]
+        result = validate_write_plan_values(writes, {})
+        assert not result.valid
+        assert len(result.errors) == 2
+
     def test_valid_values(self):
         writes = [{"range": "A1", "values": [["hello"]]}]
+        result = validate_write_plan_values(writes, {})
+        assert result.valid
+
+    def test_multi_row_valid(self):
+        writes = [{"range": "A1:B3", "values": [
+            ["a", "b"],
+            ["c", "d"],
+            ["e", "f"],
+        ]}]
         result = validate_write_plan_values(writes, {})
         assert result.valid
 
