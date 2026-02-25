@@ -14,17 +14,17 @@ from whatsapp_bot.inmoenter_sync import (
     transform_properties_to_documents,
 )
 
-XCP_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
+XCP_XML = """<?xml version="1.0" encoding="UTF-8"?>
 <root>
   <inmueble>
     <id>INM-001</id>
-    <titulo>Ático en Marbella</titulo>
-    <descripcion>Luminoso ático con vistas al mar</descripcion>
+    <titulo>Atico en Marbella</titulo>
+    <descripcion>Luminoso atico con vistas al mar</descripcion>
     <precio>285000</precio>
     <moneda>EUR</moneda>
     <localidad>Marbella</localidad>
-    <provincia>Málaga</provincia>
-    <tipo>Ático</tipo>
+    <provincia>Malaga</provincia>
+    <tipo>Atico</tipo>
     <operacion>Venta</operacion>
     <habitaciones>2</habitaciones>
     <banos>2</banos>
@@ -41,9 +41,9 @@ XCP_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
     <banos>1</banos>
     <superficie>80</superficie>
   </inmueble>
-</root>"""
+</root>""".encode("utf-8")
 
-KML3_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
+KML3_XML = """<?xml version="1.0" encoding="UTF-8"?>
 <kyero>
   <property>
     <id>KYR-002</id>
@@ -52,14 +52,14 @@ KML3_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
     <price>450000</price>
     <currency>EUR</currency>
     <town>Estepona</town>
-    <province>Málaga</province>
+    <province>Malaga</province>
     <type>Villa</type>
     <beds>4</beds>
     <baths>3</baths>
     <surface_area>250</surface_area>
     <energy_rating>C</energy_rating>
   </property>
-</kyero>"""
+</kyero>""".encode("utf-8")
 
 
 class TestParseXCP:
@@ -75,7 +75,7 @@ class TestParseXCP:
         props = _parse_xcp(root)
         p = props[0]
         assert p.id == "INM-001"
-        assert p.title == "Ático en Marbella"
+        assert p.title == "Atico en Marbella"
         assert p.price == "285000"
         assert p.currency == "EUR"
         assert p.bedrooms == 2
