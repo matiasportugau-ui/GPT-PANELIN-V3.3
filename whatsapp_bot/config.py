@@ -1,5 +1,6 @@
 """Centralized configuration for the WhatsApp Bot service.
 
+BMC Uruguay — Panelin technical sales assistant for construction panel systems.
 All values are loaded from environment variables at startup.
 The Settings dataclass is frozen (immutable) to prevent accidental mutation.
 Uses _safe_int() for integer env vars to prevent startup crashes on invalid values.
@@ -12,28 +13,34 @@ from dataclasses import dataclass
 logger = logging.getLogger(__name__)
 
 DEFAULT_SYSTEM_PROMPT = (
-    "Eres un asistente inmobiliario profesional. Respondes consultas sobre propiedades "
-    "disponibles usando exclusivamente la información del catálogo indexado.\n"
+    "Eres Panelin, el asistente técnico comercial de BMC Uruguay, especializado en "
+    "sistemas de paneles aislantes para construcción (ISODEC, ISOPANEL, ISOROOF, ISOWALL, ISOFRIG).\n"
+    "Respondes consultas sobre productos, precios, cotizaciones y especificaciones técnicas "
+    "usando exclusivamente la información de la base de conocimiento indexada.\n"
     "Reglas:\n"
     "1. Sé conciso: máximo 150 palabras por respuesta.\n"
-    "2. Si no encuentras propiedades que coincidan, dilo claramente.\n"
-    "3. Si el cliente pide documentación o un dossier, incluye el token [SEND_PDF] al inicio.\n"
-    "4. Nunca inventes propiedades que no estén en el catálogo.\n"
+    "2. Incluye siempre: producto, espesor, precio por m² (USD + IVA 22%).\n"
+    "3. Si el cliente pide una cotización formal o PDF, incluye el token [SEND_PDF] al inicio.\n"
+    "4. Nunca inventes productos o precios que no estén en el catálogo.\n"
     "5. Responde en el idioma del cliente.\n"
-    "6. Incluye siempre: precio, ubicación y características principales.\n"
-    "7. Si el cliente quiere hablar con un humano, respóndele que lo transferirás."
+    "6. Para cotizaciones completas, necesitas: tipo de panel, dimensiones (largo × ancho), "
+    "tipo de instalación (techo/pared/cámara frigorífica) y cantidad.\n"
+    "7. Si el cliente quiere hablar con un vendedor, respóndele que lo transferirás.\n"
+    "8. BMC Uruguay comercializa y asesora, NO fabrica los productos.\n"
+    "9. Valida siempre la autoportancia del panel según las luces del proyecto."
 )
 
 ESCALATION_KEYWORDS = [
     "hablar con humano",
     "hablar con una persona",
-    "agente",
+    "vendedor",
     "asesor",
     "queja",
     "persona real",
     "operador",
     "no me sirve",
     "quiero reclamar",
+    "hablar con alguien",
 ]
 
 
@@ -74,9 +81,13 @@ class Settings:
     # --- Firestore ---
     timeout_hours: int = 24
 
-    # --- Inmoenter / PANELIN-API ---
-    inmoenter_api_key: str = ""
-    inmoenter_feed_url: str = ""
+    # --- Wolf API (Panelin backend) ---
+    wolf_api_key: str = ""
+    wolf_api_url: str = "https://panelin-api-642127786762.us-central1.run.app"
+
+    # --- Knowledge Base paths (for vector store sync) ---
+    kb_pricing_path: str = "bromyros_pricing_master.json"
+    kb_base_path: str = "BMC_Base_Conocimiento_GPT-2.json"
 
     # --- Internal ---
     sync_api_key: str = ""
@@ -102,8 +113,17 @@ def load_settings() -> Settings:
         max_search_results=_safe_int("MAX_SEARCH_RESULTS", 3),
         system_prompt=os.environ.get("SYSTEM_PROMPT", DEFAULT_SYSTEM_PROMPT),
         timeout_hours=_safe_int("TIMEOUT_HOURS", 24),
-        inmoenter_api_key=os.environ.get("INMOENTER_API_KEY", ""),
-        inmoenter_feed_url=os.environ.get("INMOENTER_FEED_URL", ""),
+        wolf_api_key=os.environ.get("WOLF_API_KEY", ""),
+        wolf_api_url=os.environ.get(
+            "WOLF_API_URL",
+            "https://panelin-api-642127786762.us-central1.run.app",
+        ),
+        kb_pricing_path=os.environ.get(
+            "KB_PRICING_PATH", "bromyros_pricing_master.json"
+        ),
+        kb_base_path=os.environ.get(
+            "KB_BASE_PATH", "BMC_Base_Conocimiento_GPT-2.json"
+        ),
         sync_api_key=os.environ.get("SYNC_API_KEY", ""),
         log_level=os.environ.get("LOG_LEVEL", "INFO"),
     )
