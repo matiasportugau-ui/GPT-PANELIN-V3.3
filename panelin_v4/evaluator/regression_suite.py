@@ -204,8 +204,8 @@ EXPERT_TEST_CASES: list[TestCase] = [
     # ── BOM tests ──
     TestCase(
         id="B01", category="bom",
-        description="Complete roof BOM - ISODEC EPS 100mm 5x11m",
-        input_text="Isodec EPS 100 mm / techo 5 m largo x 11 m ancho / completo a metal",
+        description="Complete roof BOM - ISODEC EPS 100mm 11x5m",
+        input_text="Isodec EPS 100 mm / techo 11 m ancho x 5 m largo / completo a metal",
         assertions=[
             assert_familia("ISODEC"),
             assert_has_bom_items(),
