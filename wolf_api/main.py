@@ -5,7 +5,7 @@ v3.0.0 — 2026-02-26
 
 import logging
 import os
-import json
+import jso
 import hmac
 import hashlib
 from datetime import datetime, timezone
@@ -103,7 +103,7 @@ async def health_check():
 async def ready_check():
     return {
         "status": "ready",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "gcs_configured": bool(KB_GCS_BUCKET),
         "sheets_configured": bool(os.environ.get("SHEETS_SPREADSHEET_ID", "")),
     }
@@ -266,6 +266,7 @@ async def lookup_customer(search: str = Query(..., min_length=2), _=Security(req
 SHEETS_ID = os.environ.get("SHEETS_SPREADSHEET_ID", "")
 SHEETS_TAB_2026 = os.environ.get("SHEETS_TAB_2026", "Administrador de Cotizaciones 2026")
 SHEETS_TAB_2025 = os.environ.get("SHEETS_TAB_2025", "2.0 -  Administrador de Cotizaciones")
+SHEETS_TAB_ADMIN = os.environ.get("SHEETS_TAB_ADMIN", "Admin.")
 _gc = None
 _spreadsheet = None
 
@@ -293,6 +294,19 @@ def _get_worksheet(tab=None):
         return ss.worksheet(tab_name)
     except Exception:
         raise HTTPException(404, f"Tab '{tab_name}' not found")
+
+
+def _get_admin_worksheet():
+    """Get the Admin tab for write operations (new consultations, quotation lines)."""
+    ss = _get_spreadsheet()
+    tab_name = SHEETS_TAB_ADMIN.strip()
+    try:
+        return ss.worksheet(tab_name)
+    except Exception:
+        # Fallback to default tab if Admin not found
+        logger.warning(f"Admin tab '{tab_name}' not found, falling back to default")
+        return _get_worksheet()
+
 
 def _row_to_dict(row, row_number):
     return {
@@ -353,7 +367,7 @@ async def read_consultations(
 
 @app.post("/sheets/consultations")
 async def add_consultation(data: dict, _=Security(require_api_key)):
-    ws = await run_in_threadpool(_get_worksheet)
+    ws = await run_in_threadpool(_get_admin_worksheet)
     fecha = data.get("fecha") or datetime.now(timezone.utc).strftime("%d-%m")
     new_row = [
         data.get("asignado", ""), "Pendiente", fecha,
@@ -369,7 +383,7 @@ async def add_consultation(data: dict, _=Security(require_api_key)):
 
 @app.post("/sheets/quotation_line")
 async def add_quotation_line(data: dict, _=Security(require_api_key)):
-    ws = await run_in_threadpool(_get_worksheet)
+    ws = await run_in_threadpool(_get_admin_worksheet)
     fecha = datetime.now(timezone.utc).strftime("%d-%m")
     row_num = data.get("row_number")
     if row_num:
