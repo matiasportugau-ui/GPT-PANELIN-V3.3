@@ -5,7 +5,7 @@ v3.0.0 — 2026-02-26
 
 import logging
 import os
-import jso
+import json
 import hmac
 import hashlib
 from datetime import datetime, timezone
