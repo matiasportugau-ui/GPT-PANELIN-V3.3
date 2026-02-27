@@ -480,3 +480,36 @@ async def get_sheet_stats(tab: Optional[str] = None, _=Security(require_api_key)
         if a:
             stats["by_asignado"][a] = stats["by_asignado"].get(a, 0) + 1
     return stats
+
+
+# ─── Multi-Sheet Inspector (Admin-Hub) ────────────────────────────────
+@app.get("/sheets/inspect", tags=["admin-hub"])
+async def inspect_sheet(
+    sheet_id: str = Query(..., description="Google Sheets ID to inspect"),
+    _=Security(require_api_key)
+):
+    """Inspect any Google Sheet shared with the service account."""
+    try:
+        _get_spreadsheet()
+        target = await run_in_threadpool(_gc.open_by_key, sheet_id)
+        worksheets = await run_in_threadpool(lambda: target.worksheets())
+        result = {
+            "sheet_id": sheet_id,
+            "title": target.title,
+            "url": f"https://docs.google.com/spreadsheets/d/{sheet_id}",
+            "tab_count": len(worksheets),
+            "tabs": []
+        }
+        for ws in worksheets:
+            tab = {"name": ws.title, "gid": ws.id, "rows_alloc": ws.row_count, "cols_alloc": ws.col_count}
+            try:
+                vals = await run_in_threadpool(ws.get_all_values)
+                tab["rows_used"] = len(vals)
+                tab["headers"] = vals[0] if vals else []
+                tab["sample"] = vals[1:6] if len(vals) > 1 else []
+            except Exception as e:
+                tab["error"] = str(e)
+                result["tabs"].append(tab)
+                return result
+            except Exception as e:
+                raise HTTPException(500, f"Cannot inspect sheet {sheet_id}: {e}")
