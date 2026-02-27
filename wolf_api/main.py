@@ -509,7 +509,7 @@ async def inspect_sheet(
                 tab["sample"] = vals[1:6] if len(vals) > 1 else []
             except Exception as e:
                 tab["error"] = str(e)
-                result["tabs"].append(tab)
-                return result
-            except Exception as e:
-                raise HTTPException(500, f"Cannot inspect sheet {sheet_id}: {e}")
+            result["tabs"].append(tab)
+        return result
+    except Exception as e:
+        raise HTTPException(500, f"Cannot inspect sheet {sheet_id}: {e}")
