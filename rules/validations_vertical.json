@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0-migrated",
+  "validations": [
+    {
+      "id": "V-DIMS-001",
+      "description": "Dimensiones positivas y área > 0",
+      "checks": [
+        { "field": "largo_m", "op": ">", "value": 0 },
+        { "field": "alto_m", "op": ">", "value": 0 },
+        { "field": "area_m2", "op": ">", "value": 0 }
+      ]
+    },
+    {
+      "id": "V-THICK-001",
+      "description": "Espesor debe estar en la lista de espesores válidos del sistema",
+      "checks": [
+        { "field": "espesor_mm", "op": "in", "value": "system.thicknesses" }
+      ]
+    },
+    {
+      "id": "V-FAMILY-001",
+      "description": "Familia de panel debe ser VERTICAL",
+      "checks": [
+        { "field": "panel_family", "op": "in", "value": ["ISOPANEL", "ISOWALL", "ISOFRIG"] }
+      ]
+    }
+  ]
+}

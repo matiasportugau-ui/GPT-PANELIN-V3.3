@@ -1,0 +1,103 @@
+{
+  "empresa": {
+    "nombre": "BMC Uruguay",
+    "email": "info@bmcuruguay.com.uy",
+    "web": "www.bmcuruguay.com.uy",
+    "telefono": "4222 4031",
+    "ciudad": "Maldonado, Uy.",
+    "logo_path": null,
+    "contacto_dudas": "092 663 245",
+    "banco_titular": "Metalog SAS",
+    "banco_rut": "120403430012",
+    "banco_cuenta": "110520638-00002",
+    "banco_tipo": "Caja de Ahorro - BROU."
+  },
+  "cotizacion": {
+    "numero": "COT-20250508-6394",
+    "fecha": "08/05/2025",
+    "titulo": "Isoroof 80 mm",
+    "validez_dias": 10,
+    "imagen_path": null
+  },
+  "cliente": {
+    "nombre": "Alejandra Balarini",
+    "direccion": "Arrayanes, frente a Mercedes, Soriano",
+    "telefono": "099 888 264"
+  },
+  "paneles": [
+    {
+      "nombre": "ISOROOF - Gris ó Terracota – 80mm",
+      "seccion": "Paneles Aislantes 3G",
+      "largo_m": 5.01,
+      "cantidad": 3,
+      "ancho_util_m": 1.00,
+      "precio_m2": 49.67,
+      "costo_m2": 44.98
+    },
+    {
+      "nombre": "ISOROOF - Gris ó Terracota – 80mm",
+      "seccion": "Paneles Aislantes 3G",
+      "largo_m": 4.50,
+      "cantidad": 20,
+      "ancho_util_m": 1.00,
+      "precio_m2": 49.67,
+      "costo_m2": 44.98
+    },
+    {
+      "nombre": "ISOROOF - Gris ó Terracota – 80mm",
+      "seccion": "Paneles Aislantes 3G",
+      "largo_m": 6.01,
+      "cantidad": 4,
+      "ancho_util_m": 1.00,
+      "precio_m2": 49.67,
+      "costo_m2": 44.98
+    },
+    {
+      "nombre": "ISOROOF - Gris ó Terracota – 80mm",
+      "seccion": "Paneles Aislantes 3G",
+      "largo_m": 3.50,
+      "cantidad": 1,
+      "ancho_util_m": 1.00,
+      "precio_m2": 49.67,
+      "costo_m2": 44.98
+    }
+  ],
+  "accesorios": [
+    { "nombre": "Gotero Frontal Simple 80 mm", "largo_m": 3.03, "cantidad": 6, "precio_ml": 6.60, "costo_ml": 5.50 },
+    { "nombre": "Gotero Lateral 80 mm", "largo_m": 3.00, "cantidad": 7, "precio_ml": 9.48, "costo_ml": 5.77 },
+    { "nombre": "Cumbrera Roof 3G", "largo_m": 3.03, "cantidad": 7, "precio_ml": 13.20, "costo_ml": 6.48 },
+    { "nombre": "Canalón Doble 80mm", "largo_m": 3.03, "cantidad": 4, "precio_ml": 27.81, "costo_ml": 19.13 },
+    { "nombre": "Soporte de Canalón", "largo_m": 3.00, "cantidad": 2, "precio_ml": 4.23, "costo_ml": 4.43 },
+    { "nombre": "Limahoya standar", "largo_m": 3.00, "cantidad": 3, "precio_ml": 7.40, "costo_ml": 4.50 }
+  ],
+  "anclaje": [
+    { "nombre": "Silicona Neutra (Pomo)", "especificacion": "400 g.", "cantidad": 24, "precio_unit": 6.08, "costo_real": 2.42 },
+    { "nombre": "Caballete Roof Gris o Terracota", "especificacion": "", "cantidad": 290, "precio_unit": 0.63, "costo_real": 0.30 },
+    { "nombre": "Tornillos / P. Aguja – P. Mecha", "especificacion": "", "cantidad": 290, "precio_unit": 0.78, "costo_real": 0.35 },
+    { "nombre": "Tornillos T1 ½", "especificacion": "½", "cantidad": 600, "precio_unit": 0.06, "costo_real": 0.025 },
+    { "nombre": "Membrana Auto-adhesiva (bajo babeta)", "especificacion": "0,3 x 10 m", "cantidad": 2, "precio_unit": 36.20, "costo_real": 24.10 },
+    { "nombre": "Espuma PUR Expansiva", "especificacion": "750 gr.", "cantidad": 4, "precio_unit": 10.40, "costo_real": 5.63 }
+  ],
+  "traslado": {
+    "incluido": false,
+    "costo": null,
+    "costo_real": null,
+    "nota": "Traslado sin cotizar"
+  },
+  "comentarios": [
+    "Ancho útil paneles de Cubierta = 1 m. Autoportancia de techo 4 m.",
+    "<b>Oferta válida por 10 días a partir de la fecha.</b>",
+    "Pendiente mínima 7%.",
+    "<b>Sujeto a cambios según fábrica.</b>",
+    "<b>Entrega de 7 a 45 días, dependemos de producción.</b>",
+    "<b>Incluye descuentos de Pago al Contado. Seña del 60% (al confirmar). Saldo del 40% (previo a retiro de fábrica).</b>",
+    "<b>Con tarjeta de crédito y en cuotas, sería en $ y a través de Mercado Pago con un recargo de 11,9% (comisión MP).</b>",
+    "Retiro sin cargo en Planta Industrial de Bromyros S.A. (Colonia Nicolich, Canelones)",
+    "<b>BMC no asume responsabilidad por fallas producidas por no respetar la autoportancia sugerida.</b>",
+    "<b>No incluye descarga del material. Se requieren 2 personas.</b>",
+    "Opcional: Costo descarga $1500 + IVA / H. Únicamente en ciudad de Maldonado.",
+    "Al aceptar esta cotización confirma haber revisado el contenido de la misma en cuanto a medidas, cantidades, colores, valores y tipo de producto.",
+    "<b>Nuestro asesoramiento es una guía, en ningún caso sustituye el trabajo profesional de Arq. o Ing.</b>",
+    "Al momento de recibir el material corroborar el estado del mismo. Una vez recibido, no aceptamos devolución."
+  ]
+}

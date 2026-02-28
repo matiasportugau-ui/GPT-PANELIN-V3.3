@@ -1,0 +1,32 @@
+sku_id,product_name,category,compatible_system,largo_std_m,currency,pvp_ml,cost_ml,pvp_unit,cost_unit,price_unit_type,effective_from,source
+GF_ISODEC_100,Gotero Frontal ISODEC 100mm,accessory,ISODEC,3.03,USD,5.22,4.31,,,ml,2026-01-01,KB_PRECIOS_v6
+GL_ISODEC_100,Gotero Lateral ISODEC 100mm,accessory,ISODEC,3.00,USD,6.92,5.77,,,ml,2026-01-01,KB_PRECIOS_v6
+ALU_5852,Perfil Aluminio 5852 Anodizado,accessory,ISODEC,6.80,USD,9.30,7.75,,,ml,2026-01-01,KB_PRECIOS_v6
+CUMB_ISODEC,Cumbrera ISODEC,accessory,ISODEC,3.03,USD,7.86,6.48,,,ml,2026-01-01,KB_PRECIOS_v6
+BAB_ATORN,Babeta de Atornillar,accessory,ISODEC,3.00,USD,4.06,3.39,,,ml,2026-01-01,KB_PRECIOS_v6
+BAB_EMPOT,Babeta de Empotrar,accessory,ISODEC,3.00,USD,4.06,3.39,,,ml,2026-01-01,KB_PRECIOS_v6
+CAN_ISODEC_100,Canalón ISODEC 100mm Kit,accessory,ISODEC,3.03,USD,23.18,19.13,,,ml,2026-01-01,KB_PRECIOS_v6
+SOP_CAN_ISODEC,Soporte Canalón ISODEC,accessory,ISODEC,3.00,USD,5.31,4.43,,,ml,2026-01-01,KB_PRECIOS_v6
+GFS_ISOROOF,Gotero Frontal Simple ISOROOF,accessory,ISOROOF,3.03,USD,6.60,,,,ml,2026-01-01,KB_PRECIOS_v6
+GFG_ISOROOF,Gotero Frontal con Greca ISOROOF,accessory,ISOROOF,3.03,USD,,,,,ml,2026-01-01,KB_PRECIOS_v6
+GL_ISOROOF,Gotero Lateral ISOROOF,accessory,ISOROOF,3.00,USD,9.48,,,,ml,2026-01-01,KB_PRECIOS_v6
+CUMB_ROOF_3G,Cumbrera Roof 3G,accessory,ISOROOF,3.03,USD,13.20,,,,ml,2026-01-01,KB_PRECIOS_v6
+CAN_DOBLE_80,Canalón Doble 80mm,accessory,ISOROOF,3.03,USD,27.81,,,,ml,2026-01-01,KB_PRECIOS_v6
+SOP_CAN_ROOF,Soporte de Canalón ISOROOF,accessory,ISOROOF,3.00,USD,4.23,,,,ml,2026-01-01,KB_PRECIOS_v6
+LIMAHOYA,Limahoya estándar,accessory,ISOROOF,3.00,USD,7.40,,,,ml,2026-01-01,KB_PRECIOS_v6
+SILIC_NEUTRA,Silicona Neutra (Pomo),fixation,ALL,,USD,,,7.11,2.42,u,2026-01-01,KB_PRECIOS_v6
+SILIC_400G,Silicona Neutra 400g (cotización),fixation,ALL,,USD,,,6.08,2.42,u,2026-01-01,KB_PRECIOS_v6
+VAR_3_8,Varilla Roscada 3/8 (1m),fixation,ISODEC|ISOPANEL,,USD,,,2.43,1.15,u,2026-01-01,KB_PRECIOS_v6
+VAR_5_16,Varilla Roscada 5/16 (1m),fixation,ISODEC|ISOPANEL,,USD,,,1.90,0.90,u,2026-01-01,KB_PRECIOS_v6
+TUER_3_8,Tuerca Galvanizada 3/8,fixation,ALL,,USD,,,0.15,0.03,u,2026-01-01,KB_PRECIOS_v6
+TUER_5_16,Tuerca Galvanizada 5/16,fixation,ALL,,USD,,,0.12,0.02,u,2026-01-01,KB_PRECIOS_v6
+ARAND_CARR,Arandela Carrocero,fixation,ALL,,USD,,,2.00,0.29,u,2026-01-01,KB_PRECIOS_v6
+ARAND_PLANA,Arandela Plana,fixation,ALL,,USD,,,0.24,0.03,u,2026-01-01,KB_PRECIOS_v6
+ARAND_POLIP,Arandela Polipropileno (Tortuga),fixation,ALL,,USD,,,1.60,0.60,u,2026-01-01,KB_PRECIOS_v6
+REMACHE_POP,Remache POP,fixation,ALL,,USD,,,0.06,0.025,u,2026-01-01,KB_PRECIOS_v6
+MEMBRANA,Membrana Auto-adhesiva (rollo 0.3x10m),fixation,ALL,,USD,,,36.20,24.10,u,2026-01-01,KB_PRECIOS_v6
+ESPUMA_PUR,Espuma PU Expansiva 750ml,fixation,ALL,,USD,,,10.40,5.63,u,2026-01-01,KB_PRECIOS_v6
+TACO_3_8,Taco Expansivo 3/8,fixation,ALL,,USD,,,0.53,0.33,u,2026-01-01,KB_PRECIOS_v6
+CABALLETE,Caballete Roof,fixation,ISOROOF,,USD,,,0.63,0.30,u,2026-01-01,KB_PRECIOS_v6
+TORN_AGUJA,Tornillo Aguja / P. Mecha,fixation,ISOROOF,,USD,,,0.78,0.35,u,2026-01-01,KB_PRECIOS_v6
+TORN_T1,Tornillo T1 1/2,fixation,ALL,,USD,,,0.06,0.025,u,2026-01-01,KB_PRECIOS_v6

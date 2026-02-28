@@ -1,0 +1,44 @@
+name: Test Knowledge Base & Schemas
+
+on:
+  push:
+    paths:
+      - 'kb/**'
+      - 'rules/**'
+      - 'schemas/**'
+      - 'tests/**'
+      - 'docs/v6/KB_*.md'
+  pull_request:
+    paths:
+      - 'kb/**'
+      - 'rules/**'
+      - 'schemas/**'
+      - 'tests/**'
+
+jobs:
+  test-kb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Run KB test suite
+        run: python tests/run_tests.py -v
+
+      - name: Validate v6 JSON fixture
+        run: python schemas/validate_output.py tests/fixtures/real_quote_COT20250508.json
+
+      - name: Validate v1 schema example
+        run: python schemas/validate_output.py --example
+
+      - name: Check JSON syntax in rules/
+        run: python -c "import json, glob; [json.load(open(f)) for f in glob.glob('rules/*.json')]; print('All rules JSON valid')"
+
+      - name: Check JSON syntax in schemas/
+        run: python -c "import json, glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('All schemas JSON valid')"

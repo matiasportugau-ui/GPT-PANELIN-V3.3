@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bmcuruguay.com.uy/schemas/quote_output_v6.schema.json",
+  "title": "Panelin v6 Quote Output (PDF Generator Input)",
+  "description": "JSON structure that feeds panelin_pdf_v6.py to generate client PDF + internal costing PDF",
+  "type": "object",
+  "required": ["empresa", "cotizacion", "cliente", "paneles", "accesorios", "anclaje", "traslado", "comentarios"],
+  "properties": {
+    "empresa": {
+      "type": "object",
+      "description": "Fixed company data - never changes",
+      "required": ["nombre", "email", "web", "telefono", "ciudad"],
+      "properties": {
+        "nombre": { "type": "string", "const": "BMC Uruguay" },
+        "email": { "type": "string" },
+        "web": { "type": "string" },
+        "telefono": { "type": "string" },
+        "ciudad": { "type": "string" },
+        "logo_path": { "type": ["string", "null"] },
+        "contacto_dudas": { "type": "string" },
+        "banco_titular": { "type": "string" },
+        "banco_rut": { "type": "string" },
+        "banco_cuenta": { "type": "string" },
+        "banco_tipo": { "type": "string" }
+      }
+    },
+    "cotizacion": {
+      "type": "object",
+      "required": ["numero", "fecha", "titulo", "validez_dias"],
+      "properties": {
+        "numero": { "type": ["string", "null"], "description": "Auto-generated COT-YYYYMMDD-XXXX" },
+        "fecha": { "type": "string", "description": "DD/MM/AAAA format" },
+        "titulo": { "type": "string", "description": "Main product name" },
+        "validez_dias": { "type": "integer", "default": 10 },
+        "imagen_path": { "type": ["string", "null"] }
+      }
+    },
+    "cliente": {
+      "type": "object",
+      "required": ["nombre", "direccion", "telefono"],
+      "properties": {
+        "nombre": { "type": "string" },
+        "direccion": { "type": "string", "description": "Job site address" },
+        "telefono": { "type": "string" }
+      }
+    },
+    "paneles": {
+      "type": "array",
+      "description": "Each different length = separate row, even for same product",
+      "items": {
+        "type": "object",
+        "required": ["nombre", "seccion", "largo_m", "cantidad", "ancho_util_m", "precio_m2", "costo_m2"],
+        "properties": {
+          "nombre": { "type": "string", "description": "Full name with thickness and color" },
+          "seccion": { "type": "string", "enum": ["Paneles Aislantes 3G", "Paneles ISODEC EPS", "Paneles ISODEC PIR", "Paneles ISOPANEL", "Paneles ISOWALL", "Paneles ISOFRIG"] },
+          "largo_m": { "type": "number", "minimum": 0.1 },
+          "cantidad": { "type": "integer", "minimum": 1 },
+          "ancho_util_m": { "type": "number", "enum": [1.00, 1.10, 1.12] },
+          "precio_m2": { "type": "number", "minimum": 0, "description": "Sale price per m2 (PVP)" },
+          "costo_m2": { "type": "number", "minimum": 0, "description": "Internal cost per m2" }
+        }
+      }
+    },
+    "accesorios": {
+      "type": "array",
+      "description": "Only accessories needed for the project",
+      "items": {
+        "type": "object",
+        "required": ["nombre", "largo_m", "cantidad", "precio_ml", "costo_ml"],
+        "properties": {
+          "nombre": { "type": "string" },
+          "largo_m": { "type": "number" },
+          "cantidad": { "type": "integer", "minimum": 1 },
+          "precio_ml": { "type": "number", "minimum": 0, "description": "Sale price per linear meter" },
+          "costo_ml": { "type": "number", "minimum": 0, "description": "Internal cost per linear meter" }
+        }
+      }
+    },
+    "anclaje": {
+      "type": "array",
+      "description": "Varies by fixation system (metal vs wood)",
+      "items": {
+        "type": "object",
+        "required": ["nombre", "cantidad", "precio_unit", "costo_real"],
+        "properties": {
+          "nombre": { "type": "string" },
+          "especificacion": { "type": "string", "description": "Size/weight if applicable" },
+          "cantidad": { "type": "number", "minimum": 0 },
+          "precio_unit": { "type": "number", "minimum": 0, "description": "Sale price per unit" },
+          "costo_real": { "type": "number", "minimum": 0, "description": "Internal cost per unit" }
+        }
+      }
+    },
+    "traslado": {
+      "type": "object",
+      "required": ["incluido"],
+      "properties": {
+        "incluido": { "type": "boolean" },
+        "costo": { "type": ["number", "null"] },
+        "costo_real": { "type": ["number", "null"] },
+        "nota": { "type": "string" }
+      }
+    },
+    "comentarios": {
+      "type": "array",
+      "description": "Standard comments list, adjust autoportancia per quoted thickness",
+      "items": { "type": "string" }
+    }
+  }
+}

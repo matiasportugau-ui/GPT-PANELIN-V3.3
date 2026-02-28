@@ -1,0 +1,20 @@
+family,thickness_mm,support_condition,span_m_max,load_kPa,weight_kg_m2,slope_deg_min,slope_deg_max,notes,source
+ISODEC_EPS,100,2_apoyos_simple,5.5,,12.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISODEC_EPS,150,2_apoyos_simple,7.5,,14.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISODEC_EPS,200,2_apoyos_simple,9.1,,16.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISODEC_EPS,250,2_apoyos_simple,10.4,,18.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISODEC_PIR,50,2_apoyos_simple,3.5,,10.0,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISODEC_PIR,80,2_apoyos_simple,5.5,,11.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISODEC_PIR,120,2_apoyos_simple,7.6,,13.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISOROOF_3G,30,2_apoyos_simple,2.8,,5.0,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISOROOF_3G,50,2_apoyos_simple,3.3,,6.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISOROOF_3G,80,2_apoyos_simple,4.0,,8.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISOPANEL_EPS,50,2_apoyos_simple,3.0,,10.0,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISOPANEL_EPS,100,2_apoyos_simple,5.5,,12.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISOPANEL_EPS,150,2_apoyos_simple,7.5,,14.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISOPANEL_EPS,200,2_apoyos_simple,9.1,,16.5,,,Pendiente min 7% para techos,bom_rules.json v1.0.0
+ISOROOF_3G,40,2_apoyos_simple,3.0,,,,,Pendiente min 7% para techos,KB_PRECIOS_v6
+ISOROOF_Plus,80,2_apoyos_simple,4.0,,,,,Pendiente min 7% para techos,KB_PRECIOS_v6
+ISOROOF_Foil,30,2_apoyos_simple,2.8,,,,,Pendiente min 7% para techos,KB_PRECIOS_v6
+ISOROOF_Foil,50,2_apoyos_simple,3.3,,,,,Pendiente min 7% para techos,KB_PRECIOS_v6
+ISOROOF_Colonial,40,2_apoyos_simple,3.0,,,,,Pendiente min 7% - ref ISOROOF 3G,KB_PRECIOS_v6

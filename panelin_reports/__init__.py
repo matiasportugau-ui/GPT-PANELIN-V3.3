@@ -26,7 +26,12 @@ Usage:
 """
 
 from .pdf_generator import generate_quotation_pdf, build_quote_pdf
+from .panelin_pdf_v6 import generate_v6_pdfs, generate_from_json_file
 from .pdf_styles import BMCStyles
 
-__version__ = "2.0"
-__all__ = ["generate_quotation_pdf", "build_quote_pdf", "BMCStyles"]
+__version__ = "6.0"
+__all__ = [
+    "generate_quotation_pdf", "build_quote_pdf",
+    "generate_v6_pdfs", "generate_from_json_file",
+    "BMCStyles",
+]

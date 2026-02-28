@@ -24,6 +24,9 @@ panelin_reports/output/*.pdf
 # MCP memory store files (generated at runtime)
 mcp/quotation_memory.json
 
+# KB self-learning runtime data
+kb_self_learning/data/
+
 # IDE
 .vscode/
 .idea/

@@ -1,0 +1,133 @@
+{
+  "version": "1.0.0-migrated",
+  "source": "bom_rules.json v1.0.0",
+  "envelope_class": "HORIZONTAL",
+  "conventions": {
+    "currency": "USD",
+    "iva": { "included": true, "rate": 0.22 },
+    "rounding": "ceil",
+    "units": { "area": "m2", "length": "ml", "quantity": "unid", "sealant": "tubo" }
+  },
+  "systems": {
+    "techo_isodec_eps": {
+      "rule_id": "H-ISODEC-EPS",
+      "name": "Techo con ISODEC EPS (cubierta pesada)",
+      "product_ref": "ISODEC_EPS",
+      "ancho_util_m": 1.12,
+      "fixation_system": "varilla_tuerca",
+      "min_slope_pct": 7,
+      "thicknesses": [100, 150, 200, 250],
+      "formulas": {
+        "area_m2": "largo_m * ancho_m",
+        "paneles_necesarios": "ceil(ancho_m / 1.12)",
+        "apoyos_por_panel": "ceil(largo_m / autoportancia_m) + 1",
+        "puntos_fijacion": "ceil((paneles * apoyos * 2) + (largo_m * 2 / 2.5))",
+        "varilla_cantidad": "ceil(puntos_fijacion / 4)",
+        "tuercas_metal": "puntos_fijacion * 2",
+        "tuercas_hormigon": "puntos_fijacion * 1",
+        "tacos_hormigon": "puntos_fijacion * 1 (solo hormigon)",
+        "arandelas_carrocero": "puntos_fijacion * 1",
+        "tortugas_pvc": "puntos_fijacion * 1",
+        "gotero_frontal_piezas": "ceil((paneles * 1.12) / 3.03)",
+        "gotero_lateral_piezas": "ceil((largo_m * 2) / 3.0)",
+        "babeta_lateral_piezas": "ceil((largo_m * 2) / 3.0)",
+        "encuentro_muro_piezas": "ceil(ancho_m / 3.03) si aplica",
+        "cumbrera_piezas": "ceil(ancho_m / 3.0) si aplica",
+        "canalon_piezas": "ceil(ancho_m / 3.03)",
+        "soporte_canalon": "ceil(ancho_m / 1.5)",
+        "fijaciones_perfileria": "ceil(perimetro_ml / 0.30)",
+        "silicona_tubos": "ceil(perimetro_ml / 8)",
+        "cinta_butilo_rollos": "ceil(perimetro_ml / 22.5)"
+      },
+      "standard_lengths_m": {
+        "gotero_frontal": 3.03,
+        "gotero_lateral": 3.0,
+        "babeta_adosar": 3.03,
+        "babeta_empotrar": 3.03,
+        "babeta_lateral": 3.0,
+        "cumbrera": 3.0,
+        "perfil_u": 3.0,
+        "canalon": 3.03,
+        "vaina": 3.0,
+        "soporte_canalon": 3.0
+      },
+      "cut_rules": {
+        "overlap_m": 0.05,
+        "waste_pct": 3
+      },
+      "items_bom": [
+        { "tipo": "panel", "ref": "ISODEC_EPS", "unit": "m2", "formula": "area_m2" },
+        { "tipo": "gotero_frontal", "ref": "accessories_catalog->gotero_frontal->espesor_mm", "unit": "unid", "formula": "gotero_frontal_piezas" },
+        { "tipo": "gotero_lateral", "ref": "accessories_catalog->gotero_lateral->espesor_mm", "unit": "unid", "formula": "gotero_lateral_piezas" },
+        { "tipo": "babeta_adosar", "ref": "accessories_catalog->babeta_adosar->ISODEC", "unit": "unid", "formula": "encuentro_muro_piezas" },
+        { "tipo": "babeta_empotrar", "ref": "accessories_catalog->babeta_empotrar->ISODEC", "unit": "unid", "formula": "encuentro_muro_piezas" },
+        { "tipo": "cumbrera", "ref": "accessories_catalog->cumbrera->ISODEC", "unit": "unid", "formula": "cumbrera_piezas" },
+        { "tipo": "perfil_u", "ref": "accessories_catalog->perfil->espesor_mm", "unit": "unid", "formula": "ceil(perimetro / largo_std)" },
+        { "tipo": "canalon", "ref": "accessories_catalog->canalon->espesor_mm", "unit": "unid", "formula": "canalon_piezas" },
+        { "tipo": "soporte_canalon", "ref": "accessories_catalog->soporte->ISODEC", "unit": "unid", "formula": "soporte_canalon" },
+        { "tipo": "varilla", "ref": "varilla_3_8", "unit": "unid", "formula": "varilla_cantidad" },
+        { "tipo": "tuerca", "ref": "tuerca_3_8", "unit": "unid", "formula": "tuercas" },
+        { "tipo": "arandela_carrocero", "ref": "arandela_carrocero_3_8", "unit": "unid", "formula": "arandelas_carrocero" },
+        { "tipo": "tortuga_pvc", "ref": "tortuga_pvc", "unit": "unid", "formula": "tortugas_pvc" },
+        { "tipo": "taco", "ref": "taco_3_8", "unit": "unid", "formula": "tacos_hormigon", "condition": "tipo_estructura == hormigon" },
+        { "tipo": "silicona", "ref": "silicona_neutra", "unit": "tubo", "formula": "silicona_tubos" },
+        { "tipo": "cinta_butilo", "ref": "cinta_butilo", "unit": "rollo", "formula": "cinta_butilo_rollos" },
+        { "tipo": "fijacion_perfileria", "ref": "remache_o_t1", "unit": "unid", "formula": "fijaciones_perfileria" }
+      ],
+      "required_inputs": ["largo_m", "ancho_m", "espesor_mm", "tipo_estructura"]
+    },
+    "techo_isodec_pir": {
+      "rule_id": "H-ISODEC-PIR",
+      "name": "Techo con ISODEC PIR (cubierta pesada ignífuga)",
+      "product_ref": "ISODEC_PIR",
+      "ancho_util_m": 1.12,
+      "fixation_system": "varilla_tuerca",
+      "min_slope_pct": 7,
+      "thicknesses": [50, 80, 120],
+      "inherits_from": "techo_isodec_eps",
+      "differences": {
+        "note": "SKUs y precios de perfilería son diferentes (ver accessories_catalog con compatibilidad ISODEC y composición PIR)",
+        "safety_note": "Recomendado para industrias, depósitos y proyectos con requerimientos de resistencia al fuego"
+      },
+      "required_inputs": ["largo_m", "ancho_m", "espesor_mm", "tipo_estructura"]
+    },
+    "techo_isoroof_3g": {
+      "rule_id": "H-ISOROOF-3G",
+      "name": "Techo con ISOROOF 3G (cubierta liviana)",
+      "product_ref": "ISOROOF_3G",
+      "ancho_util_m": 1.0,
+      "fixation_system": "caballete_tornillo",
+      "min_slope_pct": 7,
+      "thicknesses": [30, 50, 80],
+      "formulas": {
+        "area_m2": "largo_m * ancho_m",
+        "paneles_necesarios": "ceil(ancho_m / 1.0)",
+        "apoyos_por_panel": "ceil(largo_m / autoportancia_m) + 1",
+        "caballetes": "paneles * apoyos",
+        "tornillo_aguja_5": "caballetes * 1",
+        "tornillo_t1_perfileria": "ceil(perimetro_ml / 0.30)",
+        "gotero_frontal_piezas": "ceil((paneles * 1.0) / 3.03)",
+        "gotero_lateral_piezas": "ceil((largo_m * 2) / 3.0)",
+        "babeta_superior_piezas": "ceil(ancho_m / 3.03)",
+        "babeta_lateral_piezas": "ceil((largo_m * 2) / 3.0)",
+        "cumbrera_piezas": "ceil(ancho_m / 3.0)",
+        "silicona_tubos": "ceil(perimetro_ml / 8)",
+        "cinta_butilo_rollos": "ceil(perimetro_ml / 22.5)"
+      },
+      "note": "ISOROOF 3G a madera NO usa varilla ni tuercas, usa caballete + tornillo",
+      "items_bom": [
+        { "tipo": "panel", "ref": "ISOROOF_3G", "unit": "m2", "formula": "area_m2" },
+        { "tipo": "caballete", "ref": "accessories_catalog->caballete->ISOROOF", "unit": "unid", "formula": "caballetes" },
+        { "tipo": "gotero_frontal", "ref": "accessories_catalog->gotero_frontal->ISOROOF", "unit": "unid", "formula": "gotero_frontal_piezas" },
+        { "tipo": "gotero_lateral", "ref": "accessories_catalog->gotero_lateral->ISOROOF", "unit": "unid", "formula": "gotero_lateral_piezas" },
+        { "tipo": "babeta_superior", "ref": "accessories_catalog->babeta_superior->ISOROOF", "unit": "unid", "formula": "babeta_superior_piezas" },
+        { "tipo": "babeta_lateral", "ref": "accessories_catalog->babeta_lateral->ISOROOF", "unit": "unid", "formula": "babeta_lateral_piezas" },
+        { "tipo": "cumbrera", "ref": "accessories_catalog->cumbrera->ISOROOF", "unit": "unid", "formula": "cumbrera_piezas" },
+        { "tipo": "silicona", "ref": "silicona_neutra", "unit": "tubo", "formula": "silicona_tubos" },
+        { "tipo": "cinta_butilo", "ref": "cinta_butilo", "unit": "rollo", "formula": "cinta_butilo_rollos" },
+        { "tipo": "fijacion_perfileria", "ref": "tornillo_t1", "unit": "unid", "formula": "tornillo_t1_perfileria" }
+      ],
+      "required_inputs": ["largo_m", "ancho_m", "espesor_mm", "tipo_estructura"]
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "version": "6.0.0",
+  "source": "KB_FORMULAS.md + KB_PRECIOS.md (v6)",
+  "description": "Calculation formulas for Panelin v6 quotation engine",
+
+  "panel_calculations": {
+    "total_line": "largo_m * ancho_util_m * cantidad * precio_m2",
+    "total_m2": "SUM(largo_m * ancho_util_m * cantidad) for each row"
+  },
+
+  "ancho_util": {
+    "ISOROOF_3G": 1.00,
+    "ISOROOF_Plus": 1.00,
+    "ISOROOF_Foil": 1.00,
+    "ISOROOF_Colonial": 1.00,
+    "ISODEC_EPS": 1.12,
+    "ISODEC_PIR": 1.12,
+    "ISOPANEL_EPS": 1.10,
+    "ISOWALL_PIR": 1.10
+  },
+
+  "waste_factors": {
+    "ISODEC_EPS": { "factor": 1.12, "pct": 12, "note": "12% desperdicio" },
+    "ISODEC_PIR": { "factor": 1.12, "pct": 12, "note": "12% desperdicio techo" },
+    "ISOROOF": { "factor": 1.00, "pct": 0, "note": "Sin desperdicio adicional" },
+    "ISOFRIG_techo": { "factor": 1.10, "pct": 10, "note": "10% desperdicio" },
+    "ISOFRIG_camara": { "factor": 1.14, "pct": 14, "note": "14% desperdicio paredes cámara" }
+  },
+
+  "max_manufacturing_length_m": {
+    "ISODEC_EPS": 14.0,
+    "ISODEC_PIR": 14.0,
+    "ISOROOF_3G": 8.5,
+    "ISOROOF_Plus": 8.5,
+    "ISOPANEL_EPS": 12.0,
+    "ISOWALL_PIR": 12.0
+  },
+
+  "autoportancia": {
+    "ISOROOF_3G": { "30": 2.8, "40": 3.0, "50": 3.3, "80": 4.0 },
+    "ISODEC_EPS": { "100": 5.5, "150": 7.5, "200": 9.1, "250": 10.4 },
+    "ISODEC_PIR": { "50": 3.5, "80": 5.5, "120": 7.6 },
+    "supports_formula": "ROUNDUP((largo_panel / autoportancia) + 1)"
+  },
+
+  "accessories_formulas": {
+    "gotero_frontal": {
+      "formula": "ROUNDUP(cantidad_paneles * waste_factor / largo_barra)",
+      "largo_std": 3.03
+    },
+    "gotero_lateral": {
+      "formula": "ROUNDUP((largo_panel * 2) / largo_barra)",
+      "largo_std": 3.00
+    },
+    "cumbrera": {
+      "formula": "ROUNDUP(cantidad_paneles * waste_factor * 2 / 2)"
+    },
+    "perfil_aluminio_5852": {
+      "formula": "ROUNDUP(((cant * desp * 2) + (largo * 2)) / 6.8)",
+      "largo_std": 6.80,
+      "only_for": "ISODEC"
+    },
+    "babeta": {
+      "formula": "ROUNDUP((cant * desp) + (largo * 2))"
+    },
+    "canalon": {
+      "formula": "ROUNDUP(cantidad_paneles * waste_factor / 3)"
+    },
+    "soporte_canalon": {
+      "formula": "ROUNDUP((cant_total + 1) * 0.4 / 3)",
+      "rule": "1 soporte cada 3m, mínimo 1"
+    }
+  },
+
+  "fixation_formulas": {
+    "silicona": {
+      "formula": "ROUNDUP(m2_total / 8)",
+      "note": "m2_total includes panels + profiles + babetas"
+    },
+    "varilla_system": {
+      "applies_to": ["ISODEC", "ISOPANEL"],
+      "structure": "metal",
+      "puntos_fijacion": "((cant_paneles * apoyos * 2) + (largo * 2 / 2.5))",
+      "varillas": "ROUNDUP(puntos / 4)",
+      "tuercas": "puntos * 2",
+      "arandelas_carrocero": "puntos",
+      "arandelas_planas": "puntos",
+      "arandelas_tortuga": "puntos"
+    },
+    "caballete_system": {
+      "applies_to": ["ISOROOF"],
+      "structure": "madera",
+      "caballetes": "ROUNDUP((cant * 3 * (largo/2.9 + 1)) + ((largo * 2) / 0.3))",
+      "tornillos_aguja": "same as caballetes",
+      "note": "NO varilla ni tuercas"
+    },
+    "tornillos_t1": {
+      "formula": "total_barras_perfiles * 20",
+      "note": "20 tornillos por barra de perfil/accesorio, todos los sistemas"
+    }
+  },
+
+  "totals": {
+    "note": "Motor PDF calculates, GPT does NOT calculate totals",
+    "subtotal": "SUM(all lines: paneles + accesorios + anclaje + traslado)",
+    "iva": "subtotal * 0.22",
+    "total_materiales": "subtotal + iva",
+    "costeo_interno": {
+      "costo_total": "SUM(costo of each line)",
+      "margen_usd": "subtotal - costo_total",
+      "margen_pct": "(margen_usd / costo_total) * 100"
+    }
+  },
+
+  "margins_reference": {
+    "paneles_eps": { "margin": "15% + ajuste", "factor": 1.15 },
+    "paneles_pir": { "margin": "15%", "factor": 1.15 },
+    "paneles_isoroof": { "margin": "15%", "factor": 1.15 },
+    "perfiles_accesorios": { "margin": "20%", "factor": 1.20 },
+    "puerta_frigorifica": { "margin": "30%", "factor": 1.30 },
+    "tornilleria": { "margin": "50-200%", "factor_range": [1.50, 3.00] },
+    "silicona": { "margin": "~200%", "factor": 3.00 }
+  }
+}

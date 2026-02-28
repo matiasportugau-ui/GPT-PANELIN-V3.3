@@ -1,0 +1,158 @@
+{
+  "version": "1.0.0-migrated",
+  "source": "accessories_catalog.json + bom_rules.json",
+  "migrated_at": "2026-02-25",
+  "rules": [
+    {
+      "envelope_class": "HORIZONTAL",
+      "family": "ISODEC",
+      "composition": "EPS",
+      "accessories": {
+        "gotero_frontal": "6838",
+        "gotero_lateral": "6842",
+        "babeta_adosar": "6828",
+        "babeta_empotrar": "6865",
+        "cumbrera": "6847",
+        "canalon": "6801",
+        "vaina": "6825",
+        "varilla": "6805",
+        "tuerca": "6805",
+        "arandela_carrocero": "6805",
+        "tortuga_pvc": "6805",
+        "silicona": "Bromplast",
+        "cinta_butilo": "C.But."
+      },
+      "synonyms": {
+        "gotero": "gotero_frontal",
+        "gotero frontal": "gotero_frontal",
+        "gotero lateral": "gotero_lateral",
+        "babeta": "babeta_adosar",
+        "babeta adosar": "babeta_adosar",
+        "babeta empotrar": "babeta_empotrar",
+        "cumbrera": "cumbrera",
+        "canalon": "canalon",
+        "vaina": "vaina",
+        "varilla": "varilla",
+        "tuerca": "tuerca",
+        "arandela": "arandela_carrocero",
+        "tortuga": "tortuga_pvc",
+        "sellador": "silicona",
+        "silicona": "silicona",
+        "cinta": "cinta_butilo"
+      }
+    },
+    {
+      "envelope_class": "HORIZONTAL",
+      "family": "ISOROOF",
+      "composition": "PIR",
+      "accessories": {
+        "gotero_frontal": "GFS50",
+        "gotero_lateral": "GLDCAM50",
+        "gotero_superior": "GFSUP50",
+        "babeta_adosar": "BBAL",
+        "babeta_empotrar": "BBAL",
+        "babeta_superior": "BBAL",
+        "cumbrera": "CUMROOF3M",
+        "canalon": "CD50",
+        "soporte_canalon": "SOPCAN3M",
+        "caballete": "Cab. Roj",
+        "silicona": "Bromplast",
+        "cinta_butilo": "C.But."
+      },
+      "synonyms": {
+        "gotero": "gotero_frontal",
+        "gotero frontal": "gotero_frontal",
+        "gotero lateral": "gotero_lateral",
+        "gotero superior": "gotero_superior",
+        "babeta": "babeta_adosar",
+        "babeta lateral": "babeta_adosar",
+        "babeta superior": "babeta_superior",
+        "cumbrera": "cumbrera",
+        "canalon": "canalon",
+        "soporte": "soporte_canalon",
+        "caballete": "caballete",
+        "sellador": "silicona",
+        "silicona": "silicona",
+        "cinta": "cinta_butilo"
+      }
+    },
+    {
+      "envelope_class": "VERTICAL",
+      "family": "ISOPANEL",
+      "composition": "EPS",
+      "accessories": {
+        "perfil_u": "PLECHU98",
+        "varilla": "6805",
+        "tuerca": "6805",
+        "arandela_carrocero": "6805",
+        "tortuga_pvc": "6805",
+        "silicona": "Bromplast",
+        "cinta_butilo": "C.But."
+      },
+      "synonyms": {
+        "perfil": "perfil_u",
+        "perfil u": "perfil_u",
+        "u": "perfil_u",
+        "varilla": "varilla",
+        "tuerca": "tuerca",
+        "arandela": "arandela_carrocero",
+        "tortuga": "tortuga_pvc",
+        "sellador": "silicona",
+        "silicona": "silicona",
+        "cinta": "cinta_butilo"
+      }
+    },
+    {
+      "envelope_class": "VERTICAL",
+      "family": "ISOWALL",
+      "composition": "PIR",
+      "accessories": {
+        "perfil_u": "PU50MM",
+        "varilla": "6805",
+        "tuerca": "6805",
+        "arandela_carrocero": "6805",
+        "tortuga_pvc": "6805",
+        "silicona": "Bromplast",
+        "cinta_butilo": "C.But."
+      },
+      "synonyms": {
+        "perfil": "perfil_u",
+        "perfil u": "perfil_u",
+        "u": "perfil_u",
+        "varilla": "varilla",
+        "tuerca": "tuerca",
+        "arandela": "arandela_carrocero",
+        "tortuga": "tortuga_pvc",
+        "sellador": "silicona",
+        "silicona": "silicona",
+        "cinta": "cinta_butilo"
+      }
+    },
+    {
+      "envelope_class": "VERTICAL",
+      "family": "ISOFRIG",
+      "composition": "PIR",
+      "accessories": {
+        "perfil_u": "PU100MM",
+        "varilla": "6805",
+        "tuerca": "6805",
+        "arandela_carrocero": "6805",
+        "tortuga_pvc": "6805",
+        "silicona": "Bromplast",
+        "cinta_butilo": "C.But."
+      },
+      "synonyms": {
+        "perfil": "perfil_u",
+        "perfil u": "perfil_u",
+        "u": "perfil_u",
+        "varilla": "varilla",
+        "tuerca": "tuerca",
+        "arandela": "arandela_carrocero",
+        "tortuga": "tortuga_pvc",
+        "sellador": "silicona",
+        "silicona": "silicona",
+        "cinta": "cinta_butilo"
+      }
+    }
+  ]
+}

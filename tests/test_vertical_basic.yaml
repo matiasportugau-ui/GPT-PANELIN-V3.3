@@ -1,0 +1,17 @@
+name: vertical_basic
+input:
+  envelope_class: VERTICAL
+  panel_family: ISOWALL
+  thickness_mm: 50
+  area_m2: 100
+  perimeter_m: 60
+  corner_in_m: 10
+  corner_out_m: 10
+  fasteners_per_m2: 6
+  sealant_units: 4
+expect:
+  hard_stop: null
+  includes_skus:
+    - IW50
+    - PU50MM
+    - Bromplast

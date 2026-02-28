@@ -1,0 +1,16 @@
+name: accessory_ambiguity
+input:
+  envelope_class: HORIZONTAL
+  panel_family: ISOROOF_3G
+  thickness_mm: 50
+  area_m2: 100
+  span_m: 3
+  accessory_request: "gotero"
+expect:
+  hard_stop: null
+  ambiguity_resolution: true
+  must_not_auto_select: true
+  should_list_options:
+    - "gotero_frontal"
+    - "gotero_lateral"
+    - "gotero_superior"

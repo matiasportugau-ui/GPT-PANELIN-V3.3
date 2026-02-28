@@ -1,0 +1,21 @@
+name: horizontal_span_ok
+input:
+  envelope_class: HORIZONTAL
+  panel_family: ISOROOF_3G
+  thickness_mm: 50
+  area_m2: 80
+  span_m: 3
+  ridge_m: 12
+  drip_edge_m: 30
+  flashing_m: 10
+  fasteners_per_m2: 7
+  pvc_washers_per_m2: 7
+  sealant_units: 3
+expect:
+  hard_stop: null
+  requires_autoportancia_match: true
+  includes_skus:
+    - IROOF50
+    - CUMROOF3M
+    - GL50
+    - Bromplast

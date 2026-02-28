@@ -70,6 +70,13 @@ class AccessoriesResult(TypedDict):
     accessories_subtotal_usd: float  # Sum of all accessory prices
 
 
+class LineItemTrace(TypedDict, total=False):
+    """Traceability: which rule produced this line item and how."""
+    rule_id: str
+    formula: str
+    source_file: str
+
+
 class QuotationLineItem(TypedDict):
     product_id: str
     name: str
@@ -77,6 +84,7 @@ class QuotationLineItem(TypedDict):
     area_m2: float
     unit_price_usd: float
     line_total_usd: float
+    trace: Optional[LineItemTrace]
 
 
 class AutoportanciaValidationResult(TypedDict):
@@ -129,6 +137,9 @@ class QuotationResult(TypedDict):
     calculation_method: str
     currency: str
     notes: List[str]  # Notes including cutting instructions
+
+    # V3.2 Traceability: maps each line item back to its rule
+    trace_log: Optional[List[dict]]
 
 
 def _load_knowledge_base() -> dict:
@@ -666,52 +677,53 @@ def calculate_accessories_pricing(
                 return accesorios[idx]
         return None
     
+    def _make_line(acc: dict, qty: int, rule_id: str, formula: str) -> QuotationLineItem:
+        price = Decimal(str(acc['precio_unit_iva_inc']))
+        subtotal = _decimal_round(Decimal(str(qty)) * price)
+        return QuotationLineItem(
+            product_id=acc['sku'], name=acc['name'], quantity=qty,
+            area_m2=0.0, unit_price_usd=float(price), line_total_usd=float(subtotal),
+            trace=LineItemTrace(
+                rule_id=rule_id,
+                formula=formula,
+                source_file="accessories_catalog.json",
+            ),
+        )
+
     # Gotero frontal
     if accessories_quantities['front_drip_edge_units'] > 0:
         acc = find_accessory('gotero_frontal')
         if acc:
-            qty = accessories_quantities['front_drip_edge_units']
-            price = Decimal(str(acc['precio_unit_iva_inc']))
-            subtotal = _decimal_round(Decimal(str(qty)) * price)
-            line_items.append(QuotationLineItem(
-                product_id=acc['sku'], name=acc['name'], quantity=qty,
-                area_m2=0.0, unit_price_usd=float(price), line_total_usd=float(subtotal)
+            line_items.append(_make_line(
+                acc, accessories_quantities['front_drip_edge_units'],
+                f"BOM-{sistema}-gotero_frontal", "gotero_frontal_piezas",
             ))
-    
+
     # Gotero lateral
     if accessories_quantities['lateral_drip_edge_units'] > 0:
         acc = find_accessory('gotero_lateral')
         if acc:
-            qty = accessories_quantities['lateral_drip_edge_units']
-            price = Decimal(str(acc['precio_unit_iva_inc']))
-            subtotal = _decimal_round(Decimal(str(qty)) * price)
-            line_items.append(QuotationLineItem(
-                product_id=acc['sku'], name=acc['name'], quantity=qty,
-                area_m2=0.0, unit_price_usd=float(price), line_total_usd=float(subtotal)
+            line_items.append(_make_line(
+                acc, accessories_quantities['lateral_drip_edge_units'],
+                f"BOM-{sistema}-gotero_lateral", "gotero_lateral_piezas",
             ))
-    
+
     # Silicona
     if accessories_quantities['silicone_tubes'] > 0:
         acc = find_accessory('silicona')
         if acc:
-            qty = accessories_quantities['silicone_tubes']
-            price = Decimal(str(acc['precio_unit_iva_inc']))
-            subtotal = _decimal_round(Decimal(str(qty)) * price)
-            line_items.append(QuotationLineItem(
-                product_id=acc['sku'], name=acc['name'], quantity=qty,
-                area_m2=0.0, unit_price_usd=float(price), line_total_usd=float(subtotal)
+            line_items.append(_make_line(
+                acc, accessories_quantities['silicone_tubes'],
+                f"BOM-{sistema}-silicona", "ceil(perimetro_ml / 8)",
             ))
-    
+
     # Varillas
     if accessories_quantities['rod_quantity'] > 0:
         acc = find_accessory('varilla')
         if acc:
-            qty = accessories_quantities['rod_quantity']
-            price = Decimal(str(acc['precio_unit_iva_inc']))
-            subtotal = _decimal_round(Decimal(str(qty)) * price)
-            line_items.append(QuotationLineItem(
-                product_id=acc['sku'], name=acc['name'], quantity=qty,
-                area_m2=0.0, unit_price_usd=float(price), line_total_usd=float(subtotal)
+            line_items.append(_make_line(
+                acc, accessories_quantities['rod_quantity'],
+                f"BOM-{sistema}-varilla", "ceil(puntos_fijacion / 4)",
             ))
     
     # Calculate total
@@ -954,7 +966,13 @@ def calculate_panel_quote(
         calculation_verified=True,
         calculation_method="python_decimal_deterministic",
         currency="USD",
-        notes=cutting_notes  # Include cutting notes
+        notes=cutting_notes,
+        trace_log=[
+            {"rule_id": "PANEL-AREA", "formula": f"ceil({width_m} / {ancho_util_m})", "result": panels_needed},
+            {"rule_id": "PANEL-PRICE", "formula": f"{area_m2} * {unit_price_per_m2}", "result": float(subtotal)},
+        ] + ([
+            {"rule_id": f"AUTOP-{product_id}", "formula": f"span={length_m}m <= max={autoportancia_validation.get('span_max_m', 'N/A')}m", "result": autoportancia_validation.get("is_valid")}
+        ] if autoportancia_validation else [])
     )
 
 

@@ -1,0 +1,81 @@
+name: real_quotation_COT_20250508_6394
+description: >
+  Real quotation from BMC Uruguay PDF (COT-20250508-6394).
+  ISOROOF 80mm, 28 panels (4 different lengths), fijación a madera.
+  Client: Alejandra Balarini, Arrayanes, Soriano.
+  Total: USD 10,147.53 (with IVA 22%)
+source: BMC_Cotizacion_COT-20250508-6394.pdf
+
+input:
+  envelope_class: HORIZONTAL
+  panel_family: ISOROOF_3G
+  thickness_mm: 80
+  fixation_system: caballete_tornillo
+  panels:
+    - largo_m: 5.01
+      cantidad: 3
+    - largo_m: 4.50
+      cantidad: 20
+    - largo_m: 6.01
+      cantidad: 4
+    - largo_m: 3.50
+      cantidad: 1
+  accesorios:
+    - nombre: "Gotero Frontal Simple 80 mm"
+      largo_m: 3.03
+      cantidad: 6
+    - nombre: "Gotero Lateral 80 mm"
+      largo_m: 3.00
+      cantidad: 7
+    - nombre: "Cumbrera Roof 3G"
+      largo_m: 3.03
+      cantidad: 7
+    - nombre: "Canalón Doble 80mm"
+      largo_m: 3.03
+      cantidad: 4
+    - nombre: "Soporte de Canalón"
+      largo_m: 3.00
+      cantidad: 2
+    - nombre: "Limahoya standar"
+      largo_m: 3.00
+      cantidad: 3
+  anclaje:
+    - nombre: "Silicona Neutra (Pomo)"
+      cantidad: 24
+    - nombre: "Caballete Roof"
+      cantidad: 290
+    - nombre: "Tornillos Aguja"
+      cantidad: 290
+    - nombre: "Tornillos T1"
+      cantidad: 600
+    - nombre: "Membrana Auto-adhesiva"
+      cantidad: 2
+    - nombre: "Espuma PUR Expansiva"
+      cantidad: 4
+
+expect:
+  hard_stop: "Falta información de autoportancia para este caso. No se emite cotización formal sin verificación"
+  note: >
+    This quotation was issued in production despite span exceeding autoportancia (6.01m > 4.0m).
+    The hard-stop is correct per validation rules. In production, the operator overrode it.
+    The costeo/financial data below is from the actual PDF for reference validation.
+  total_m2: 132.57
+  subtotal_usd: 8317.65
+  iva_usd: 1829.88
+  total_usd: 10147.53
+  precio_m2_panel: 49.67
+  costo_m2_panel: 44.98
+  autoportancia_m: 4.0
+  ancho_util_m: 1.00
+
+  costeo_interno:
+    costo_total_sin_iva: 6931.20
+    pvp_total_sin_iva: 8317.65
+    margen_bruto_usd: 1386.45
+    margen_pct: 20.0
+    margen_paneles_pct: 10.4
+    margen_accesorios_pct: 61.7
+    margen_anclaje_pct: 112.1
+
+  warnings:
+    - "Panel de 6.01m excede autoportancia de 4.0m para ISOROOF 80mm"
