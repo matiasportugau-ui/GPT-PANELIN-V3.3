@@ -1,0 +1,80 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🤖 ACTIVAR EVOLUCIONADOR (Auditoría)",
+      "type": "shell",
+      "command": "python .evolucionador/core/analyzer.py && python .evolucionador/reports/generator.py",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "detail": "Ejecuta los 7 validadores y genera el reporte de salud del proyecto.",
+      "problemMatcher": []
+    },
+    {
+      "label": "📦 EMPAQUETAR PARA GPT (Deploy)",
+      "type": "shell",
+      "command": "python validate_gpt_files.py && python package_gpt_files.py",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "detail": "Valida JSONs y crea la carpeta GPT_Upload_Package organizada por fases.",
+      "problemMatcher": []
+    },
+    {
+      "label": "🔌 LEVANTAR SERVIDOR MCP (Local)",
+      "type": "shell",
+      "command": "python mcp/server.py",
+      "options": {
+        "env": {
+          "WOLF_API_KEY": "${input:wolfApiKey}"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "detail": "Inicia el servidor MCP para pruebas locales con Claude/OpenAI.",
+      "problemMatcher": []
+    },
+    {
+      "label": "✅ VALIDAR ARCHIVOS GPT",
+      "type": "shell",
+      "command": "python validate_gpt_files.py",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Ejecuta validación de esquema JSON y estructura de archivos de Knowledge Base.",
+      "problemMatcher": []
+    },
+    {
+      "label": "🧪 EJECUTAR TESTS MCP",
+      "type": "shell",
+      "command": "pytest mcp/tests/ -v",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Ejecuta suite completa de tests del servidor MCP.",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "wolfApiKey",
+      "type": "promptString",
+      "description": "Ingresa tu WOLF_API_KEY para pruebas locales",
+      "password": true
+    }
+  ]
+}
