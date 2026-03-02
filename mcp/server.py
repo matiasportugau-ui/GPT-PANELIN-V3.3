@@ -93,6 +93,7 @@ from .handlers.tasks import (
     handle_task_list,
     handle_task_cancel,
 )
+from .handlers.shortcuts import handle_shortcut_execute, handle_shortcut_manage
 
 TOOLS_DIR = Path(__file__).parent / "tools"
 
@@ -136,6 +137,9 @@ TOOL_HANDLERS = {
     "task_result": handle_task_result,
     "task_list": handle_task_list,
     "task_cancel": handle_task_cancel,
+    # Shortcuts (atajos)
+    "shortcut_execute": handle_shortcut_execute,
+    "shortcut_manage": handle_shortcut_manage,
 }
 
 TOOL_NAMES = list(TOOL_HANDLERS.keys())

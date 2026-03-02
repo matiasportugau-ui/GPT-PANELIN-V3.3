@@ -1,0 +1,14 @@
+{
+  "name": "shortcut_execute",
+  "description": "Execute a named shortcut (atajo). Shortcuts are pre-configured command templates identified by a /name. Returns the shortcut prompt and configuration so the LLM can carry out the instructions. Type /shortcut-name in chat or call this tool with the shortcut name.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Shortcut name (with or without leading /). Example: 'open-mcp-docs' or '/open-mcp-docs'"
+      }
+    },
+    "required": ["name"]
+  }
+}

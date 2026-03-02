@@ -1,0 +1,63 @@
+{
+  "name": "shortcut_manage",
+  "description": "Manage shortcuts (atajos). Supports listing, creating, updating, deleting, enabling and disabling shortcuts. Shortcuts are named command templates that can be executed via /name in chat or scheduled to run at specific times.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["list", "create", "update", "delete", "enable", "disable"],
+        "description": "Management action to perform. Default: 'list'"
+      },
+      "name": {
+        "type": "string",
+        "description": "Shortcut name (required for create/update/delete/enable/disable)"
+      },
+      "prompt": {
+        "type": "string",
+        "description": "Prompt text for the shortcut (required for create, optional for update)"
+      },
+      "start_url": {
+        "type": "string",
+        "description": "Optional starting URL to navigate to before executing the prompt"
+      },
+      "model": {
+        "type": "string",
+        "description": "Optional preferred model for execution (e.g., 'haiku-4.5')"
+      },
+      "schedule": {
+        "type": "object",
+        "description": "Optional schedule configuration",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["once", "daily", "interval"],
+            "description": "Schedule type"
+          },
+          "time": {
+            "type": "string",
+            "description": "Time in HH:MM format (for 'once' and 'daily')"
+          },
+          "timezone": {
+            "type": "string",
+            "description": "Timezone (e.g., 'UTC', 'America/Montevideo'). Default: 'UTC'"
+          },
+          "interval_seconds": {
+            "type": "number",
+            "description": "Interval in seconds (for 'interval' type)"
+          }
+        }
+      },
+      "tags": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Optional tags for categorizing the shortcut"
+      },
+      "tag": {
+        "type": "string",
+        "description": "Filter shortcuts by tag (used with 'list' action)"
+      }
+    },
+    "required": []
+  }
+}

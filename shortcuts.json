@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "shortcuts": [
+    {
+      "id": "open-mcp-docs",
+      "name": "open-mcp-docs",
+      "prompt": "Navigate to the OpenAI Developers documentation page about tools, connectors, and the Model Context Protocol (MCP). Specifically, go to the URL: https://developers.openai.com/api/docs/guides/tools-connectors-mcp\n\nThis page contains documentation about:\n- The OpenAI API's tools and connectors functionality\n- Information about the Model Context Protocol (MCP)\n- Developer guides and integration instructions\n\nThe page is part of the OpenAI Developer Platform documentation, located in the guides section under API documentation. It provides technical information for developers implementing tools, connectors, and MCP integrations with OpenAI's API.",
+      "start_url": "https://developers.openai.com/api/docs/guides/tools-connectors-mcp",
+      "model": "haiku-4.5",
+      "schedule": {
+        "type": "once",
+        "time": "09:00",
+        "timezone": "UTC"
+      },
+      "enabled": true,
+      "created_at": "2026-02-14T10:00:00Z",
+      "tags": ["documentation", "mcp", "openai"]
+    }
+  ]
+}
