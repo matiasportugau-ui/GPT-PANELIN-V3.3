@@ -6,7 +6,7 @@ The Wolf API is a FastAPI backend service that provides Knowledge Base write ope
 
 **Service Name:** `panelin-api`  
 **Base URL:** `https://panelin-api-642127786762.us-central1.run.app`  
-**Version:** 2.1.0
+**Version:** 2.2.0
 
 ## Architecture
 

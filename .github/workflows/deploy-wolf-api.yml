@@ -33,6 +33,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Validate required secrets
+        run: |
+          MISSING=""
+          if [ -z "${{ secrets.GCP_WIF_PROVIDER }}" ]; then
+            MISSING="$MISSING\n  - GCP_WIF_PROVIDER (Workload Identity Federation provider, format: projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/providers/PROVIDER_ID)"
+          fi
+          if [ -z "${{ secrets.GCP_DEPLOY_SA_EMAIL }}" ]; then
+            MISSING="$MISSING\n  - GCP_DEPLOY_SA_EMAIL (Deployment service account email)"
+          fi
+          if [ -z "${{ secrets.GCP_RUNTIME_SA_EMAIL }}" ]; then
+            MISSING="$MISSING\n  - GCP_RUNTIME_SA_EMAIL (Runtime service account email)"
+          fi
+          if [ -z "${{ secrets.WOLF_API_KEY }}" ]; then
+            MISSING="$MISSING\n  - WOLF_API_KEY (API key for Wolf API authentication)"
+          fi
+          if [ -z "${{ secrets.KB_GCS_BUCKET }}" ]; then
+            MISSING="$MISSING\n  - KB_GCS_BUCKET (GCS bucket name for KB data)"
+          fi
+          if [ -n "$MISSING" ]; then
+            printf "::error::Missing required GitHub secrets:%b\n" "$MISSING"
+            echo ""
+            echo "Please configure the required secrets in Settings > Secrets and variables > Actions."
+            echo "See wolf_api/IAM_SETUP.md for setup instructions."
+            exit 1
+          fi
+          echo "✅ All required secrets are configured"
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
         with:
