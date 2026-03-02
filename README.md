@@ -649,7 +649,7 @@ tools = server.tools_registry()
 
 **Configuration:**
 - `mcp/config/mcp_server_config.json` - Server config with KB paths, OpenAI integration settings, and GitHub MCP capabilities
-- Tool schemas in `mcp/tools/*.json` - MCP-compliant tool definitions
+- Tool schemas in [`mcp/tools/`](mcp/tools/) - MCP-compliant tool definitions
 
 **Research & Analysis:**
 - [MCP_SERVER_COMPARATIVE_ANALYSIS.md](MCP_SERVER_COMPARATIVE_ANALYSIS.md) - Top 10 MCP server comparison with cost analysis
