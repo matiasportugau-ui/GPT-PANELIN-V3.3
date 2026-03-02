@@ -1,0 +1,74 @@
+name: "Panelin Sheets Orchestrator – CI & Deploy"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "panelin_sheets_orchestrator/**"
+      - ".github/workflows/panelin-sheets-ci-deploy.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "panelin_sheets_orchestrator/**"
+
+defaults:
+  run:
+    working-directory: panelin_sheets_orchestrator
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: ruff check src/ tests/
+
+      - name: Run tests
+        env:
+          IDEMPOTENCY_BACKEND: memory
+          PANELIN_ORCH_API_KEY: ci-test-key
+        run: |
+          export PYTHONPATH=${{ github.workspace }}/panelin_sheets_orchestrator/src
+          python -m pytest tests/ -v --tb=short
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.DEPLOYER_SA }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Build & push image
+        run: |
+          IMAGE="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/${{ vars.SERVICE_NAME }}"
+          gcloud builds submit --tag "${IMAGE}:${{ github.sha }}" .
+          gcloud builds submit --tag "${IMAGE}:latest" .
+
+      - name: Deploy to Cloud Run
+        run: |
+          IMAGE="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/${{ vars.SERVICE_NAME }}"
+          gcloud run deploy ${{ vars.SERVICE_NAME }} \
+            --region=${{ vars.GCP_REGION }} \
+            --image="${IMAGE}:${{ github.sha }}" \
+            --platform=managed

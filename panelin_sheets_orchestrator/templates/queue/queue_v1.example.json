@@ -1,0 +1,21 @@
+{
+  "queue": {
+    "spreadsheet_id": "<QUEUE_SPREADSHEET_ID>",
+    "sheet_name": "QUEUE",
+    "start_row": 2,
+    "columns": {
+      "A": "job_id",
+      "B": "status",
+      "C": "template_id",
+      "D": "target_spreadsheet_id",
+      "E": "payload_json",
+      "F": "result_json"
+    },
+    "status_values": {
+      "pending": "PENDING",
+      "running": "RUNNING",
+      "done": "DONE",
+      "error": "ERROR"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "template_id": "cotizacion_isofrig_pir_v1",
+  "sheet_name": "ISOFRIG_CAMARA",
+  "writes_allowlist": [
+    "ISOFRIG_CAMARA!B6",
+    "ISOFRIG_CAMARA!F3",
+    "ISOFRIG_CAMARA!A10:G16",
+    "ISOFRIG_CAMARA!D18:D25",
+    "ISOFRIG_CAMARA!B27",
+    "ISOFRIG_CAMARA!B28"
+  ],
+  "read_ranges": [
+    "ISOFRIG_CAMARA!A1:K35"
+  ],
+  "hints": {
+    "cells": {
+      "cliente_nombre": "ISOFRIG_CAMARA!B6",
+      "fecha": "ISOFRIG_CAMARA!F3",
+      "temperatura_objetivo_c": "ISOFRIG_CAMARA!B27",
+      "volumen_camara_m3": "ISOFRIG_CAMARA!B28"
+    },
+    "tables": {
+      "items": {
+        "range": "ISOFRIG_CAMARA!A10:G16",
+        "columns": ["Producto", "Ubicacion", "Largo_m", "Cantidad", "Costo_m2", "Costo_total", "Notas"]
+      },
+      "accesorios_qty": {
+        "range": "ISOFRIG_CAMARA!D18:D25",
+        "description": "Cantidades de accesorios y selladores (estanqueidad térmica crítica)."
+      }
+    },
+    "product_info": {
+      "family": "ISOFRIG_PIR",
+      "core_type": "PIR",
+      "usage": "camara",
+      "available_thicknesses_mm": [40, 60, 80, 100, 150, 200],
+      "notes": "Cámaras frigoríficas requieren sellado perimetral completo. Espesor según temp. objetivo."
+    }
+  }
+}

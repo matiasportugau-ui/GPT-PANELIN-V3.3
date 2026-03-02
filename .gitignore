@@ -77,3 +77,9 @@ coverage.xml
 docker-volumes/
 .coverage
 htmlcov/
+
+# Panelin Sheets Orchestrator
+panelin_sheets_orchestrator/.env
+panelin_sheets_orchestrator/.venv/
+panelin_sheets_orchestrator/.pytest_cache/
+panelin_sheets_orchestrator/.ruff_cache/
