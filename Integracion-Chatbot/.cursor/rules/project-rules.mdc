@@ -1,0 +1,44 @@
+---
+description: Reglas arquitectónicas para el Agente Inmobiliario Cognitivo
+globs: ["**/*.py"]
+alwaysApply: true
+---
+
+# Reglas del Proyecto: Integracion-Chatbot
+
+## Stack Tecnológico Obligatorio
+
+- **Framework Web:** FastAPI con soporte async/await. NO usar Flask ni frameworks síncronos.
+- **Cliente HTTP:** httpx (AsyncClient). NO usar requests (síncrono).
+- **API OpenAI:** Responses API (`client.responses.create`). NO usar Assistants API legacy (`client.beta.threads`), ya que está en proceso de depreciación.
+- **Protocolo de Herramientas:** Model Context Protocol (MCP) vía FastMCP. NO usar `function_calling` legacy con esquemas JSON inline.
+- **Base de Datos de Estado:** Google Cloud Firestore con transacciones atómicas para sesiones.
+- **Runtime:** Python 3.12+, type hints obligatorios en funciones públicas.
+
+## Patrones Arquitectónicos
+
+### Human Handoff (Escalado Humano)
+- La bandera `ai_active` en Firestore determina quién controla la conversación.
+- Keywords de activación: `["humano", "agente", "asesor"]`
+- Timeout automático: 24 horas sin interacción del operador → `ai_active` revierte a `true`.
+- Cuando `ai_active=false`, el webhook devuelve HTTP 200 silencioso (no procesa con IA).
+
+### Estructura Modular
+- `src/config.py` → Configuración centralizada (NO variables de entorno dispersas).
+- `src/firestore_client.py` → Toda lógica de Firestore.
+- `src/api_meta.py` → Toda comunicación con WhatsApp Cloud API.
+- `src/openai_router.py` → Toda interacción con OpenAI.
+- `src/main.py` → Solo endpoints FastAPI y orquestación.
+
+### Webhook de WhatsApp
+- `body["entry"]` es una LISTA → siempre iterar.
+- `entry["changes"]` es una LISTA → siempre iterar.
+- `value["messages"]` es una LISTA → siempre iterar.
+- Validar `X-Hub-Signature-256` con HMAC SHA-256 en producción.
+
+## Convenciones de Código
+
+- Funciones async para toda operación I/O.
+- Imports desde `src.config` para variables de entorno (no `os.environ` directo).
+- Docstrings en español para funciones públicas.
+- Logging estructurado (no print statements).
