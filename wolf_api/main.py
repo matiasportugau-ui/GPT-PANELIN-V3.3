@@ -78,7 +78,7 @@ def _append_jsonl(blob_path: str, record: dict) -> dict:
 CATALOG = {}
 
 
-def loadcatalog():
+def _load_catalog():
     global CATALOG
     try:
         bucket = storage_client.bucket(KB_GCS_BUCKET)
@@ -98,7 +98,7 @@ def loadcatalog():
 
 @app.on_event("startup")
 async def startup():
-    loadcatalog()
+    _load_catalog()
 
 
 @app.get("/health")
