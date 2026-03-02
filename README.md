@@ -14,6 +14,7 @@
 - [Features](#features)
 - [GPT Configuration](#gpt-configuration)
 - [Repository Structure](#repository-structure)
+- [Developer Guidelines](#-developer-guidelines)
 - [EVOLUCIONADOR - Autonomous Evolution Agent](#evolucionador---autonomous-evolution-agent)
 - [MCP Server - Model Context Protocol Integration](#mcp-server---model-context-protocol-integration)
 - [Knowledge Base](#knowledge-base)
@@ -408,6 +409,48 @@ GPT-PANELIN-V3.3/
 │   └── README_REVIEW_SUMMARY.md                 # README audit results
 │
 ```
+
+---
+
+## 👨‍💻 Developer Guidelines
+
+### GitHub Copilot Instructions
+
+This repository includes comprehensive developer guidelines in [.github/copilot-instructions.md](.github/copilot-instructions.md). These instructions serve as the authoritative reference for:
+
+- **Coding Standards**: Python style (PEP 8, 4-space indentation), type hints, financial calculations with Decimal
+- **Testing Practices**: Running tests from repository root, async test patterns, pytest usage
+- **MCP Server Patterns**: Handler structure, validation rules, error code imports
+- **Docker & Deployment**: Base images (Python 3.11-slim), multi-stage builds, non-root users
+- **Security Guidelines**: API key management, input validation, dependency checking
+- **Memory Storage**: When and how to store facts about the codebase
+
+### Quick Reference for Developers
+
+| Topic | Key Points |
+|-------|-----------|
+| **Python Version** | 3.11 (standard across all Docker images and workflows) |
+| **Indentation** | Exactly 4 spaces (PEP 8) - CRITICAL |
+| **Money Calculations** | Always use `Decimal`, never `float` |
+| **Testing** | Run from repo root: `pytest mcp/tests/test_handlers.py` |
+| **MCP Handlers** | Import error codes from `mcp_tools.contracts` |
+| **Docker Base** | `python:3.11-slim` with non-root user `panelin:1000` |
+
+### Getting Started
+
+1. **Read the guidelines**: Review [.github/copilot-instructions.md](.github/copilot-instructions.md)
+2. **Setup environment**: Follow [CONTRIBUTING.md](CONTRIBUTING.md) for development setup
+3. **Run tests**: Ensure all tests pass before making changes
+4. **Follow patterns**: Match existing code style and patterns
+
+### Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines, including:
+- Development setup instructions
+- Branching strategy and commit conventions
+- Testing requirements and CI/CD pipeline
+- Code style and formatting guidelines
+- Pull request process
 
 ---
 
@@ -2351,6 +2394,8 @@ See [PANELIN_TRAINING_GUIDE.md](PANELIN_TRAINING_GUIDE.md) for details.
 | Document | Description | Status |
 |----------|-------------|--------|
 | [README.md](README.md) | This file - Complete project overview | ✅ Current |
+| [.github/copilot-instructions.md](.github/copilot-instructions.md) | **Developer guidelines** - Coding standards, testing, security | ✅ Production |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines and development setup | ✅ Current |
 | [Instrucciones GPT.rtf](Instrucciones%20GPT.rtf) | Full GPT system instructions (v3.1) | ✅ Production |
 | [Panelin_GPT_config.json](Panelin_GPT_config.json) | Complete GPT configuration (v2.3) | ✅ Production |
 
@@ -2661,6 +2706,12 @@ EVOLUCIONADOR tracks these quality dimensions:
 ---
 
 ## 🤝 Contributing
+
+### Developer Guidelines
+
+Before contributing, please review:
+- **[.github/copilot-instructions.md](.github/copilot-instructions.md)** - Comprehensive coding standards, testing practices, and security guidelines
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Detailed contribution process, setup instructions, and workflow
 
 ### How to Contribute
 
