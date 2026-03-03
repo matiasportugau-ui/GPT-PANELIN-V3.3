@@ -177,7 +177,7 @@ class PanelinAudit:
 
             origin_by_channel = {
                 "whatsapp": "WA",
-                "facebook": "IG",
+                "facebook": "FB",
                 "mercadolibre": "ML",
                 "email": "EM",
             }
