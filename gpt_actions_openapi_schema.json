@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Panelin Wolf API",
-    "description": "Knowledge Base API for Panelin GPT Assistant (BMC Uruguay). Provides write access for persisting conversation summaries, KB corrections, and customer data. All write operations (POST) require X-API-Key header authentication.",
-    "version": "2.2.0"
+    "description": "Complete API for BMC Uruguay — quotation engine, technical validation, product catalog, KB persistence, Google Sheets integration. v4.0.0 unifies all endpoints including the v4 quotation engine and new technical validation endpoints.",
+    "version": "4.0.0"
   },
   "servers": [
     {
@@ -20,28 +20,328 @@
     "/health": {
       "get": {
         "operationId": "healthCheck",
-        "summary": "Health check",
-        "description": "Returns 200 when the service is up. No authentication required.",
+        "summary": "Health check (public)",
         "security": [],
         "responses": {
           "200": {
-            "description": "Service healthy",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
+            "description": "Service healthy"
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "operationId": "readyCheck",
+        "summary": "Readiness check (public)",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Service ready with config status"
+          }
+        }
+      }
+    },
+    "/calculate_quote": {
+      "post": {
+        "operationId": "calculateQuote",
+        "summary": "Calculate panel quotation (deterministic)",
+        "description": "Calculates exact quotation using Decimal precision. The GPT extracts parameters, this endpoint does all math. NEVER let the LLM calculate prices directly.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["product_id", "length_m", "width_m"],
+                "properties": {
+                  "product_id": {
+                    "type": "string",
+                    "description": "Product ID (e.g. ISOPANEL_EPS_50mm, ISODEC_EPS_100mm)"
+                  },
+                  "length_m": {
+                    "type": "number",
+                    "minimum": 0.5,
+                    "maximum": 14.0,
+                    "description": "Panel length in meters"
+                  },
+                  "width_m": {
+                    "type": "number",
+                    "minimum": 0.5,
+                    "maximum": 50.0,
+                    "description": "Total width in meters"
+                  },
+                  "quantity": { "type": "integer", "minimum": 1, "default": 1 },
+                  "discount_percent": { "type": "number", "minimum": 0, "maximum": 30, "default": 0 },
+                  "include_accessories": { "type": "boolean", "default": false },
+                  "include_tax": { "type": "boolean", "default": true },
+                  "installation_type": { "type": "string", "enum": ["techo", "pared"], "default": "techo" }
                 }
               }
             }
           }
+        },
+        "responses": {
+          "200": { "description": "Quotation result with itemized breakdown" },
+          "400": { "description": "Invalid product or parameters" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    },
+    "/find_products": {
+      "post": {
+        "operationId": "findProducts",
+        "summary": "Search products by natural language",
+        "description": "Searches the product catalog using natural language. Use for queries like 'isopanel 100mm para techo' or 'panel PIR pared'.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["query"],
+                "properties": {
+                  "query": { "type": "string", "minLength": 3, "description": "Natural language search query" },
+                  "max_results": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Matching products list" }
+        }
+      }
+    },
+    "/product_price": {
+      "post": {
+        "operationId": "getProductPrice",
+        "summary": "Get price for a specific product",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["product_id"],
+                "properties": {
+                  "product_id": { "type": "string", "description": "Exact product ID" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Product pricing details" },
+          "404": { "description": "Product not found" }
+        }
+      }
+    },
+    "/check_availability": {
+      "post": {
+        "operationId": "checkAvailability",
+        "summary": "Check product stock/availability",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["product_id"],
+                "properties": {
+                  "product_id": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Availability status" },
+          "404": { "description": "Product not found" }
+        }
+      }
+    },
+    "/validate_autoportancia": {
+      "post": {
+        "operationId": "validateAutoportancia",
+        "summary": "Validate if a panel can span the requested distance",
+        "description": "Checks panel autoportancia (self-supporting span) against the project span. Returns ok/warning/blocked status with 15% safety margin and alternative thickness suggestions. ALWAYS call this before quoting when span > 3m.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["familia", "thickness_mm", "span_m"],
+                "properties": {
+                  "familia": { "type": "string", "description": "Product family: ISODEC, ISOROOF, ISOPANEL, ISOWALL, ISOFRIG" },
+                  "sub_familia": { "type": "string", "default": "EPS", "description": "Sub-family: EPS, PIR, 3G" },
+                  "thickness_mm": { "type": "integer", "minimum": 20, "maximum": 250, "description": "Panel thickness in mm" },
+                  "span_m": { "type": "number", "minimum": 0.1, "maximum": 20, "description": "Project span between supports in meters" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Validation result with status, margins, and alternatives" },
+          "404": { "description": "No autoportancia data for the specified product" }
+        }
+      }
+    },
+    "/product_specs/{product_id}": {
+      "get": {
+        "operationId": "getProductSpecs",
+        "summary": "Get technical specifications for a product",
+        "description": "Returns autoportancia, thermal coefficients, dimensions, fixing system. Accepts product_id in formats: ISODEC_EPS_100mm, ISD100EPS, etc.",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Technical specifications" },
+          "404": { "description": "Product not found or specs unavailable" }
+        }
+      }
+    },
+    "/product_catalog": {
+      "get": {
+        "operationId": "getProductCatalog",
+        "summary": "Get slim listing of all available products",
+        "description": "Returns product_id, name, familia, tipo, thickness, unit, price for all products. Optionally filter by tipo or familia.",
+        "parameters": [
+          { "name": "tipo", "in": "query", "schema": { "type": "string" }, "description": "Filter by type: Panel, Accesorio, Perfileria / Terminaciones" },
+          { "name": "familia", "in": "query", "schema": { "type": "string" }, "description": "Filter by family: ISODEC, ISOROOF, ISOPANEL, etc." }
+        ],
+        "responses": {
+          "200": { "description": "Product catalog listing" }
+        }
+      }
+    },
+    "/business_rules": {
+      "get": {
+        "operationId": "getBusinessRules",
+        "summary": "Get current business rules and policies",
+        "description": "Returns IVA rate, currency, derivation policy, shipping defaults, phone format, formal quote requirements.",
+        "responses": {
+          "200": { "description": "Business rules configuration" }
+        }
+      }
+    },
+    "/compare_options": {
+      "post": {
+        "operationId": "compareOptions",
+        "summary": "Compare two panel options with energy savings analysis",
+        "description": "Compares pricing, thermal performance, and estimated annual energy savings between two panel products. Uses Uruguay reference data for heating season calculations.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["option_a_product_id", "option_b_product_id", "area_m2"],
+                "properties": {
+                  "option_a_product_id": { "type": "string", "description": "First product ID" },
+                  "option_b_product_id": { "type": "string", "description": "Second product ID" },
+                  "area_m2": { "type": "number", "minimum": 1, "maximum": 10000, "description": "Project area in m²" },
+                  "usage": { "type": "string", "enum": ["residencial", "comercial"], "default": "residencial" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Comparison with pricing, thermal, and energy analysis" },
+          "404": { "description": "One or both products not found" }
+        }
+      }
+    },
+    "/api/quote": {
+      "post": {
+        "operationId": "fullQuote",
+        "summary": "Full quotation pipeline (v4 engine)",
+        "description": "Processes natural language quotation request through the complete pipeline: classify → parse → SRE risk → BOM → pricing → validation → SAI score. Send the user's text directly.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text"],
+                "properties": {
+                  "text": { "type": "string", "minLength": 1, "description": "Raw quotation request in Spanish (e.g. 'ISODEC EPS 100mm, 5x11m, estructura metal, techo')" },
+                  "mode": { "type": "string", "enum": ["informativo", "pre_cotizacion", "formal"], "default": "pre_cotizacion" },
+                  "client_name": { "type": "string" },
+                  "client_phone": { "type": "string" },
+                  "client_location": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Complete quotation with BOM, pricing, validation, confidence score" }
+        }
+      }
+    },
+    "/api/validate": {
+      "post": {
+        "operationId": "validateQuote",
+        "summary": "Validate quotation (v4 engine)",
+        "description": "Multi-layer validation: autoportancia, BOM verification, pricing, mode compliance.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text"],
+                "properties": {
+                  "text": { "type": "string", "minLength": 1 },
+                  "mode": { "type": "string", "default": "pre_cotizacion" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Validation result with classification, SRE, BOM, pricing" }
+        }
+      }
+    },
+    "/api/sai-score": {
+      "post": {
+        "operationId": "saiScore",
+        "summary": "Calculate quotation quality score (SAI)",
+        "description": "System Accuracy Index: measures quotation quality 0-100 with penalties for errors and bonuses for completeness.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text"],
+                "properties": {
+                  "text": { "type": "string", "minLength": 1 },
+                  "mode": { "type": "string", "default": "pre_cotizacion" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "SAI score with grade and detailed penalties/bonuses" }
         }
       }
     },
     "/kb/conversations": {
       "post": {
         "operationId": "persistConversation",
-        "summary": "Persist conversation summary to Knowledge Base",
-        "description": "Saves a conversation summary and optional quotation reference to GCS as JSONL. Requires X-API-Key header.",
+        "summary": "Save conversation summary to KB",
+        "description": "Persists conversation summary + quotation reference to GCS. Use after completing a formal quotation.",
         "requestBody": {
           "required": true,
           "content": {
@@ -53,30 +353,16 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Conversation persisted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ConversationResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "503": {
-            "$ref": "#/components/responses/ServiceUnavailable"
-          }
+          "200": { "description": "Conversation persisted" },
+          "401": { "description": "Invalid API key" }
         }
       }
     },
     "/kb/corrections": {
       "post": {
         "operationId": "registerCorrection",
-        "summary": "Register a KB correction",
-        "description": "Persists a detected correction (price, formula, or technical data) for continuous KB improvement. Requires X-API-Key header.",
+        "summary": "Register a KB data correction",
+        "description": "Log a detected error in pricing, formulas, or technical data.",
         "requestBody": {
           "required": true,
           "content": {
@@ -88,33 +374,15 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Correction registered successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CorrectionResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "503": {
-            "$ref": "#/components/responses/ServiceUnavailable"
-          }
+          "200": { "description": "Correction registered" },
+          "401": { "description": "Invalid API key" }
         }
       }
     },
     "/kb/customers": {
       "post": {
         "operationId": "saveCustomer",
-        "summary": "Save or update customer data",
-        "description": "Stores customer contact and project information in GCS for reuse in future quotations. Requires X-API-Key header.",
+        "summary": "Save customer data for future quotations",
         "requestBody": {
           "required": true,
           "content": {
@@ -126,60 +394,168 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Customer saved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomerSaveResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "503": {
-            "$ref": "#/components/responses/ServiceUnavailable"
-          }
+          "200": { "description": "Customer saved" },
+          "401": { "description": "Invalid API key" }
         }
       },
       "get": {
         "operationId": "lookupCustomer",
-        "summary": "Look up customer data",
-        "description": "Searches stored customer records by name, phone, or address fragment. Requires X-API-Key header.",
+        "summary": "Look up existing customer data",
         "parameters": [
           {
             "name": "search",
             "in": "query",
             "required": true,
-            "description": "Search term: customer name, phone (09XXXXXXX or +598XXXXXXXX), or address fragment. Minimum 2 characters.",
-            "schema": {
-              "type": "string",
-              "minLength": 2
-            }
+            "schema": { "type": "string", "minLength": 2 }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Customer lookup result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomerLookupResponse"
+          "200": { "description": "Matching customers" }
+        }
+      }
+    },
+    "/sheets/consultations": {
+      "get": {
+        "operationId": "readConsultations",
+        "summary": "Read consultation tracker from Google Sheets",
+        "parameters": [
+          { "name": "tab", "in": "query", "schema": { "type": "string" } },
+          { "name": "estado", "in": "query", "schema": { "type": "string", "enum": ["Pendiente", "Asignado", "Enviado", "Listo"] } },
+          { "name": "origen", "in": "query", "schema": { "type": "string", "enum": ["WA", "ML", "EM", "CL", "AM", "LO", "LL", "IN", "FB", "EE", "EC"] } },
+          { "name": "asignado", "in": "query", "schema": { "type": "string", "enum": ["MA", "MO", "RA", "SPRT", "TIN"] } },
+          { "name": "cliente", "in": "query", "schema": { "type": "string" } },
+          { "name": "fecha", "in": "query", "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50 } }
+        ],
+        "responses": {
+          "200": { "description": "Filtered consultations" }
+        }
+      },
+      "post": {
+        "operationId": "addConsultation",
+        "summary": "Add new client consultation to tracker",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["cliente", "origen", "consulta"],
+                "properties": {
+                  "cliente": { "type": "string" },
+                  "origen": { "type": "string", "enum": ["WA", "ML", "EM", "CL", "AM", "LO", "LL", "IN", "FB", "EE", "EC"] },
+                  "consulta": { "type": "string" },
+                  "telefono": { "type": "string" },
+                  "direccion": { "type": "string" },
+                  "asignado": { "type": "string", "enum": ["MA", "MO", "RA", "SPRT", "TIN"] },
+                  "fecha": { "type": "string" },
+                  "comentarios": { "type": "string" }
                 }
               }
             }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
           }
+        },
+        "responses": {
+          "200": { "description": "Row added with row_number" }
+        }
+      }
+    },
+    "/sheets/quotation_line": {
+      "post": {
+        "operationId": "addQuotationLine",
+        "summary": "Record completed quotation in tracker",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["cliente", "consulta"],
+                "properties": {
+                  "row_number": { "type": "integer" },
+                  "cliente": { "type": "string" },
+                  "consulta": { "type": "string" },
+                  "estado": { "type": "string", "default": "Enviado", "enum": ["Pendiente", "Asignado", "Enviado", "Listo"] },
+                  "comentarios": { "type": "string" },
+                  "origen": { "type": "string" },
+                  "telefono": { "type": "string" },
+                  "direccion": { "type": "string" },
+                  "asignado": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Quotation recorded" }
+        }
+      }
+    },
+    "/sheets/update_row": {
+      "patch": {
+        "operationId": "updateRow",
+        "summary": "Update fields of existing tracker row",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["row_number"],
+                "properties": {
+                  "row_number": { "type": "integer" },
+                  "estado": { "type": "string", "enum": ["Pendiente", "Asignado", "Enviado", "Listo"] },
+                  "asignado": { "type": "string" },
+                  "comentarios": { "type": "string" },
+                  "consulta": { "type": "string" },
+                  "telefono": { "type": "string" },
+                  "direccion": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Row updated" }
+        }
+      }
+    },
+    "/sheets/search": {
+      "get": {
+        "operationId": "searchClients",
+        "summary": "Full-text search across clients and consultations",
+        "parameters": [
+          { "name": "q", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "tab", "in": "query", "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 } }
+        ],
+        "responses": {
+          "200": { "description": "Search results" }
+        }
+      }
+    },
+    "/sheets/stats": {
+      "get": {
+        "operationId": "getSheetStats",
+        "summary": "Quotation tracker statistics",
+        "parameters": [
+          { "name": "tab", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Stats summary" }
+        }
+      }
+    },
+    "/sheets/row/{row_number}": {
+      "get": {
+        "operationId": "getRow",
+        "summary": "Get specific row by number",
+        "parameters": [
+          { "name": "row_number", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "tab", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Row data" }
         }
       }
     }
@@ -189,290 +565,44 @@
       "ApiKeyAuth": {
         "type": "apiKey",
         "in": "header",
-        "name": "X-API-Key",
-        "description": "Wolf API key. Set via WOLF_API_KEY environment variable on the server. Obtain from system administrator."
+        "name": "X-API-Key"
       }
     },
     "schemas": {
-      "HealthResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "example": "healthy"
-          }
-        }
-      },
       "ConversationRequest": {
         "type": "object",
         "required": ["client_id", "summary"],
         "properties": {
-          "client_id": {
-            "type": "string",
-            "description": "Client identifier (phone number or name-based ID)",
-            "example": "091234567"
-          },
-          "summary": {
-            "type": "string",
-            "description": "Summary of the conversation and quotation details",
-            "example": "Cotización ISODEC 100mm, 55 m2, techo galpón en Montevideo. Total USD 4.200."
-          },
-          "quotation_ref": {
-            "type": "string",
-            "description": "Reference number for the quotation, if applicable",
-            "example": "COT-20260223-001"
-          },
-          "products_discussed": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "List of product SKUs or names discussed",
-            "example": ["ISODEC-EPS-100", "GOTERO-FRONTAL-AL"]
-          },
-          "date": {
-            "type": "string",
-            "format": "date-time",
-            "description": "ISO 8601 timestamp. Added server-side if omitted."
-          }
-        }
-      },
-      "ConversationResponse": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "example": true
-          },
-          "stored_at": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-02-23T15:00:00+00:00"
-          },
-          "gcs": {
-            "type": "object",
-            "description": "GCS storage metadata"
-          }
+          "client_id": { "type": "string", "description": "Client phone or name-based ID" },
+          "summary": { "type": "string", "description": "Conversation + quotation summary" },
+          "quotation_ref": { "type": "string" },
+          "products_discussed": { "type": "array", "items": { "type": "string" } },
+          "date": { "type": "string", "format": "date-time" }
         }
       },
       "CorrectionRequest": {
         "type": "object",
         "required": ["source_file", "field_path", "old_value", "new_value", "reason"],
         "properties": {
-          "source_file": {
-            "type": "string",
-            "description": "KB file where the error was found. Must be an authorized file.",
-            "example": "shopify_catalog_v1.json"
-          },
-          "field_path": {
-            "type": "string",
-            "description": "JSON path to the field with the incorrect value",
-            "example": "products[42].weight_kg"
-          },
-          "old_value": {
-            "type": "string",
-            "description": "Current incorrect value",
-            "example": "12.5"
-          },
-          "new_value": {
-            "type": "string",
-            "description": "Corrected value",
-            "example": "11.0"
-          },
-          "reason": {
-            "type": "string",
-            "description": "Explanation of why the correction is needed",
-            "example": "Manufacturer spec sheet updated Feb 2026"
-          },
-          "reported_by": {
-            "type": "string",
-            "description": "Who reported the correction (defaults to panelin_gpt)",
-            "example": "Mauro Portuga"
-          }
-        }
-      },
-      "CorrectionResponse": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "example": true
-          },
-          "correction_id": {
-            "type": "string",
-            "example": "cor-a1b2c3d4e5f6"
-          },
-          "stored_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "gcs": {
-            "type": "object",
-            "description": "GCS storage metadata"
-          }
+          "source_file": { "type": "string" },
+          "field_path": { "type": "string" },
+          "old_value": { "type": "string" },
+          "new_value": { "type": "string" },
+          "reason": { "type": "string" },
+          "reported_by": { "type": "string" }
         }
       },
       "CustomerSaveRequest": {
         "type": "object",
         "required": ["name", "phone"],
         "properties": {
-          "name": {
-            "type": "string",
-            "description": "Customer full name",
-            "example": "Juan Pérez"
-          },
-          "phone": {
-            "type": "string",
-            "description": "Uruguayan mobile phone: 09XXXXXXX (9 digits total, e.g. '09' + 7 digits) or +598XXXXXXXX (12 chars)",
-            "example": "091234567"
-          },
-          "address": {
-            "type": "string",
-            "description": "Work site address",
-            "example": "Av. Rivera 1234"
-          },
-          "city": {
-            "type": "string",
-            "example": "Montevideo"
-          },
-          "department": {
-            "type": "string",
-            "description": "Uruguayan department",
-            "example": "Montevideo"
-          },
-          "notes": {
-            "type": "string",
-            "description": "Additional notes about the customer or project",
-            "example": "Galpón industrial, estructura metálica"
-          },
-          "last_interaction": {
-            "type": "string",
-            "format": "date-time",
-            "description": "ISO 8601 timestamp. Added server-side if omitted."
-          }
-        }
-      },
-      "CustomerSaveResponse": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "example": true
-          },
-          "customer_id": {
-            "type": "string",
-            "example": "cust-a1b2c3d4e5f6"
-          },
-          "stored_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "gcs": {
-            "type": "object",
-            "description": "GCS storage metadata"
-          }
-        }
-      },
-      "CustomerLookupResponse": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "example": true
-          },
-          "customers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CustomerRecord"
-            }
-          },
-          "count": {
-            "type": "integer",
-            "example": 1
-          }
-        }
-      },
-      "CustomerRecord": {
-        "type": "object",
-        "properties": {
-          "customer_id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "address": {
-            "type": "string"
-          },
-          "city": {
-            "type": "string"
-          },
-          "department": {
-            "type": "string"
-          },
-          "notes": {
-            "type": "string"
-          },
-          "last_interaction": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "stored_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "ErrorDetail": {
-        "type": "object",
-        "properties": {
-          "detail": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "responses": {
-      "Unauthorized": {
-        "description": "Invalid or missing X-API-Key header",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorDetail"
-            },
-            "example": {
-              "detail": "Invalid or missing X-API-Key"
-            }
-          }
-        }
-      },
-      "ValidationError": {
-        "description": "Request body or query parameter validation failed",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorDetail"
-            },
-            "example": {
-              "detail": "Missing required fields: source_file, reason"
-            }
-          }
-        }
-      },
-      "ServiceUnavailable": {
-        "description": "Service misconfigured (e.g. missing WOLF_API_KEY or KB_GCS_BUCKET)",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorDetail"
-            },
-            "example": {
-              "detail": "Service not configured: KB_GCS_BUCKET is missing"
-            }
-          }
+          "name": { "type": "string" },
+          "phone": { "type": "string", "description": "09XXXXXXX or +598XXXXXXXX" },
+          "address": { "type": "string" },
+          "city": { "type": "string" },
+          "department": { "type": "string" },
+          "notes": { "type": "string" },
+          "last_interaction": { "type": "string", "format": "date-time" }
         }
       }
     }

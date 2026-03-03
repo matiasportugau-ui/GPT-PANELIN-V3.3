@@ -1,0 +1,4827 @@
+{
+  "meta": {
+    "generated_from": "bromyros_pricing_gpt_optimized.json",
+    "generated_at": "2026-02-11T06:50:31Z",
+    "notes": "Fallback master dataset generated to satisfy Level 1 reference. Replace with full upstream BROMYROS master when available."
+  },
+  "data": {
+    "metadata": {
+      "source": "MATRIZ de COSTOS y VENTAS 2026",
+      "source_file": "wiki/matriz de costos adaptacion /mat design/Copy of MATRIZ de COSTOS y VENTAS 2026 update .xlsx - BROMYROS.csv",
+      "generated_at": "2026-01-27T23:30:07.792648",
+      "total_products": 96,
+      "total_familias": 11,
+      "total_sub_familias": 9,
+      "currency": "USD",
+      "iva_rate": 0.22,
+      "version": "1.0.0"
+    },
+    "indices": {
+      "by_sku": {
+        "IAGRO30": {
+          "familia": "ISOROOF / FOIL",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IAGRO50": {
+          "familia": "ISOROOF / FOIL",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IROOF30": {
+          "familia": "ISOROOF",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IROOF40": {
+          "familia": "ISOROOF",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IROOF50": {
+          "familia": "ISOROOF",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IROOF80": {
+          "familia": "ISOROOF",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IROOF100": {
+          "familia": "ISOROOF",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IROOF50-PLS": {
+          "familia": "ISOROOF",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IROOF80-PLS": {
+          "familia": "ISOROOF",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "C.But.": {
+          "familia": "Estandar",
+          "sub_familia": "Estandar",
+          "tipo": "Accesorio"
+        },
+        "Cab. Roj": {
+          "familia": "ISOROOF",
+          "sub_familia": "PIR",
+          "tipo": "Anclajes / Fijaciones"
+        },
+        "Bromplast": {
+          "familia": "Estandar",
+          "sub_familia": "Estandar",
+          "tipo": "Accesorio"
+        },
+        "GFS30": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO FRONTAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GFS50": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO FRONTAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GFS80": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO FRONTAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GFSUP30": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO FRONTAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GFSUP40": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO FRONTAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GFSUP50": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO FRONTAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GFSUP80": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO FRONTAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GFCGR30": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO FRONTAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GSDECAM50": {
+          "familia": "ISODEC",
+          "sub_familia": "GOTERO FRONTAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GSDECAM80": {
+          "familia": "ISODEC",
+          "sub_familia": "GOTERO FRONTAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GL30": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO LATERAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GL40": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO LATERAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GL50": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO LATERAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GL80": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO LATERAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GLDCAM50": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO LATERAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GLDCAM80": {
+          "familia": "ISOROOF",
+          "sub_familia": "GOTERO LATERAL PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "BBAS3G": {
+          "familia": "ISOROOF",
+          "sub_familia": "BABETAS PREPINTADOS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "BBESUP": {
+          "familia": "ISOROOF",
+          "sub_familia": "BABETAS PREPINTADOS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "BBAL": {
+          "familia": "ISOROOF",
+          "sub_familia": "BABETAS PREPINTADOS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "BBAL_1": {
+          "familia": "ISOROOF",
+          "sub_familia": "BABETAS PREPINTADOS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "CD30": {
+          "familia": "ISOROOF",
+          "sub_familia": "CANALÓN PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "CD50": {
+          "familia": "ISOROOF",
+          "sub_familia": "CANALÓN PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "CD80": {
+          "familia": "ISOROOF",
+          "sub_familia": "CANALÓN PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "SOPCAN3M": {
+          "familia": "ISOROOF",
+          "sub_familia": "CANALÓN PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "CUMROOF3M": {
+          "familia": "ISOROOF",
+          "sub_familia": "CUMBRERAS PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "CUMROOF3M_1": {
+          "familia": "ISOROOF Colonial",
+          "sub_familia": "CUMBRERAS PREPINTADO",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "IW50": {
+          "familia": "ISOWALL",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IW50_1": {
+          "familia": "ISOWALL",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IW50_2": {
+          "familia": "ISOWALL",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IW80": {
+          "familia": "ISOWALL",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IW100": {
+          "familia": "ISOWALL",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IF40": {
+          "familia": "ISOFRIG",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IF60 - IFSL60": {
+          "familia": "ISOFRIG",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IF80 - IFSL80": {
+          "familia": "ISOFRIG",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IF100 - IFSL100": {
+          "familia": "ISOFRIG",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "IF150 - IFSL150": {
+          "familia": "ISOFRIG",
+          "sub_familia": "PIR",
+          "tipo": "Panel"
+        },
+        "ISD50EPS": {
+          "familia": "ISOPANEL",
+          "sub_familia": "EPS",
+          "tipo": "Panel"
+        },
+        "ISD100EPS": {
+          "familia": "ISOPANEL",
+          "sub_familia": "EPS",
+          "tipo": "Panel"
+        },
+        "ISD150EPS": {
+          "familia": "ISOPANEL",
+          "sub_familia": "EPS",
+          "tipo": "Panel"
+        },
+        "ISD200EPS": {
+          "familia": "ISOPANEL",
+          "sub_familia": "EPS",
+          "tipo": "Panel"
+        },
+        "ISD250EPS": {
+          "familia": "ISOPANEL",
+          "sub_familia": "EPS",
+          "tipo": "Panel"
+        },
+        "PU50MM": {
+          "familia": "ISOFRIG",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "PU50MM_1": {
+          "familia": "ISOWALL-ISOPANEL",
+          "sub_familia": "PIR / EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "PU50MM_2": {
+          "familia": "ISOFRIG",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "PU50MM_3": {
+          "familia": "ISOWALL",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "PU100MM": {
+          "familia": "ISOPANEL EPS & PIR / ISOFRIG / ISOWALL",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "PU150MM": {
+          "familia": "ISOPANEL",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "PU200MM": {
+          "familia": "ISOPANEL",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "PU250MM": {
+          "familia": "ISOPANEL",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "PLEGU148": {
+          "familia": "ISOPANEL / ISODEC",
+          "sub_familia": "Estandar",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "PLECHU98": {
+          "familia": "ISOPANEL / ISODEC",
+          "sub_familia": "Estandar",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "ISD100EPS_1": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "PANEL EPS"
+        },
+        "ISD150EPS_1": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "PANEL EPS"
+        },
+        "ISD200EPS_1": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "PANEL EPS"
+        },
+        "ISD250EPS_1": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "PANEL EPS"
+        },
+        "ISD50PIR": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "PANEL PIR"
+        },
+        "ISD80PIR": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "PANEL PIR"
+        },
+        "ISD80PIR_1": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "PANEL PIR"
+        },
+        "GF80DC": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Gotero Frontal"
+        },
+        "GF120DC": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Gotero Frontal"
+        },
+        "6838": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Gotero Frontal"
+        },
+        "GF120DC_1": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Gotero Frontal"
+        },
+        "6839": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Gotero Frontal"
+        },
+        "6840": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Gotero Frontal"
+        },
+        "6841": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Gotero Frontal"
+        },
+        "GL80DC": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GL80DC_1": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6842": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "GL120DC": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6843": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6844": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6845": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6847": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR / EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6828": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR / EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6865": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR / EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6825": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR / EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "CAN.ISDC120": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "CAN.ISDC120_1": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6801": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "CAN.ISDC120_2": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6802": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6803": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6804": {
+          "familia": "ISODEC",
+          "sub_familia": "EPS",
+          "tipo": "Perfileria / Terminaciones"
+        },
+        "6805": {
+          "familia": "ISODEC",
+          "sub_familia": "PIR / EPS",
+          "tipo": "Perfileria / Terminaciones"
+        }
+      },
+      "by_familia": {
+        "ISOROOF / FOIL": [
+          "IAGRO30",
+          "IAGRO50"
+        ],
+        "ISOROOF": [
+          "IROOF30",
+          "IROOF40",
+          "IROOF50",
+          "IROOF80",
+          "IROOF100",
+          "IROOF50-PLS",
+          "IROOF80-PLS",
+          "Cab. Roj",
+          "GFS30",
+          "GFS50",
+          "GFS80",
+          "GFSUP30",
+          "GFSUP40",
+          "GFSUP50",
+          "GFSUP80",
+          "GFCGR30",
+          "GL30",
+          "GL40",
+          "GL50",
+          "GL80",
+          "GLDCAM50",
+          "GLDCAM80",
+          "BBAS3G",
+          "BBESUP",
+          "BBAL",
+          "BBAL_1",
+          "CD30",
+          "CD50",
+          "CD80",
+          "SOPCAN3M",
+          "CUMROOF3M"
+        ],
+        "Estandar": [
+          "C.But.",
+          "Bromplast"
+        ],
+        "ISODEC": [
+          "GSDECAM50",
+          "GSDECAM80",
+          "ISD100EPS_1",
+          "ISD150EPS_1",
+          "ISD200EPS_1",
+          "ISD250EPS_1",
+          "ISD50PIR",
+          "ISD80PIR",
+          "ISD80PIR_1",
+          "GF80DC",
+          "GF120DC",
+          "6838",
+          "GF120DC_1",
+          "6839",
+          "6840",
+          "6841",
+          "GL80DC",
+          "GL80DC_1",
+          "6842",
+          "GL120DC",
+          "6843",
+          "6844",
+          "6845",
+          "6847",
+          "6828",
+          "6865",
+          "6825",
+          "CAN.ISDC120",
+          "CAN.ISDC120_1",
+          "6801",
+          "CAN.ISDC120_2",
+          "6802",
+          "6803",
+          "6804",
+          "6805"
+        ],
+        "ISOROOF Colonial": [
+          "CUMROOF3M_1"
+        ],
+        "ISOWALL": [
+          "IW50",
+          "IW50_1",
+          "IW50_2",
+          "IW80",
+          "IW100",
+          "PU50MM_3"
+        ],
+        "ISOFRIG": [
+          "IF40",
+          "IF60 - IFSL60",
+          "IF80 - IFSL80",
+          "IF100 - IFSL100",
+          "IF150 - IFSL150",
+          "PU50MM",
+          "PU50MM_2"
+        ],
+        "ISOPANEL": [
+          "ISD50EPS",
+          "ISD100EPS",
+          "ISD150EPS",
+          "ISD200EPS",
+          "ISD250EPS",
+          "PU150MM",
+          "PU200MM",
+          "PU250MM"
+        ],
+        "ISOWALL-ISOPANEL": [
+          "PU50MM_1"
+        ],
+        "ISOPANEL EPS & PIR / ISOFRIG / ISOWALL": [
+          "PU100MM"
+        ],
+        "ISOPANEL / ISODEC": [
+          "PLEGU148",
+          "PLECHU98"
+        ]
+      },
+      "by_sub_familia": {
+        "PIR": [
+          "IAGRO30",
+          "IAGRO50",
+          "IROOF30",
+          "IROOF40",
+          "IROOF50",
+          "IROOF80",
+          "IROOF100",
+          "IROOF50-PLS",
+          "IROOF80-PLS",
+          "Cab. Roj",
+          "IW50",
+          "IW50_1",
+          "IW50_2",
+          "IW80",
+          "IW100",
+          "IF40",
+          "IF60 - IFSL60",
+          "IF80 - IFSL80",
+          "IF100 - IFSL100",
+          "IF150 - IFSL150",
+          "PU50MM",
+          "PU50MM_2",
+          "PU50MM_3",
+          "ISD50PIR",
+          "ISD80PIR",
+          "ISD80PIR_1",
+          "GF80DC",
+          "GF120DC",
+          "6838",
+          "GF120DC_1",
+          "GL80DC",
+          "GL80DC_1",
+          "GL120DC",
+          "CAN.ISDC120",
+          "CAN.ISDC120_1",
+          "CAN.ISDC120_2"
+        ],
+        "Estandar": [
+          "C.But.",
+          "Bromplast",
+          "PLEGU148",
+          "PLECHU98"
+        ],
+        "GOTERO FRONTAL PREPINTADO": [
+          "GFS30",
+          "GFS50",
+          "GFS80",
+          "GFSUP30",
+          "GFSUP40",
+          "GFSUP50",
+          "GFSUP80",
+          "GFCGR30",
+          "GSDECAM50",
+          "GSDECAM80"
+        ],
+        "GOTERO LATERAL PREPINTADO": [
+          "GL30",
+          "GL40",
+          "GL50",
+          "GL80",
+          "GLDCAM50",
+          "GLDCAM80"
+        ],
+        "BABETAS PREPINTADOS": [
+          "BBAS3G",
+          "BBESUP",
+          "BBAL",
+          "BBAL_1"
+        ],
+        "CANALÓN PREPINTADO": [
+          "CD30",
+          "CD50",
+          "CD80",
+          "SOPCAN3M"
+        ],
+        "CUMBRERAS PREPINTADO": [
+          "CUMROOF3M",
+          "CUMROOF3M_1"
+        ],
+        "EPS": [
+          "ISD50EPS",
+          "ISD100EPS",
+          "ISD150EPS",
+          "ISD200EPS",
+          "ISD250EPS",
+          "PU100MM",
+          "PU150MM",
+          "PU200MM",
+          "PU250MM",
+          "ISD100EPS_1",
+          "ISD150EPS_1",
+          "ISD200EPS_1",
+          "ISD250EPS_1",
+          "6839",
+          "6840",
+          "6841",
+          "6842",
+          "6843",
+          "6844",
+          "6845",
+          "6801",
+          "6802",
+          "6803",
+          "6804"
+        ],
+        "PIR / EPS": [
+          "PU50MM_1",
+          "6847",
+          "6828",
+          "6865",
+          "6825",
+          "6805"
+        ]
+      },
+      "by_tipo": {
+        "Panel": [
+          "IAGRO30",
+          "IAGRO50",
+          "IROOF30",
+          "IROOF40",
+          "IROOF50",
+          "IROOF80",
+          "IROOF100",
+          "IROOF50-PLS",
+          "IROOF80-PLS",
+          "IW50",
+          "IW50_1",
+          "IW50_2",
+          "IW80",
+          "IW100",
+          "IF40",
+          "IF60 - IFSL60",
+          "IF80 - IFSL80",
+          "IF100 - IFSL100",
+          "IF150 - IFSL150",
+          "ISD50EPS",
+          "ISD100EPS",
+          "ISD150EPS",
+          "ISD200EPS",
+          "ISD250EPS"
+        ],
+        "Accesorio": [
+          "C.But.",
+          "Bromplast"
+        ],
+        "Anclajes / Fijaciones": [
+          "Cab. Roj"
+        ],
+        "Perfileria / Terminaciones": [
+          "GFS30",
+          "GFS50",
+          "GFS80",
+          "GFSUP30",
+          "GFSUP40",
+          "GFSUP50",
+          "GFSUP80",
+          "GFCGR30",
+          "GSDECAM50",
+          "GSDECAM80",
+          "GL30",
+          "GL40",
+          "GL50",
+          "GL80",
+          "GLDCAM50",
+          "GLDCAM80",
+          "BBAS3G",
+          "BBESUP",
+          "BBAL",
+          "BBAL_1",
+          "CD30",
+          "CD50",
+          "CD80",
+          "SOPCAN3M",
+          "CUMROOF3M",
+          "CUMROOF3M_1",
+          "PU50MM",
+          "PU50MM_1",
+          "PU50MM_2",
+          "PU50MM_3",
+          "PU100MM",
+          "PU150MM",
+          "PU200MM",
+          "PU250MM",
+          "PLEGU148",
+          "PLECHU98",
+          "GL80DC",
+          "GL80DC_1",
+          "6842",
+          "GL120DC",
+          "6843",
+          "6844",
+          "6845",
+          "6847",
+          "6828",
+          "6865",
+          "6825",
+          "CAN.ISDC120",
+          "CAN.ISDC120_1",
+          "6801",
+          "CAN.ISDC120_2",
+          "6802",
+          "6803",
+          "6804",
+          "6805"
+        ],
+        "PANEL EPS": [
+          "ISD100EPS_1",
+          "ISD150EPS_1",
+          "ISD200EPS_1",
+          "ISD250EPS_1"
+        ],
+        "PANEL PIR": [
+          "ISD50PIR",
+          "ISD80PIR",
+          "ISD80PIR_1"
+        ],
+        "Perfileria / Gotero Frontal": [
+          "GF80DC",
+          "GF120DC",
+          "6838",
+          "GF120DC_1",
+          "6839",
+          "6840",
+          "6841"
+        ]
+      }
+    },
+    "familia_groups": {
+      "ISOROOF / FOIL": {
+        "description": "Isoroof panels with foil coating for enhanced thermal performance",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "thickness_range": "30-50mm",
+        "product_count": 2,
+        "products": [
+          {
+            "sku": "IAGRO30",
+            "name": "Isoroof FOIL 30 mm - Color Gris-Rojo",
+            "familia": "ISOROOF / FOIL",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 30.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 28.14,
+              "sale_sin_iva": 32.36,
+              "sale_iva_inc": 39.48,
+              "web_sin_iva": 32.36,
+              "web_iva_inc": 39.48
+            }
+          },
+          {
+            "sku": "IAGRO50",
+            "name": "Isoroof FOIL 50 mm - Color Rojo-Gris",
+            "familia": "ISOROOF / FOIL",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 31.9,
+              "sale_sin_iva": 36.69,
+              "sale_iva_inc": 44.76,
+              "web_sin_iva": 36.69,
+              "web_iva_inc": 44.76
+            }
+          }
+        ]
+      },
+      "ISOROOF": {
+        "description": "Standard Isoroof panels for roofing applications",
+        "sub_familia": "GOTERO FRONTAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "thickness_range": "30-100mm",
+        "product_count": 31,
+        "products": [
+          {
+            "sku": "IROOF30",
+            "name": "Isoroof 30 mm Terracota o Gris",
+            "familia": "ISOROOF",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 30.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 34.74,
+              "sale_sin_iva": 39.95,
+              "sale_iva_inc": 48.74,
+              "web_sin_iva": 39.95,
+              "web_iva_inc": 48.74
+            }
+          },
+          {
+            "sku": "IROOF40",
+            "name": "Isoroof 40 mm Terracota o Gris",
+            "familia": "ISOROOF",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 40.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 36.5,
+              "sale_sin_iva": 41.98,
+              "sale_iva_inc": 51.21,
+              "web_sin_iva": 41.98,
+              "web_iva_inc": 51.21
+            }
+          },
+          {
+            "sku": "IROOF50",
+            "name": "Isoroof 50 mm Terracota o Gris",
+            "familia": "ISOROOF",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 38.26,
+              "sale_sin_iva": 44.0,
+              "sale_iva_inc": 53.68,
+              "web_sin_iva": 44.0,
+              "web_iva_inc": 53.68
+            }
+          },
+          {
+            "sku": "IROOF80",
+            "name": "Isoroof 80 mm - Gris - Rojo",
+            "familia": "ISOROOF",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 44.98,
+              "sale_sin_iva": 51.73,
+              "sale_iva_inc": 63.11,
+              "web_sin_iva": 51.73,
+              "web_iva_inc": 63.11
+            }
+          },
+          {
+            "sku": "IROOF100",
+            "name": "Isoroof 100 mm - Gris - Rojo",
+            "familia": "ISOROOF",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 100.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 49.39,
+              "sale_sin_iva": 56.8,
+              "sale_iva_inc": 69.29,
+              "web_sin_iva": 56.8,
+              "web_iva_inc": 69.29
+            }
+          },
+          {
+            "sku": "IROOF50-PLS",
+            "name": "Isoroof Plus 50 mm - Gris - Rojo (MINIMO 800 M2)",
+            "familia": "ISOROOF",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 43.53,
+              "sale_sin_iva": 50.06,
+              "sale_iva_inc": 61.07,
+              "web_sin_iva": 60.94,
+              "web_iva_inc": 74.35
+            }
+          },
+          {
+            "sku": "IROOF80-PLS",
+            "name": "Isoroof Plus 80 mm - Gris - Rojo",
+            "familia": "ISOROOF",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 51.15,
+              "sale_sin_iva": 58.82,
+              "sale_iva_inc": 71.76,
+              "web_sin_iva": 58.82,
+              "web_iva_inc": 71.76
+            }
+          },
+          {
+            "sku": "Cab. Roj",
+            "name": "Caballete Rojo Teja, Gris y blanco- (Arandela Trapezoidal)",
+            "familia": "ISOROOF",
+            "sub_familia": "PIR",
+            "tipo": "Anclajes / Fijaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "N/A",
+              "unit_base": "Unit",
+              "largo_min_max": "N/A"
+            },
+            "pricing": {
+              "cost_sin_iva": 0.33,
+              "sale_sin_iva": 0.5,
+              "sale_iva_inc": 0.6,
+              "web_sin_iva": 0.46,
+              "web_iva_inc": 0.56
+            }
+          },
+          {
+            "sku": "GFS30",
+            "name": "Gotero Frontal Simple 30mm Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO FRONTAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 30.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 13.19,
+              "sale_sin_iva": 15.83,
+              "sale_iva_inc": 19.31,
+              "web_sin_iva": 18.47,
+              "web_iva_inc": 22.53
+            }
+          },
+          {
+            "sku": "GFS50",
+            "name": "Gotero Frontal Simple 50mm Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO FRONTAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 13.97,
+              "sale_sin_iva": 16.76,
+              "sale_iva_inc": 20.45,
+              "web_sin_iva": 19.56,
+              "web_iva_inc": 23.86
+            }
+          },
+          {
+            "sku": "GFS80",
+            "name": "Gotero Frontal Simple 80mm Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO FRONTAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 14.69,
+              "sale_sin_iva": 17.63,
+              "sale_iva_inc": 21.51,
+              "web_sin_iva": 20.57,
+              "web_iva_inc": 25.09
+            }
+          },
+          {
+            "sku": "GFSUP30",
+            "name": "Gotero Superior 30mm Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO FRONTAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 30.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 23.51,
+              "sale_sin_iva": 28.21,
+              "sale_iva_inc": 34.42,
+              "web_sin_iva": 32.91,
+              "web_iva_inc": 40.16
+            }
+          },
+          {
+            "sku": "GFSUP40",
+            "name": "Gotero Superior 40mm Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO FRONTAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 40.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 21.3,
+              "sale_sin_iva": 25.56,
+              "sale_iva_inc": 31.18,
+              "web_sin_iva": 29.82,
+              "web_iva_inc": 36.38
+            }
+          },
+          {
+            "sku": "GFSUP50",
+            "name": "Gotero Superior 50mm Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO FRONTAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 24.23,
+              "sale_sin_iva": 29.08,
+              "sale_iva_inc": 35.47,
+              "web_sin_iva": 33.92,
+              "web_iva_inc": 41.38
+            }
+          },
+          {
+            "sku": "GFSUP80",
+            "name": "Gotero Superior 80mm Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO FRONTAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 25.7,
+              "sale_sin_iva": 30.84,
+              "sale_iva_inc": 37.62,
+              "web_sin_iva": 35.98,
+              "web_iva_inc": 43.9
+            }
+          },
+          {
+            "sku": "GFCGR30",
+            "name": "Gotero frontal con greca  1 x panel  30 - 40 - 50 - 80 - 100 mm",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO FRONTAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 100.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 13.84,
+              "sale_sin_iva": 17.99,
+              "sale_iva_inc": 21.95,
+              "web_sin_iva": 19.38,
+              "web_iva_inc": 23.64
+            }
+          },
+          {
+            "sku": "GL30",
+            "name": "Gotero Lateral 30mm  Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO LATERAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 30.0,
+              "length_m": "3",
+              "unit_base": "Unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 18.19,
+              "sale_sin_iva": 21.83,
+              "sale_iva_inc": 26.63,
+              "web_sin_iva": 25.47,
+              "web_iva_inc": 31.07
+            }
+          },
+          {
+            "sku": "GL40",
+            "name": "Gotero Lateral 40mm  Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO LATERAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 40.0,
+              "length_m": "3",
+              "unit_base": "Unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 18.9,
+              "sale_sin_iva": 22.68,
+              "sale_iva_inc": 27.67,
+              "web_sin_iva": 26.46,
+              "web_iva_inc": 32.28
+            }
+          },
+          {
+            "sku": "GL50",
+            "name": "Gotero Lateral 50mm  Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO LATERAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "3",
+              "unit_base": "Unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 19.64,
+              "sale_sin_iva": 23.57,
+              "sale_iva_inc": 28.75,
+              "web_sin_iva": 27.5,
+              "web_iva_inc": 33.55
+            }
+          },
+          {
+            "sku": "GL80",
+            "name": "Gotero Lateral 80mm  Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO LATERAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "3",
+              "unit_base": "Unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 21.09,
+              "sale_sin_iva": 25.31,
+              "sale_iva_inc": 30.88,
+              "web_sin_iva": 29.53,
+              "web_iva_inc": 36.02
+            }
+          },
+          {
+            "sku": "GLDCAM50",
+            "name": "Gotero Lateral   CAMARA  50mm  Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO LATERAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "3",
+              "unit_base": "Unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 18.6,
+              "sale_sin_iva": 22.32,
+              "sale_iva_inc": 27.23,
+              "web_sin_iva": 26.04,
+              "web_iva_inc": 31.77
+            }
+          },
+          {
+            "sku": "GLDCAM80",
+            "name": "Gotero Lateral  CAMARA  80mm  Prep.",
+            "familia": "ISOROOF",
+            "sub_familia": "GOTERO LATERAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "3",
+              "unit_base": "Unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 20.92,
+              "sale_sin_iva": 25.1,
+              "sale_iva_inc": 30.63,
+              "web_sin_iva": 29.29,
+              "web_iva_inc": 35.73
+            }
+          },
+          {
+            "sku": "BBAS3G",
+            "name": "Babeta de Atornillar Superior 3G",
+            "familia": "ISOROOF",
+            "sub_familia": "BABETAS PREPINTADOS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 19.78,
+              "sale_sin_iva": 23.74,
+              "sale_iva_inc": 28.96,
+              "web_sin_iva": 27.69,
+              "web_iva_inc": 33.78
+            }
+          },
+          {
+            "sku": "BBESUP",
+            "name": "Babeta de Empotrar Superior 3G",
+            "familia": "ISOROOF",
+            "sub_familia": "BABETAS PREPINTADOS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 19.06,
+              "sale_sin_iva": 22.87,
+              "sale_iva_inc": 27.9,
+              "web_sin_iva": 26.68,
+              "web_iva_inc": 32.55
+            }
+          },
+          {
+            "sku": "BBAL-ATN",
+            "name": "Babeta de Atornillar Lateral",
+            "familia": "ISOROOF",
+            "sub_familia": "BABETAS PREPINTADOS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "3.00",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 12.0,
+              "sale_sin_iva": 14.4,
+              "sale_iva_inc": 17.57,
+              "web_sin_iva": 16.8,
+              "web_iva_inc": 20.5
+            }
+          },
+          {
+            "sku": "BBAL-EMP",
+            "name": "Babeta de Empotrar Lateral",
+            "familia": "ISOROOF",
+            "sub_familia": "BABETAS PREPINTADOS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "3.00",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 10.54,
+              "sale_sin_iva": 12.65,
+              "sale_iva_inc": 15.43,
+              "web_sin_iva": 14.76,
+              "web_iva_inc": 18.0
+            },
+            "original_sku": "BBAL"
+          },
+          {
+            "sku": "CD30",
+            "name": "Canalón Doble roof 30mm / base 150mm + tapas + agujero + bajada / 3,03 m",
+            "familia": "ISOROOF",
+            "sub_familia": "CANALÓN PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 30.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 59.86,
+              "sale_sin_iva": 71.83,
+              "sale_iva_inc": 87.64,
+              "web_sin_iva": 83.8,
+              "web_iva_inc": 102.24
+            }
+          },
+          {
+            "sku": "CD50",
+            "name": "Canalón Doble roof 50mm / base 150mm + tapas + agujero + bajada / 3,03 m",
+            "familia": "ISOROOF",
+            "sub_familia": "CANALÓN PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 60.99,
+              "sale_sin_iva": 73.19,
+              "sale_iva_inc": 89.29,
+              "web_sin_iva": 85.39,
+              "web_iva_inc": 104.17
+            }
+          },
+          {
+            "sku": "CD80",
+            "name": "Canalón Doble roof 80mm / base 150mm + tapas + agujero + bajada / 3,03 m",
+            "familia": "ISOROOF",
+            "sub_familia": "CANALÓN PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 61.85,
+              "sale_sin_iva": 74.22,
+              "sale_iva_inc": 90.55,
+              "web_sin_iva": 86.59,
+              "web_iva_inc": 105.64
+            }
+          },
+          {
+            "sku": "SOPCAN3M",
+            "name": "Soporte para Canalón Isoroof (3m)",
+            "familia": "ISOROOF",
+            "sub_familia": "CANALÓN PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "3.00",
+              "unit_base": "Unit",
+              "largo_min_max": null
+            },
+            "pricing": {
+              "cost_sin_iva": 10.93,
+              "sale_sin_iva": 13.12,
+              "sale_iva_inc": 16.0,
+              "web_sin_iva": 15.3,
+              "web_iva_inc": 18.67
+            }
+          },
+          {
+            "sku": "CUMROOF3M",
+            "name": "Cumbrera Roof 3G de 3 m",
+            "familia": "ISOROOF",
+            "sub_familia": "CUMBRERAS PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "3.00",
+              "unit_base": "Unit",
+              "largo_min_max": null
+            },
+            "pricing": {
+              "cost_sin_iva": 29.35,
+              "sale_sin_iva": 35.22,
+              "sale_iva_inc": 42.97,
+              "web_sin_iva": 41.09,
+              "web_iva_inc": 50.13
+            }
+          }
+        ]
+      },
+      "Estandar": {
+        "description": "Accesorio products in Estandar family (Estandar material)",
+        "sub_familia": "Estandar",
+        "tipo": "Accesorio",
+        "thickness_range": "2mm",
+        "product_count": 2,
+        "products": [
+          {
+            "sku": "C.But.",
+            "name": "Cinta Butilo 2mm x 15mm x 22.5m lineales",
+            "familia": "Estandar",
+            "sub_familia": "Estandar",
+            "tipo": "Accesorio",
+            "specifications": {
+              "thickness_mm": 2.0,
+              "length_m": "22,5",
+              "unit_base": "Unit",
+              "largo_min_max": "N/A"
+            },
+            "pricing": {
+              "cost_sin_iva": 12.95,
+              "sale_sin_iva": 14.89,
+              "sale_iva_inc": 18.17,
+              "web_sin_iva": 18.13,
+              "web_iva_inc": 22.12
+            }
+          },
+          {
+            "sku": "Bromplast",
+            "name": "Bromplast 8 - Silicona Neutra  X 600",
+            "familia": "Estandar",
+            "sub_familia": "Estandar",
+            "tipo": "Accesorio",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "N/A",
+              "unit_base": "Unit",
+              "largo_min_max": "N/A"
+            },
+            "pricing": {
+              "cost_sin_iva": 7.91,
+              "sale_sin_iva": 9.49,
+              "sale_iva_inc": 11.58,
+              "web_sin_iva": 11.07,
+              "web_iva_inc": 13.51
+            }
+          }
+        ]
+      },
+      "ISODEC": {
+        "description": "ISODEC panels for heavy-duty roofing and wall applications",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "thickness_range": "50-250mm",
+        "product_count": 35,
+        "products": [
+          {
+            "sku": "GSDECAM50",
+            "name": "Gotero Superior  -  DE CAMARA  50mm",
+            "familia": "ISODEC",
+            "sub_familia": "GOTERO FRONTAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 22.77,
+              "sale_sin_iva": 27.32,
+              "sale_iva_inc": 33.34,
+              "web_sin_iva": 31.88,
+              "web_iva_inc": 38.89
+            }
+          },
+          {
+            "sku": "GSDECAM80",
+            "name": "Gotero Superior  -  DE CAMARA  80mm",
+            "familia": "ISODEC",
+            "sub_familia": "GOTERO FRONTAL PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 24.95,
+              "sale_sin_iva": 29.94,
+              "sale_iva_inc": 36.53,
+              "web_sin_iva": 34.93,
+              "web_iva_inc": 42.61
+            }
+          },
+          {
+            "sku": "ISD100EPS_1",
+            "name": "ISODEC EPS 100 mm",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "PANEL EPS",
+            "specifications": {
+              "thickness_mm": 100.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 32.83,
+              "sale_sin_iva": 37.76,
+              "sale_iva_inc": 46.07,
+              "web_sin_iva": 37.76,
+              "web_iva_inc": 46.07
+            },
+            "original_sku": "ISD100EPS"
+          },
+          {
+            "sku": "ISD150EPS_1",
+            "name": "ISODEC EPS 150 mm",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "PANEL EPS",
+            "specifications": {
+              "thickness_mm": 150.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 36.94,
+              "sale_sin_iva": 42.48,
+              "sale_iva_inc": 51.82,
+              "web_sin_iva": 42.48,
+              "web_iva_inc": 51.82
+            },
+            "original_sku": "ISD150EPS"
+          },
+          {
+            "sku": "ISD200EPS_1",
+            "name": "ISODEC EPS 200 mm",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "PANEL EPS",
+            "specifications": {
+              "thickness_mm": 200.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 41.42,
+              "sale_sin_iva": 47.64,
+              "sale_iva_inc": 58.12,
+              "web_sin_iva": 47.64,
+              "web_iva_inc": 58.12
+            },
+            "original_sku": "ISD200EPS"
+          },
+          {
+            "sku": "ISD250EPS_1",
+            "name": "ISODEC EPS 250mm",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "PANEL EPS",
+            "specifications": {
+              "thickness_mm": 250.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 45.53,
+              "sale_sin_iva": 52.35,
+              "sale_iva_inc": 63.87,
+              "web_sin_iva": 52.35,
+              "web_iva_inc": 63.87
+            },
+            "original_sku": "ISD250EPS"
+          },
+          {
+            "sku": "ISD50PIR",
+            "name": "ISODEC 50mm PIR (EVITAR ESTE ESPESOR)",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "PANEL PIR",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 36.37,
+              "sale_sin_iva": 41.82,
+              "sale_iva_inc": 51.02,
+              "web_sin_iva": 41.82,
+              "web_iva_inc": 51.02
+            }
+          },
+          {
+            "sku": "ISD80PIR",
+            "name": "ISODEC 80mm PIR",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "PANEL PIR",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 37.17,
+              "sale_sin_iva": 42.75,
+              "sale_iva_inc": 52.15,
+              "web_sin_iva": 42.75,
+              "web_iva_inc": 52.15
+            }
+          },
+          {
+            "sku": "ISD80PIR_1",
+            "name": "ISODEC 120mm PIR",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "PANEL PIR",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "3.5 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 44.68,
+              "sale_sin_iva": 51.38,
+              "sale_iva_inc": 62.69,
+              "web_sin_iva": 51.38,
+              "web_iva_inc": 62.69
+            },
+            "original_sku": "ISD80PIR"
+          },
+          {
+            "sku": "GF80DC",
+            "name": "Perf. Ch. Gotero Frontal 50mm - ISODEC PIR  - (3,03m)",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Gotero Frontal",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "3.03",
+              "unit_base": "unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 16.64,
+              "sale_sin_iva": 19.97,
+              "sale_iva_inc": 24.36,
+              "web_sin_iva": 23.3,
+              "web_iva_inc": 28.42
+            }
+          },
+          {
+            "sku": "GF120DC",
+            "name": "Perf. Ch. Gotero Frontal 80mm - ISODEC PIR  - (3,03m)",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Gotero Frontal",
+            "specifications": {
+              "thickness_mm": 120.0,
+              "length_m": "3.03",
+              "unit_base": "unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 17.39,
+              "sale_sin_iva": 20.87,
+              "sale_iva_inc": 25.46,
+              "web_sin_iva": 24.34,
+              "web_iva_inc": 29.7
+            }
+          },
+          {
+            "sku": "6838",
+            "name": "Perf. Ch. Gotero Frontal 100mm - (3,03m)",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Gotero Frontal",
+            "specifications": {
+              "thickness_mm": 100.0,
+              "length_m": "3.03",
+              "unit_base": "unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 13.06,
+              "sale_sin_iva": 15.67,
+              "sale_iva_inc": 19.12,
+              "web_sin_iva": 18.28,
+              "web_iva_inc": 22.31
+            }
+          },
+          {
+            "sku": "GF120DC_1",
+            "name": "Perf. Ch. Gotero Frontal 120mm - ISODEC PIR  - (3,03m)",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Gotero Frontal",
+            "specifications": {
+              "thickness_mm": 120.0,
+              "length_m": "3.03",
+              "unit_base": "unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 20.58,
+              "sale_sin_iva": 24.69,
+              "sale_iva_inc": 30.12,
+              "web_sin_iva": 28.81,
+              "web_iva_inc": 35.14
+            },
+            "original_sku": "GF120DC"
+          },
+          {
+            "sku": "6839",
+            "name": "Perf. Ch. Gotero Frontal 150mm - (3,03m)",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Gotero Frontal",
+            "specifications": {
+              "thickness_mm": 150.0,
+              "length_m": "3.03",
+              "unit_base": "unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 18.87,
+              "sale_sin_iva": 22.64,
+              "sale_iva_inc": 27.63,
+              "web_sin_iva": 26.42,
+              "web_iva_inc": 32.23
+            }
+          },
+          {
+            "sku": "6840",
+            "name": "Perf. Ch. Gotero Frontal 200mm - (3,03m)",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Gotero Frontal",
+            "specifications": {
+              "thickness_mm": 200.0,
+              "length_m": "3.03",
+              "unit_base": "unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 19.64,
+              "sale_sin_iva": 23.57,
+              "sale_iva_inc": 28.75,
+              "web_sin_iva": 27.5,
+              "web_iva_inc": 33.55
+            }
+          },
+          {
+            "sku": "6841",
+            "name": "Perf. Ch. Gotero Frontal 250mm - (3,03m)",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Gotero Frontal",
+            "specifications": {
+              "thickness_mm": 250.0,
+              "length_m": "3.03",
+              "unit_base": "unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 19.83,
+              "sale_sin_iva": 23.8,
+              "sale_iva_inc": 29.03,
+              "web_sin_iva": 27.76,
+              "web_iva_inc": 33.87
+            }
+          },
+          {
+            "sku": "GL80DC",
+            "name": "Perf. Ch. Gotero Lateral 50mm - ISODEC PIR  - (3m)",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 22.09,
+              "sale_sin_iva": 26.51,
+              "sale_iva_inc": 32.34,
+              "web_sin_iva": 30.92,
+              "web_iva_inc": 37.73
+            }
+          },
+          {
+            "sku": "GL80DC_1",
+            "name": "Perf. Ch. Gotero Lateral 80mm - ISODEC PIR  - (3m)",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 22.09,
+              "sale_sin_iva": 26.51,
+              "sale_iva_inc": 32.34,
+              "web_sin_iva": 30.92,
+              "web_iva_inc": 37.73
+            },
+            "original_sku": "GL80DC"
+          },
+          {
+            "sku": "6842",
+            "name": "Perf. Ch. Gotero Lateral 100mm - (3m)",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 100.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 17.31,
+              "sale_sin_iva": 20.77,
+              "sale_iva_inc": 25.34,
+              "web_sin_iva": 24.23,
+              "web_iva_inc": 29.57
+            }
+          },
+          {
+            "sku": "GL120DC",
+            "name": "Perf. Ch. Gotero Lateral 120mm - ISODEC PIR  - (3m)",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 120.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 25.9,
+              "sale_sin_iva": 31.08,
+              "sale_iva_inc": 37.92,
+              "web_sin_iva": 36.26,
+              "web_iva_inc": 44.24
+            }
+          },
+          {
+            "sku": "6843",
+            "name": "Perf. Ch. Gotero Lateral 150mm - (3m)",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 150.0,
+              "length_m": "3.000",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 24.22,
+              "sale_sin_iva": 29.06,
+              "sale_iva_inc": 35.46,
+              "web_sin_iva": 33.91,
+              "web_iva_inc": 41.37
+            }
+          },
+          {
+            "sku": "6844",
+            "name": "Perf. Ch. Gotero Lateral 200mm - (3m)",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 200.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 26.46,
+              "sale_sin_iva": 31.75,
+              "sale_iva_inc": 38.74,
+              "web_sin_iva": 37.04,
+              "web_iva_inc": 45.19
+            }
+          },
+          {
+            "sku": "6845",
+            "name": "Perf. Ch. Gotero Lateral 250mm - (3m)",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 250.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 26.62,
+              "sale_sin_iva": 31.94,
+              "sale_iva_inc": 38.97,
+              "web_sin_iva": 37.27,
+              "web_iva_inc": 45.47
+            }
+          },
+          {
+            "sku": "6847",
+            "name": "Perfil Cumbrera",
+            "familia": "ISODEC",
+            "sub_familia": "PIR / EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "3.03",
+              "unit_base": "unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 19.64,
+              "sale_sin_iva": 23.57,
+              "sale_iva_inc": 28.75,
+              "web_sin_iva": 27.5,
+              "web_iva_inc": 33.55
+            }
+          },
+          {
+            "sku": "6828",
+            "name": "Babeta ISODEC de Adosar",
+            "familia": "ISODEC",
+            "sub_familia": "PIR / EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 10.16,
+              "sale_sin_iva": 12.19,
+              "sale_iva_inc": 14.87,
+              "web_sin_iva": 14.22,
+              "web_iva_inc": 17.35
+            }
+          },
+          {
+            "sku": "6865",
+            "name": "Babeta ISODEC de empotrar",
+            "familia": "ISODEC",
+            "sub_familia": "PIR / EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 10.16,
+              "sale_sin_iva": 12.19,
+              "sale_iva_inc": 14.87,
+              "web_sin_iva": 14.22,
+              "web_iva_inc": 17.35
+            }
+          },
+          {
+            "sku": "6825",
+            "name": "Vaina ISODEC Sist 2000",
+            "familia": "ISODEC",
+            "sub_familia": "PIR / EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 7.56,
+              "sale_sin_iva": 9.07,
+              "sale_iva_inc": 11.07,
+              "web_sin_iva": 10.58,
+              "web_iva_inc": 12.91
+            }
+          },
+          {
+            "sku": "CAN.ISDC120",
+            "name": "Canalón Isodec 50mm ISODEC PIR",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 77.72,
+              "sale_sin_iva": 93.26,
+              "sale_iva_inc": 113.78,
+              "web_sin_iva": 108.8,
+              "web_iva_inc": 132.74
+            }
+          },
+          {
+            "sku": "CAN.ISDC120_1",
+            "name": "Canalón Isodec 80mm ISODEC PIR",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 77.72,
+              "sale_sin_iva": 93.26,
+              "sale_iva_inc": 113.78,
+              "web_sin_iva": 108.8,
+              "web_iva_inc": 132.74
+            },
+            "original_sku": "CAN.ISDC120"
+          },
+          {
+            "sku": "6801",
+            "name": "Canalón Estandar 100 mm",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 100.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 57.95,
+              "sale_sin_iva": 69.54,
+              "sale_iva_inc": 84.84,
+              "web_sin_iva": 81.13,
+              "web_iva_inc": 98.98
+            }
+          },
+          {
+            "sku": "CAN.ISDC120_2",
+            "name": "Canalón Isodec 120mm ISODEC PIR",
+            "familia": "ISODEC",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 120.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 77.72,
+              "sale_sin_iva": 93.26,
+              "sale_iva_inc": 113.78,
+              "web_sin_iva": 108.8,
+              "web_iva_inc": 132.74
+            },
+            "original_sku": "CAN.ISDC120"
+          },
+          {
+            "sku": "6802",
+            "name": "Canalón Estandar 150 mm",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 150.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 66.71,
+              "sale_sin_iva": 80.05,
+              "sale_iva_inc": 97.66,
+              "web_sin_iva": 93.39,
+              "web_iva_inc": 113.94
+            }
+          },
+          {
+            "sku": "6803",
+            "name": "Canalón Estandar 200 mm",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 200.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 66.44,
+              "sale_sin_iva": 79.73,
+              "sale_iva_inc": 97.27,
+              "web_sin_iva": 93.02,
+              "web_iva_inc": 113.48
+            }
+          },
+          {
+            "sku": "6804",
+            "name": "Canalón Estandar 250 mm",
+            "familia": "ISODEC",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 250.0,
+              "length_m": "3.03",
+              "unit_base": "Unit",
+              "largo_min_max": "3.03"
+            },
+            "pricing": {
+              "cost_sin_iva": 86.92,
+              "sale_sin_iva": 104.3,
+              "sale_iva_inc": 127.25,
+              "web_sin_iva": 121.69,
+              "web_iva_inc": 148.46
+            }
+          },
+          {
+            "sku": "6805",
+            "name": "Soporte de Canalón de 3 m",
+            "familia": "ISODEC",
+            "sub_familia": "PIR / EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "3.00",
+              "unit_base": "Unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 13.28,
+              "sale_sin_iva": 15.94,
+              "sale_iva_inc": 19.44,
+              "web_sin_iva": 18.59,
+              "web_iva_inc": 22.68
+            }
+          }
+        ]
+      },
+      "ISOROOF Colonial": {
+        "description": "Isoroof Colonial panels with tile-like appearance",
+        "sub_familia": "CUMBRERAS PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "thickness_range": null,
+        "product_count": 1,
+        "products": [
+          {
+            "sku": "CUMROOF3M_1",
+            "name": "Cumbrera Roof COLONIAL - 2,2 m (2 piezas de 1,1m)",
+            "familia": "ISOROOF Colonial",
+            "sub_familia": "CUMBRERAS PREPINTADO",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": null,
+              "length_m": "2.20",
+              "unit_base": "Unit",
+              "largo_min_max": null
+            },
+            "pricing": {
+              "cost_sin_iva": 81.55,
+              "sale_sin_iva": 97.86,
+              "sale_iva_inc": 119.39,
+              "web_sin_iva": 114.17,
+              "web_iva_inc": 139.29
+            },
+            "original_sku": "CUMROOF3M"
+          }
+        ]
+      },
+      "ISOWALL": {
+        "description": "Isowall panels for facade and wall insulation",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "thickness_range": "50-100mm",
+        "product_count": 6,
+        "products": [
+          {
+            "sku": "IW50",
+            "name": "Isowall 50 mm PIR - GRIS / Blanco",
+            "familia": "ISOWALL",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.6 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 38.95,
+              "sale_sin_iva": 46.74,
+              "sale_iva_inc": 57.03,
+              "web_sin_iva": 46.74,
+              "web_iva_inc": 57.03
+            }
+          },
+          {
+            "sku": "IW50_1",
+            "name": "Isowall 80 mm PIR - GRIS / Blanco",
+            "familia": "ISOWALL",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.6 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 46.45,
+              "sale_sin_iva": 55.74,
+              "sale_iva_inc": 68.0,
+              "web_sin_iva": 55.74,
+              "web_iva_inc": 68.0
+            },
+            "original_sku": "IW50"
+          },
+          {
+            "sku": "IW50_2",
+            "name": "Isowall 50 mm",
+            "familia": "ISOWALL",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.6 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 38.95,
+              "sale_sin_iva": 44.8,
+              "sale_iva_inc": 54.65,
+              "web_sin_iva": 44.8,
+              "web_iva_inc": 54.65
+            },
+            "original_sku": "IW50"
+          },
+          {
+            "sku": "IW80",
+            "name": "Isowall 80 mm",
+            "familia": "ISOWALL",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.6 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 46.45,
+              "sale_sin_iva": 53.42,
+              "sale_iva_inc": 65.17,
+              "web_sin_iva": 53.42,
+              "web_iva_inc": 65.17
+            }
+          },
+          {
+            "sku": "IW100",
+            "name": "Isowall 100 mm",
+            "familia": "ISOWALL",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 100.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.6 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 51.22,
+              "sale_sin_iva": 58.9,
+              "sale_iva_inc": 71.86,
+              "web_sin_iva": 58.9,
+              "web_iva_inc": 71.86
+            }
+          },
+          {
+            "sku": "PU50MM_3",
+            "name": "Perfil Ch. Blanco U 80 mm x 35 mm ISOWALL / 3 m",
+            "familia": "ISOWALL",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 10.93,
+              "sale_sin_iva": 13.12,
+              "sale_iva_inc": 16.0,
+              "web_sin_iva": 15.3,
+              "web_iva_inc": 18.67
+            },
+            "original_sku": "PU50MM"
+          }
+        ]
+      },
+      "ISOFRIG": {
+        "description": "IsoFrig panels for refrigeration and clean rooms",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "thickness_range": "40-150mm",
+        "product_count": 7,
+        "products": [
+          {
+            "sku": "IF40",
+            "name": "IsoFrig 40 mm",
+            "familia": "ISOFRIG",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 40.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 36.27,
+              "sale_sin_iva": 43.53,
+              "sale_iva_inc": 53.11,
+              "web_sin_iva": 43.53,
+              "web_iva_inc": 53.11
+            }
+          },
+          {
+            "sku": "IF60 - IFSL60",
+            "name": "IsoFrig - Sala Limpia 60 mm",
+            "familia": "ISOFRIG",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 60.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 41.22,
+              "sale_sin_iva": 47.4,
+              "sale_iva_inc": 57.83,
+              "web_sin_iva": 47.4,
+              "web_iva_inc": 57.83
+            }
+          },
+          {
+            "sku": "IF80 - IFSL80",
+            "name": "IsoFrig - Sala Limpia 80 mm",
+            "familia": "ISOFRIG",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 80.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 45.47,
+              "sale_sin_iva": 52.29,
+              "sale_iva_inc": 63.8,
+              "web_sin_iva": 52.29,
+              "web_iva_inc": 63.8
+            }
+          },
+          {
+            "sku": "IF100 - IFSL100",
+            "name": "IsoFrig - Sala Limpia 100 mm",
+            "familia": "ISOFRIG",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 100.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 50.44,
+              "sale_sin_iva": 58.01,
+              "sale_iva_inc": 70.77,
+              "web_sin_iva": 58.01,
+              "web_iva_inc": 70.77
+            }
+          },
+          {
+            "sku": "IF150 - IFSL150",
+            "name": "IsoFrig - Sala Limpia 150 mm",
+            "familia": "ISOFRIG",
+            "sub_familia": "PIR",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 150.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 61.19,
+              "sale_sin_iva": 70.37,
+              "sale_iva_inc": 85.85,
+              "web_sin_iva": 70.37,
+              "web_iva_inc": 85.85
+            }
+          },
+          {
+            "sku": "PU50MM",
+            "name": "Perfil Ch. Blanco U 40 mm x 35 mm ISOFRIG / 3 m",
+            "familia": "ISOFRIG",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 40.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 9.45,
+              "sale_sin_iva": 11.34,
+              "sale_iva_inc": 13.83,
+              "web_sin_iva": 13.23,
+              "web_iva_inc": 16.14
+            }
+          },
+          {
+            "sku": "PU50MM_2",
+            "name": "Perfil Ch. Blanco U 60 mm x 35 mm ISOFRIG / 3 m",
+            "familia": "ISOFRIG",
+            "sub_familia": "PIR",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 60.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 10.16,
+              "sale_sin_iva": 12.19,
+              "sale_iva_inc": 14.87,
+              "web_sin_iva": 14.22,
+              "web_iva_inc": 17.35
+            },
+            "original_sku": "PU50MM"
+          }
+        ]
+      },
+      "ISOPANEL": {
+        "description": "ISOPANEL EPS panels for general construction",
+        "sub_familia": "EPS",
+        "tipo": "Panel",
+        "thickness_range": "50-250mm",
+        "product_count": 8,
+        "products": [
+          {
+            "sku": "ISD50EPS",
+            "name": "ISOPANEL EPS 50 mm",
+            "familia": "ISOPANEL",
+            "sub_familia": "EPS",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 29.85,
+              "sale_sin_iva": 34.32,
+              "sale_iva_inc": 41.88,
+              "web_sin_iva": 34.32,
+              "web_iva_inc": 41.88
+            }
+          },
+          {
+            "sku": "ISD100EPS",
+            "name": "ISOPANEL EPS 100 mm",
+            "familia": "ISOPANEL",
+            "sub_familia": "EPS",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 100.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 32.83,
+              "sale_sin_iva": 37.76,
+              "sale_iva_inc": 46.07,
+              "web_sin_iva": 37.76,
+              "web_iva_inc": 46.07
+            }
+          },
+          {
+            "sku": "ISD150EPS",
+            "name": "ISOPANEL EPS 150 mm",
+            "familia": "ISOPANEL",
+            "sub_familia": "EPS",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 150.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 36.94,
+              "sale_sin_iva": 42.48,
+              "sale_iva_inc": 51.82,
+              "web_sin_iva": 42.48,
+              "web_iva_inc": 51.82
+            }
+          },
+          {
+            "sku": "ISD200EPS",
+            "name": "ISOPANEL EPS 200 mm",
+            "familia": "ISOPANEL",
+            "sub_familia": "EPS",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 200.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 41.42,
+              "sale_sin_iva": 47.64,
+              "sale_iva_inc": 58.12,
+              "web_sin_iva": 47.64,
+              "web_iva_inc": 58.12
+            }
+          },
+          {
+            "sku": "ISD250EPS",
+            "name": "ISOPANEL EPS 250mm",
+            "familia": "ISOPANEL",
+            "sub_familia": "EPS",
+            "tipo": "Panel",
+            "specifications": {
+              "thickness_mm": 250.0,
+              "length_m": "on demand",
+              "unit_base": "m2",
+              "largo_min_max": "2.3 / 14"
+            },
+            "pricing": {
+              "cost_sin_iva": 45.53,
+              "sale_sin_iva": 52.35,
+              "sale_iva_inc": 63.87,
+              "web_sin_iva": 52.35,
+              "web_iva_inc": 63.87
+            }
+          },
+          {
+            "sku": "PU150MM",
+            "name": "Perfil Ch. Blanco U 150 mm x 35 mm / 3 m",
+            "familia": "ISOPANEL",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 150.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 11.64,
+              "sale_sin_iva": 13.97,
+              "sale_iva_inc": 17.04,
+              "web_sin_iva": 16.3,
+              "web_iva_inc": 19.88
+            }
+          },
+          {
+            "sku": "PU200MM",
+            "name": "Perfil Ch. Blanco U 200 mm x 35 mm / 3 m",
+            "familia": "ISOPANEL",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 200.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 14.52,
+              "sale_sin_iva": 17.42,
+              "sale_iva_inc": 21.26,
+              "web_sin_iva": 20.33,
+              "web_iva_inc": 24.8
+            }
+          },
+          {
+            "sku": "PU250MM",
+            "name": "Perfil Ch. Blanco U 250 mm x 35 mm / 3 m",
+            "familia": "ISOPANEL",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 250.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 17.45,
+              "sale_sin_iva": 20.94,
+              "sale_iva_inc": 25.55,
+              "web_sin_iva": 24.43,
+              "web_iva_inc": 29.8
+            }
+          }
+        ]
+      },
+      "ISOWALL-ISOPANEL": {
+        "description": "Perfileria / Terminaciones products in ISOWALL-ISOPANEL family (PIR / EPS material)",
+        "sub_familia": "PIR / EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "thickness_range": "50mm",
+        "product_count": 1,
+        "products": [
+          {
+            "sku": "PU50MM_1",
+            "name": "Perfil Ch. Blanco U 50 mm x 35 mm / 3 m (ISOWALL - ISOPANEL)",
+            "familia": "ISOWALL-ISOPANEL",
+            "sub_familia": "PIR / EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 50.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 8.33,
+              "sale_sin_iva": 10.0,
+              "sale_iva_inc": 12.2,
+              "web_sin_iva": 11.66,
+              "web_iva_inc": 14.23
+            },
+            "original_sku": "PU50MM"
+          }
+        ]
+      },
+      "ISOPANEL EPS & PIR / ISOFRIG / ISOWALL": {
+        "description": "Perfileria / Terminaciones products in ISOPANEL EPS & PIR / ISOFRIG / ISOWALL family (EPS material)",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "thickness_range": "100mm",
+        "product_count": 1,
+        "products": [
+          {
+            "sku": "PU100MM",
+            "name": "Perfil Ch. Blanco U 100 mm x 35 mm / 3 m",
+            "familia": "ISOPANEL EPS & PIR / ISOFRIG / ISOWALL",
+            "sub_familia": "EPS",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 100.0,
+              "length_m": "3.00",
+              "unit_base": "unit",
+              "largo_min_max": "3.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 10.35,
+              "sale_sin_iva": 12.42,
+              "sale_iva_inc": 15.15,
+              "web_sin_iva": 14.49,
+              "web_iva_inc": 17.68
+            }
+          }
+        ]
+      },
+      "ISOPANEL / ISODEC": {
+        "description": "Perfileria / Terminaciones products in ISOPANEL / ISODEC family (Estandar material)",
+        "sub_familia": "Estandar",
+        "tipo": "Perfileria / Terminaciones",
+        "thickness_range": "98-148mm",
+        "product_count": 2,
+        "products": [
+          {
+            "sku": "PLEGU148",
+            "name": "Plegado Galv. Tipo U 148 mm / 2 m de largo",
+            "familia": "ISOPANEL / ISODEC",
+            "sub_familia": "Estandar",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 148.0,
+              "length_m": "2.00",
+              "unit_base": "unit",
+              "largo_min_max": "2.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 23.72,
+              "sale_sin_iva": 28.46,
+              "sale_iva_inc": 34.73,
+              "web_sin_iva": 33.21,
+              "web_iva_inc": 40.51
+            }
+          },
+          {
+            "sku": "PLECHU98",
+            "name": "Plegado Galv. Tipo U 98 mm / 2 m de largo",
+            "familia": "ISOPANEL / ISODEC",
+            "sub_familia": "Estandar",
+            "tipo": "Perfileria / Terminaciones",
+            "specifications": {
+              "thickness_mm": 98.0,
+              "length_m": "2.00",
+              "unit_base": "unit",
+              "largo_min_max": "2.00"
+            },
+            "pricing": {
+              "cost_sin_iva": 18.17,
+              "sale_sin_iva": 21.8,
+              "sale_iva_inc": 26.6,
+              "web_sin_iva": 25.44,
+              "web_iva_inc": 31.03
+            }
+          }
+        ]
+      }
+    },
+    "products": [
+      {
+        "sku": "IAGRO30",
+        "name": "Isoroof FOIL 30 mm - Color Gris-Rojo",
+        "familia": "ISOROOF / FOIL",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 30.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 28.14,
+          "sale_sin_iva": 32.36,
+          "sale_iva_inc": 39.48,
+          "web_sin_iva": 32.36,
+          "web_iva_inc": 39.48
+        }
+      },
+      {
+        "sku": "IAGRO50",
+        "name": "Isoroof FOIL 50 mm - Color Rojo-Gris",
+        "familia": "ISOROOF / FOIL",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 31.9,
+          "sale_sin_iva": 36.69,
+          "sale_iva_inc": 44.76,
+          "web_sin_iva": 36.69,
+          "web_iva_inc": 44.76
+        }
+      },
+      {
+        "sku": "IROOF30",
+        "name": "Isoroof 30 mm Terracota o Gris",
+        "familia": "ISOROOF",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 30.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 34.74,
+          "sale_sin_iva": 39.95,
+          "sale_iva_inc": 48.74,
+          "web_sin_iva": 39.95,
+          "web_iva_inc": 48.74
+        }
+      },
+      {
+        "sku": "IROOF40",
+        "name": "Isoroof 40 mm Terracota o Gris",
+        "familia": "ISOROOF",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 40.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 36.5,
+          "sale_sin_iva": 41.98,
+          "sale_iva_inc": 51.21,
+          "web_sin_iva": 41.98,
+          "web_iva_inc": 51.21
+        }
+      },
+      {
+        "sku": "IROOF50",
+        "name": "Isoroof 50 mm Terracota o Gris",
+        "familia": "ISOROOF",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 38.26,
+          "sale_sin_iva": 44.0,
+          "sale_iva_inc": 53.68,
+          "web_sin_iva": 44.0,
+          "web_iva_inc": 53.68
+        }
+      },
+      {
+        "sku": "IROOF80",
+        "name": "Isoroof 80 mm - Gris - Rojo",
+        "familia": "ISOROOF",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 44.98,
+          "sale_sin_iva": 51.73,
+          "sale_iva_inc": 63.11,
+          "web_sin_iva": 51.73,
+          "web_iva_inc": 63.11
+        }
+      },
+      {
+        "sku": "IROOF100",
+        "name": "Isoroof 100 mm - Gris - Rojo",
+        "familia": "ISOROOF",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 100.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 49.39,
+          "sale_sin_iva": 56.8,
+          "sale_iva_inc": 69.29,
+          "web_sin_iva": 56.8,
+          "web_iva_inc": 69.29
+        }
+      },
+      {
+        "sku": "IROOF50-PLS",
+        "name": "Isoroof Plus 50 mm - Gris - Rojo (MINIMO 800 M2)",
+        "familia": "ISOROOF",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 43.53,
+          "sale_sin_iva": 50.06,
+          "sale_iva_inc": 61.07,
+          "web_sin_iva": 60.94,
+          "web_iva_inc": 74.35
+        }
+      },
+      {
+        "sku": "IROOF80-PLS",
+        "name": "Isoroof Plus 80 mm - Gris - Rojo",
+        "familia": "ISOROOF",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 51.15,
+          "sale_sin_iva": 58.82,
+          "sale_iva_inc": 71.76,
+          "web_sin_iva": 58.82,
+          "web_iva_inc": 71.76
+        }
+      },
+      {
+        "sku": "C.But.",
+        "name": "Cinta Butilo 2mm x 15mm x 22.5m lineales",
+        "familia": "Estandar",
+        "sub_familia": "Estandar",
+        "tipo": "Accesorio",
+        "specifications": {
+          "thickness_mm": 2.0,
+          "length_m": "22,5",
+          "unit_base": "Unit",
+          "largo_min_max": "N/A"
+        },
+        "pricing": {
+          "cost_sin_iva": 12.95,
+          "sale_sin_iva": 14.89,
+          "sale_iva_inc": 18.17,
+          "web_sin_iva": 18.13,
+          "web_iva_inc": 22.12
+        }
+      },
+      {
+        "sku": "Cab. Roj",
+        "name": "Caballete Rojo Teja, Gris y blanco- (Arandela Trapezoidal)",
+        "familia": "ISOROOF",
+        "sub_familia": "PIR",
+        "tipo": "Anclajes / Fijaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "N/A",
+          "unit_base": "Unit",
+          "largo_min_max": "N/A"
+        },
+        "pricing": {
+          "cost_sin_iva": 0.33,
+          "sale_sin_iva": 0.5,
+          "sale_iva_inc": 0.6,
+          "web_sin_iva": 0.46,
+          "web_iva_inc": 0.56
+        }
+      },
+      {
+        "sku": "Bromplast",
+        "name": "Bromplast 8 - Silicona Neutra  X 600",
+        "familia": "Estandar",
+        "sub_familia": "Estandar",
+        "tipo": "Accesorio",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "N/A",
+          "unit_base": "Unit",
+          "largo_min_max": "N/A"
+        },
+        "pricing": {
+          "cost_sin_iva": 7.91,
+          "sale_sin_iva": 9.49,
+          "sale_iva_inc": 11.58,
+          "web_sin_iva": 11.07,
+          "web_iva_inc": 13.51
+        }
+      },
+      {
+        "sku": "GFS30",
+        "name": "Gotero Frontal Simple 30mm Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO FRONTAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 30.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 13.19,
+          "sale_sin_iva": 15.83,
+          "sale_iva_inc": 19.31,
+          "web_sin_iva": 18.47,
+          "web_iva_inc": 22.53
+        }
+      },
+      {
+        "sku": "GFS50",
+        "name": "Gotero Frontal Simple 50mm Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO FRONTAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 13.97,
+          "sale_sin_iva": 16.76,
+          "sale_iva_inc": 20.45,
+          "web_sin_iva": 19.56,
+          "web_iva_inc": 23.86
+        }
+      },
+      {
+        "sku": "GFS80",
+        "name": "Gotero Frontal Simple 80mm Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO FRONTAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 14.69,
+          "sale_sin_iva": 17.63,
+          "sale_iva_inc": 21.51,
+          "web_sin_iva": 20.57,
+          "web_iva_inc": 25.09
+        }
+      },
+      {
+        "sku": "GFSUP30",
+        "name": "Gotero Superior 30mm Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO FRONTAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 30.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 23.51,
+          "sale_sin_iva": 28.21,
+          "sale_iva_inc": 34.42,
+          "web_sin_iva": 32.91,
+          "web_iva_inc": 40.16
+        }
+      },
+      {
+        "sku": "GFSUP40",
+        "name": "Gotero Superior 40mm Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO FRONTAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 40.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 21.3,
+          "sale_sin_iva": 25.56,
+          "sale_iva_inc": 31.18,
+          "web_sin_iva": 29.82,
+          "web_iva_inc": 36.38
+        }
+      },
+      {
+        "sku": "GFSUP50",
+        "name": "Gotero Superior 50mm Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO FRONTAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 24.23,
+          "sale_sin_iva": 29.08,
+          "sale_iva_inc": 35.47,
+          "web_sin_iva": 33.92,
+          "web_iva_inc": 41.38
+        }
+      },
+      {
+        "sku": "GFSUP80",
+        "name": "Gotero Superior 80mm Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO FRONTAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 25.7,
+          "sale_sin_iva": 30.84,
+          "sale_iva_inc": 37.62,
+          "web_sin_iva": 35.98,
+          "web_iva_inc": 43.9
+        }
+      },
+      {
+        "sku": "GFCGR30",
+        "name": "Gotero frontal con greca  1 x panel  30 - 40 - 50 - 80 - 100 mm",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO FRONTAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 100.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 13.84,
+          "sale_sin_iva": 17.99,
+          "sale_iva_inc": 21.95,
+          "web_sin_iva": 19.38,
+          "web_iva_inc": 23.64
+        }
+      },
+      {
+        "sku": "GSDECAM50",
+        "name": "Gotero Superior  -  DE CAMARA  50mm",
+        "familia": "ISODEC",
+        "sub_familia": "GOTERO FRONTAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 22.77,
+          "sale_sin_iva": 27.32,
+          "sale_iva_inc": 33.34,
+          "web_sin_iva": 31.88,
+          "web_iva_inc": 38.89
+        }
+      },
+      {
+        "sku": "GSDECAM80",
+        "name": "Gotero Superior  -  DE CAMARA  80mm",
+        "familia": "ISODEC",
+        "sub_familia": "GOTERO FRONTAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 24.95,
+          "sale_sin_iva": 29.94,
+          "sale_iva_inc": 36.53,
+          "web_sin_iva": 34.93,
+          "web_iva_inc": 42.61
+        }
+      },
+      {
+        "sku": "GL30",
+        "name": "Gotero Lateral 30mm  Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO LATERAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 30.0,
+          "length_m": "3",
+          "unit_base": "Unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 18.19,
+          "sale_sin_iva": 21.83,
+          "sale_iva_inc": 26.63,
+          "web_sin_iva": 25.47,
+          "web_iva_inc": 31.07
+        }
+      },
+      {
+        "sku": "GL40",
+        "name": "Gotero Lateral 40mm  Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO LATERAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 40.0,
+          "length_m": "3",
+          "unit_base": "Unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 18.9,
+          "sale_sin_iva": 22.68,
+          "sale_iva_inc": 27.67,
+          "web_sin_iva": 26.46,
+          "web_iva_inc": 32.28
+        }
+      },
+      {
+        "sku": "GL50",
+        "name": "Gotero Lateral 50mm  Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO LATERAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "3",
+          "unit_base": "Unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 19.64,
+          "sale_sin_iva": 23.57,
+          "sale_iva_inc": 28.75,
+          "web_sin_iva": 27.5,
+          "web_iva_inc": 33.55
+        }
+      },
+      {
+        "sku": "GL80",
+        "name": "Gotero Lateral 80mm  Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO LATERAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "3",
+          "unit_base": "Unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 21.09,
+          "sale_sin_iva": 25.31,
+          "sale_iva_inc": 30.88,
+          "web_sin_iva": 29.53,
+          "web_iva_inc": 36.02
+        }
+      },
+      {
+        "sku": "GLDCAM50",
+        "name": "Gotero Lateral   CAMARA  50mm  Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO LATERAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "3",
+          "unit_base": "Unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 18.6,
+          "sale_sin_iva": 22.32,
+          "sale_iva_inc": 27.23,
+          "web_sin_iva": 26.04,
+          "web_iva_inc": 31.77
+        }
+      },
+      {
+        "sku": "GLDCAM80",
+        "name": "Gotero Lateral  CAMARA  80mm  Prep.",
+        "familia": "ISOROOF",
+        "sub_familia": "GOTERO LATERAL PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "3",
+          "unit_base": "Unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 20.92,
+          "sale_sin_iva": 25.1,
+          "sale_iva_inc": 30.63,
+          "web_sin_iva": 29.29,
+          "web_iva_inc": 35.73
+        }
+      },
+      {
+        "sku": "BBAS3G",
+        "name": "Babeta de Atornillar Superior 3G",
+        "familia": "ISOROOF",
+        "sub_familia": "BABETAS PREPINTADOS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 19.78,
+          "sale_sin_iva": 23.74,
+          "sale_iva_inc": 28.96,
+          "web_sin_iva": 27.69,
+          "web_iva_inc": 33.78
+        }
+      },
+      {
+        "sku": "BBESUP",
+        "name": "Babeta de Empotrar Superior 3G",
+        "familia": "ISOROOF",
+        "sub_familia": "BABETAS PREPINTADOS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 19.06,
+          "sale_sin_iva": 22.87,
+          "sale_iva_inc": 27.9,
+          "web_sin_iva": 26.68,
+          "web_iva_inc": 32.55
+        }
+      },
+      {
+        "sku": "BBAL-ATN",
+        "name": "Babeta de Atornillar Lateral",
+        "familia": "ISOROOF",
+        "sub_familia": "BABETAS PREPINTADOS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "3.00",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 12.0,
+          "sale_sin_iva": 14.4,
+          "sale_iva_inc": 17.57,
+          "web_sin_iva": 16.8,
+          "web_iva_inc": 20.5
+        }
+      },
+      {
+        "sku": "BBAL-EMP",
+        "name": "Babeta de Empotrar Lateral",
+        "familia": "ISOROOF",
+        "sub_familia": "BABETAS PREPINTADOS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "3.00",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 10.54,
+          "sale_sin_iva": 12.65,
+          "sale_iva_inc": 15.43,
+          "web_sin_iva": 14.76,
+          "web_iva_inc": 18.0
+        },
+        "original_sku": "BBAL"
+      },
+      {
+        "sku": "CD30",
+        "name": "Canalón Doble roof 30mm / base 150mm + tapas + agujero + bajada / 3,03 m",
+        "familia": "ISOROOF",
+        "sub_familia": "CANALÓN PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 30.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 59.86,
+          "sale_sin_iva": 71.83,
+          "sale_iva_inc": 87.64,
+          "web_sin_iva": 83.8,
+          "web_iva_inc": 102.24
+        }
+      },
+      {
+        "sku": "CD50",
+        "name": "Canalón Doble roof 50mm / base 150mm + tapas + agujero + bajada / 3,03 m",
+        "familia": "ISOROOF",
+        "sub_familia": "CANALÓN PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 60.99,
+          "sale_sin_iva": 73.19,
+          "sale_iva_inc": 89.29,
+          "web_sin_iva": 85.39,
+          "web_iva_inc": 104.17
+        }
+      },
+      {
+        "sku": "CD80",
+        "name": "Canalón Doble roof 80mm / base 150mm + tapas + agujero + bajada / 3,03 m",
+        "familia": "ISOROOF",
+        "sub_familia": "CANALÓN PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 61.85,
+          "sale_sin_iva": 74.22,
+          "sale_iva_inc": 90.55,
+          "web_sin_iva": 86.59,
+          "web_iva_inc": 105.64
+        }
+      },
+      {
+        "sku": "SOPCAN3M",
+        "name": "Soporte para Canalón Isoroof (3m)",
+        "familia": "ISOROOF",
+        "sub_familia": "CANALÓN PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "3.00",
+          "unit_base": "Unit",
+          "largo_min_max": null
+        },
+        "pricing": {
+          "cost_sin_iva": 10.93,
+          "sale_sin_iva": 13.12,
+          "sale_iva_inc": 16.0,
+          "web_sin_iva": 15.3,
+          "web_iva_inc": 18.67
+        }
+      },
+      {
+        "sku": "CUMROOF3M",
+        "name": "Cumbrera Roof 3G de 3 m",
+        "familia": "ISOROOF",
+        "sub_familia": "CUMBRERAS PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "3.00",
+          "unit_base": "Unit",
+          "largo_min_max": null
+        },
+        "pricing": {
+          "cost_sin_iva": 29.35,
+          "sale_sin_iva": 35.22,
+          "sale_iva_inc": 42.97,
+          "web_sin_iva": 41.09,
+          "web_iva_inc": 50.13
+        }
+      },
+      {
+        "sku": "CUMROOF3M_1",
+        "name": "Cumbrera Roof COLONIAL - 2,2 m (2 piezas de 1,1m)",
+        "familia": "ISOROOF Colonial",
+        "sub_familia": "CUMBRERAS PREPINTADO",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "2.20",
+          "unit_base": "Unit",
+          "largo_min_max": null
+        },
+        "pricing": {
+          "cost_sin_iva": 81.55,
+          "sale_sin_iva": 97.86,
+          "sale_iva_inc": 119.39,
+          "web_sin_iva": 114.17,
+          "web_iva_inc": 139.29
+        },
+        "original_sku": "CUMROOF3M"
+      },
+      {
+        "sku": "IW50",
+        "name": "Isowall 50 mm PIR - GRIS / Blanco",
+        "familia": "ISOWALL",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.6 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 38.95,
+          "sale_sin_iva": 46.74,
+          "sale_iva_inc": 57.03,
+          "web_sin_iva": 46.74,
+          "web_iva_inc": 57.03
+        }
+      },
+      {
+        "sku": "IW50_1",
+        "name": "Isowall 80 mm PIR - GRIS / Blanco",
+        "familia": "ISOWALL",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.6 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 46.45,
+          "sale_sin_iva": 55.74,
+          "sale_iva_inc": 68.0,
+          "web_sin_iva": 55.74,
+          "web_iva_inc": 68.0
+        },
+        "original_sku": "IW50"
+      },
+      {
+        "sku": "IW50_2",
+        "name": "Isowall 50 mm",
+        "familia": "ISOWALL",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.6 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 38.95,
+          "sale_sin_iva": 44.8,
+          "sale_iva_inc": 54.65,
+          "web_sin_iva": 44.8,
+          "web_iva_inc": 54.65
+        },
+        "original_sku": "IW50"
+      },
+      {
+        "sku": "IW80",
+        "name": "Isowall 80 mm",
+        "familia": "ISOWALL",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.6 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 46.45,
+          "sale_sin_iva": 53.42,
+          "sale_iva_inc": 65.17,
+          "web_sin_iva": 53.42,
+          "web_iva_inc": 65.17
+        }
+      },
+      {
+        "sku": "IW100",
+        "name": "Isowall 100 mm",
+        "familia": "ISOWALL",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 100.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.6 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 51.22,
+          "sale_sin_iva": 58.9,
+          "sale_iva_inc": 71.86,
+          "web_sin_iva": 58.9,
+          "web_iva_inc": 71.86
+        }
+      },
+      {
+        "sku": "IF40",
+        "name": "IsoFrig 40 mm",
+        "familia": "ISOFRIG",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 40.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 36.27,
+          "sale_sin_iva": 43.53,
+          "sale_iva_inc": 53.11,
+          "web_sin_iva": 43.53,
+          "web_iva_inc": 53.11
+        }
+      },
+      {
+        "sku": "IF60 - IFSL60",
+        "name": "IsoFrig - Sala Limpia 60 mm",
+        "familia": "ISOFRIG",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 60.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 41.22,
+          "sale_sin_iva": 47.4,
+          "sale_iva_inc": 57.83,
+          "web_sin_iva": 47.4,
+          "web_iva_inc": 57.83
+        }
+      },
+      {
+        "sku": "IF80 - IFSL80",
+        "name": "IsoFrig - Sala Limpia 80 mm",
+        "familia": "ISOFRIG",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 45.47,
+          "sale_sin_iva": 52.29,
+          "sale_iva_inc": 63.8,
+          "web_sin_iva": 52.29,
+          "web_iva_inc": 63.8
+        }
+      },
+      {
+        "sku": "IF100 - IFSL100",
+        "name": "IsoFrig - Sala Limpia 100 mm",
+        "familia": "ISOFRIG",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 100.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 50.44,
+          "sale_sin_iva": 58.01,
+          "sale_iva_inc": 70.77,
+          "web_sin_iva": 58.01,
+          "web_iva_inc": 70.77
+        }
+      },
+      {
+        "sku": "IF150 - IFSL150",
+        "name": "IsoFrig - Sala Limpia 150 mm",
+        "familia": "ISOFRIG",
+        "sub_familia": "PIR",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 150.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 61.19,
+          "sale_sin_iva": 70.37,
+          "sale_iva_inc": 85.85,
+          "web_sin_iva": 70.37,
+          "web_iva_inc": 85.85
+        }
+      },
+      {
+        "sku": "ISD50EPS",
+        "name": "ISOPANEL EPS 50 mm",
+        "familia": "ISOPANEL",
+        "sub_familia": "EPS",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 29.85,
+          "sale_sin_iva": 34.32,
+          "sale_iva_inc": 41.88,
+          "web_sin_iva": 34.32,
+          "web_iva_inc": 41.88
+        }
+      },
+      {
+        "sku": "ISD100EPS",
+        "name": "ISOPANEL EPS 100 mm",
+        "familia": "ISOPANEL",
+        "sub_familia": "EPS",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 100.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 32.83,
+          "sale_sin_iva": 37.76,
+          "sale_iva_inc": 46.07,
+          "web_sin_iva": 37.76,
+          "web_iva_inc": 46.07
+        }
+      },
+      {
+        "sku": "ISD150EPS",
+        "name": "ISOPANEL EPS 150 mm",
+        "familia": "ISOPANEL",
+        "sub_familia": "EPS",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 150.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 36.94,
+          "sale_sin_iva": 42.48,
+          "sale_iva_inc": 51.82,
+          "web_sin_iva": 42.48,
+          "web_iva_inc": 51.82
+        }
+      },
+      {
+        "sku": "ISD200EPS",
+        "name": "ISOPANEL EPS 200 mm",
+        "familia": "ISOPANEL",
+        "sub_familia": "EPS",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 200.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 41.42,
+          "sale_sin_iva": 47.64,
+          "sale_iva_inc": 58.12,
+          "web_sin_iva": 47.64,
+          "web_iva_inc": 58.12
+        }
+      },
+      {
+        "sku": "ISD250EPS",
+        "name": "ISOPANEL EPS 250mm",
+        "familia": "ISOPANEL",
+        "sub_familia": "EPS",
+        "tipo": "Panel",
+        "specifications": {
+          "thickness_mm": 250.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 45.53,
+          "sale_sin_iva": 52.35,
+          "sale_iva_inc": 63.87,
+          "web_sin_iva": 52.35,
+          "web_iva_inc": 63.87
+        }
+      },
+      {
+        "sku": "PU50MM",
+        "name": "Perfil Ch. Blanco U 40 mm x 35 mm ISOFRIG / 3 m",
+        "familia": "ISOFRIG",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 40.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 9.45,
+          "sale_sin_iva": 11.34,
+          "sale_iva_inc": 13.83,
+          "web_sin_iva": 13.23,
+          "web_iva_inc": 16.14
+        }
+      },
+      {
+        "sku": "PU50MM_1",
+        "name": "Perfil Ch. Blanco U 50 mm x 35 mm / 3 m (ISOWALL - ISOPANEL)",
+        "familia": "ISOWALL-ISOPANEL",
+        "sub_familia": "PIR / EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 8.33,
+          "sale_sin_iva": 10.0,
+          "sale_iva_inc": 12.2,
+          "web_sin_iva": 11.66,
+          "web_iva_inc": 14.23
+        },
+        "original_sku": "PU50MM"
+      },
+      {
+        "sku": "PU50MM_2",
+        "name": "Perfil Ch. Blanco U 60 mm x 35 mm ISOFRIG / 3 m",
+        "familia": "ISOFRIG",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 60.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 10.16,
+          "sale_sin_iva": 12.19,
+          "sale_iva_inc": 14.87,
+          "web_sin_iva": 14.22,
+          "web_iva_inc": 17.35
+        },
+        "original_sku": "PU50MM"
+      },
+      {
+        "sku": "PU50MM_3",
+        "name": "Perfil Ch. Blanco U 80 mm x 35 mm ISOWALL / 3 m",
+        "familia": "ISOWALL",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 10.93,
+          "sale_sin_iva": 13.12,
+          "sale_iva_inc": 16.0,
+          "web_sin_iva": 15.3,
+          "web_iva_inc": 18.67
+        },
+        "original_sku": "PU50MM"
+      },
+      {
+        "sku": "PU100MM",
+        "name": "Perfil Ch. Blanco U 100 mm x 35 mm / 3 m",
+        "familia": "ISOPANEL EPS & PIR / ISOFRIG / ISOWALL",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 100.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 10.35,
+          "sale_sin_iva": 12.42,
+          "sale_iva_inc": 15.15,
+          "web_sin_iva": 14.49,
+          "web_iva_inc": 17.68
+        }
+      },
+      {
+        "sku": "PU150MM",
+        "name": "Perfil Ch. Blanco U 150 mm x 35 mm / 3 m",
+        "familia": "ISOPANEL",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 150.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 11.64,
+          "sale_sin_iva": 13.97,
+          "sale_iva_inc": 17.04,
+          "web_sin_iva": 16.3,
+          "web_iva_inc": 19.88
+        }
+      },
+      {
+        "sku": "PU200MM",
+        "name": "Perfil Ch. Blanco U 200 mm x 35 mm / 3 m",
+        "familia": "ISOPANEL",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 200.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 14.52,
+          "sale_sin_iva": 17.42,
+          "sale_iva_inc": 21.26,
+          "web_sin_iva": 20.33,
+          "web_iva_inc": 24.8
+        }
+      },
+      {
+        "sku": "PU250MM",
+        "name": "Perfil Ch. Blanco U 250 mm x 35 mm / 3 m",
+        "familia": "ISOPANEL",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 250.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 17.45,
+          "sale_sin_iva": 20.94,
+          "sale_iva_inc": 25.55,
+          "web_sin_iva": 24.43,
+          "web_iva_inc": 29.8
+        }
+      },
+      {
+        "sku": "PLEGU148",
+        "name": "Plegado Galv. Tipo U 148 mm / 2 m de largo",
+        "familia": "ISOPANEL / ISODEC",
+        "sub_familia": "Estandar",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 148.0,
+          "length_m": "2.00",
+          "unit_base": "unit",
+          "largo_min_max": "2.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 23.72,
+          "sale_sin_iva": 28.46,
+          "sale_iva_inc": 34.73,
+          "web_sin_iva": 33.21,
+          "web_iva_inc": 40.51
+        }
+      },
+      {
+        "sku": "PLECHU98",
+        "name": "Plegado Galv. Tipo U 98 mm / 2 m de largo",
+        "familia": "ISOPANEL / ISODEC",
+        "sub_familia": "Estandar",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 98.0,
+          "length_m": "2.00",
+          "unit_base": "unit",
+          "largo_min_max": "2.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 18.17,
+          "sale_sin_iva": 21.8,
+          "sale_iva_inc": 26.6,
+          "web_sin_iva": 25.44,
+          "web_iva_inc": 31.03
+        }
+      },
+      {
+        "sku": "ISD100EPS_1",
+        "name": "ISODEC EPS 100 mm",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "PANEL EPS",
+        "specifications": {
+          "thickness_mm": 100.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 32.83,
+          "sale_sin_iva": 37.76,
+          "sale_iva_inc": 46.07,
+          "web_sin_iva": 37.76,
+          "web_iva_inc": 46.07
+        },
+        "original_sku": "ISD100EPS"
+      },
+      {
+        "sku": "ISD150EPS_1",
+        "name": "ISODEC EPS 150 mm",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "PANEL EPS",
+        "specifications": {
+          "thickness_mm": 150.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 36.94,
+          "sale_sin_iva": 42.48,
+          "sale_iva_inc": 51.82,
+          "web_sin_iva": 42.48,
+          "web_iva_inc": 51.82
+        },
+        "original_sku": "ISD150EPS"
+      },
+      {
+        "sku": "ISD200EPS_1",
+        "name": "ISODEC EPS 200 mm",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "PANEL EPS",
+        "specifications": {
+          "thickness_mm": 200.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 41.42,
+          "sale_sin_iva": 47.64,
+          "sale_iva_inc": 58.12,
+          "web_sin_iva": 47.64,
+          "web_iva_inc": 58.12
+        },
+        "original_sku": "ISD200EPS"
+      },
+      {
+        "sku": "ISD250EPS_1",
+        "name": "ISODEC EPS 250mm",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "PANEL EPS",
+        "specifications": {
+          "thickness_mm": 250.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "2.3 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 45.53,
+          "sale_sin_iva": 52.35,
+          "sale_iva_inc": 63.87,
+          "web_sin_iva": 52.35,
+          "web_iva_inc": 63.87
+        },
+        "original_sku": "ISD250EPS"
+      },
+      {
+        "sku": "ISD50PIR",
+        "name": "ISODEC 50mm PIR (EVITAR ESTE ESPESOR)",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "PANEL PIR",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 36.37,
+          "sale_sin_iva": 41.82,
+          "sale_iva_inc": 51.02,
+          "web_sin_iva": 41.82,
+          "web_iva_inc": 51.02
+        }
+      },
+      {
+        "sku": "ISD80PIR",
+        "name": "ISODEC 80mm PIR",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "PANEL PIR",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 37.17,
+          "sale_sin_iva": 42.75,
+          "sale_iva_inc": 52.15,
+          "web_sin_iva": 42.75,
+          "web_iva_inc": 52.15
+        }
+      },
+      {
+        "sku": "ISD80PIR_1",
+        "name": "ISODEC 120mm PIR",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "PANEL PIR",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "on demand",
+          "unit_base": "m2",
+          "largo_min_max": "3.5 / 14"
+        },
+        "pricing": {
+          "cost_sin_iva": 44.68,
+          "sale_sin_iva": 51.38,
+          "sale_iva_inc": 62.69,
+          "web_sin_iva": 51.38,
+          "web_iva_inc": 62.69
+        },
+        "original_sku": "ISD80PIR"
+      },
+      {
+        "sku": "GF80DC",
+        "name": "Perf. Ch. Gotero Frontal 50mm - ISODEC PIR  - (3,03m)",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Gotero Frontal",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "3.03",
+          "unit_base": "unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 16.64,
+          "sale_sin_iva": 19.97,
+          "sale_iva_inc": 24.36,
+          "web_sin_iva": 23.3,
+          "web_iva_inc": 28.42
+        }
+      },
+      {
+        "sku": "GF120DC",
+        "name": "Perf. Ch. Gotero Frontal 80mm - ISODEC PIR  - (3,03m)",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Gotero Frontal",
+        "specifications": {
+          "thickness_mm": 120.0,
+          "length_m": "3.03",
+          "unit_base": "unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 17.39,
+          "sale_sin_iva": 20.87,
+          "sale_iva_inc": 25.46,
+          "web_sin_iva": 24.34,
+          "web_iva_inc": 29.7
+        }
+      },
+      {
+        "sku": "6838",
+        "name": "Perf. Ch. Gotero Frontal 100mm - (3,03m)",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Gotero Frontal",
+        "specifications": {
+          "thickness_mm": 100.0,
+          "length_m": "3.03",
+          "unit_base": "unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 13.06,
+          "sale_sin_iva": 15.67,
+          "sale_iva_inc": 19.12,
+          "web_sin_iva": 18.28,
+          "web_iva_inc": 22.31
+        }
+      },
+      {
+        "sku": "GF120DC_1",
+        "name": "Perf. Ch. Gotero Frontal 120mm - ISODEC PIR  - (3,03m)",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Gotero Frontal",
+        "specifications": {
+          "thickness_mm": 120.0,
+          "length_m": "3.03",
+          "unit_base": "unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 20.58,
+          "sale_sin_iva": 24.69,
+          "sale_iva_inc": 30.12,
+          "web_sin_iva": 28.81,
+          "web_iva_inc": 35.14
+        },
+        "original_sku": "GF120DC"
+      },
+      {
+        "sku": "6839",
+        "name": "Perf. Ch. Gotero Frontal 150mm - (3,03m)",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Gotero Frontal",
+        "specifications": {
+          "thickness_mm": 150.0,
+          "length_m": "3.03",
+          "unit_base": "unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 18.87,
+          "sale_sin_iva": 22.64,
+          "sale_iva_inc": 27.63,
+          "web_sin_iva": 26.42,
+          "web_iva_inc": 32.23
+        }
+      },
+      {
+        "sku": "6840",
+        "name": "Perf. Ch. Gotero Frontal 200mm - (3,03m)",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Gotero Frontal",
+        "specifications": {
+          "thickness_mm": 200.0,
+          "length_m": "3.03",
+          "unit_base": "unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 19.64,
+          "sale_sin_iva": 23.57,
+          "sale_iva_inc": 28.75,
+          "web_sin_iva": 27.5,
+          "web_iva_inc": 33.55
+        }
+      },
+      {
+        "sku": "6841",
+        "name": "Perf. Ch. Gotero Frontal 250mm - (3,03m)",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Gotero Frontal",
+        "specifications": {
+          "thickness_mm": 250.0,
+          "length_m": "3.03",
+          "unit_base": "unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 19.83,
+          "sale_sin_iva": 23.8,
+          "sale_iva_inc": 29.03,
+          "web_sin_iva": 27.76,
+          "web_iva_inc": 33.87
+        }
+      },
+      {
+        "sku": "GL80DC",
+        "name": "Perf. Ch. Gotero Lateral 50mm - ISODEC PIR  - (3m)",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 22.09,
+          "sale_sin_iva": 26.51,
+          "sale_iva_inc": 32.34,
+          "web_sin_iva": 30.92,
+          "web_iva_inc": 37.73
+        }
+      },
+      {
+        "sku": "GL80DC_1",
+        "name": "Perf. Ch. Gotero Lateral 80mm - ISODEC PIR  - (3m)",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 22.09,
+          "sale_sin_iva": 26.51,
+          "sale_iva_inc": 32.34,
+          "web_sin_iva": 30.92,
+          "web_iva_inc": 37.73
+        },
+        "original_sku": "GL80DC"
+      },
+      {
+        "sku": "6842",
+        "name": "Perf. Ch. Gotero Lateral 100mm - (3m)",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 100.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 17.31,
+          "sale_sin_iva": 20.77,
+          "sale_iva_inc": 25.34,
+          "web_sin_iva": 24.23,
+          "web_iva_inc": 29.57
+        }
+      },
+      {
+        "sku": "GL120DC",
+        "name": "Perf. Ch. Gotero Lateral 120mm - ISODEC PIR  - (3m)",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 120.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 25.9,
+          "sale_sin_iva": 31.08,
+          "sale_iva_inc": 37.92,
+          "web_sin_iva": 36.26,
+          "web_iva_inc": 44.24
+        }
+      },
+      {
+        "sku": "6843",
+        "name": "Perf. Ch. Gotero Lateral 150mm - (3m)",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 150.0,
+          "length_m": "3.000",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 24.22,
+          "sale_sin_iva": 29.06,
+          "sale_iva_inc": 35.46,
+          "web_sin_iva": 33.91,
+          "web_iva_inc": 41.37
+        }
+      },
+      {
+        "sku": "6844",
+        "name": "Perf. Ch. Gotero Lateral 200mm - (3m)",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 200.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 26.46,
+          "sale_sin_iva": 31.75,
+          "sale_iva_inc": 38.74,
+          "web_sin_iva": 37.04,
+          "web_iva_inc": 45.19
+        }
+      },
+      {
+        "sku": "6845",
+        "name": "Perf. Ch. Gotero Lateral 250mm - (3m)",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 250.0,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 26.62,
+          "sale_sin_iva": 31.94,
+          "sale_iva_inc": 38.97,
+          "web_sin_iva": 37.27,
+          "web_iva_inc": 45.47
+        }
+      },
+      {
+        "sku": "6847",
+        "name": "Perfil Cumbrera",
+        "familia": "ISODEC",
+        "sub_familia": "PIR / EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "3.03",
+          "unit_base": "unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 19.64,
+          "sale_sin_iva": 23.57,
+          "sale_iva_inc": 28.75,
+          "web_sin_iva": 27.5,
+          "web_iva_inc": 33.55
+        }
+      },
+      {
+        "sku": "6828",
+        "name": "Babeta ISODEC de Adosar",
+        "familia": "ISODEC",
+        "sub_familia": "PIR / EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 10.16,
+          "sale_sin_iva": 12.19,
+          "sale_iva_inc": 14.87,
+          "web_sin_iva": 14.22,
+          "web_iva_inc": 17.35
+        }
+      },
+      {
+        "sku": "6865",
+        "name": "Babeta ISODEC de empotrar",
+        "familia": "ISODEC",
+        "sub_familia": "PIR / EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 10.16,
+          "sale_sin_iva": 12.19,
+          "sale_iva_inc": 14.87,
+          "web_sin_iva": 14.22,
+          "web_iva_inc": 17.35
+        }
+      },
+      {
+        "sku": "6825",
+        "name": "Vaina ISODEC Sist 2000",
+        "familia": "ISODEC",
+        "sub_familia": "PIR / EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "3.00",
+          "unit_base": "unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 7.56,
+          "sale_sin_iva": 9.07,
+          "sale_iva_inc": 11.07,
+          "web_sin_iva": 10.58,
+          "web_iva_inc": 12.91
+        }
+      },
+      {
+        "sku": "CAN.ISDC120",
+        "name": "Canalón Isodec 50mm ISODEC PIR",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 50.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 77.72,
+          "sale_sin_iva": 93.26,
+          "sale_iva_inc": 113.78,
+          "web_sin_iva": 108.8,
+          "web_iva_inc": 132.74
+        }
+      },
+      {
+        "sku": "CAN.ISDC120_1",
+        "name": "Canalón Isodec 80mm ISODEC PIR",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 80.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 77.72,
+          "sale_sin_iva": 93.26,
+          "sale_iva_inc": 113.78,
+          "web_sin_iva": 108.8,
+          "web_iva_inc": 132.74
+        },
+        "original_sku": "CAN.ISDC120"
+      },
+      {
+        "sku": "6801",
+        "name": "Canalón Estandar 100 mm",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 100.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 57.95,
+          "sale_sin_iva": 69.54,
+          "sale_iva_inc": 84.84,
+          "web_sin_iva": 81.13,
+          "web_iva_inc": 98.98
+        }
+      },
+      {
+        "sku": "CAN.ISDC120_2",
+        "name": "Canalón Isodec 120mm ISODEC PIR",
+        "familia": "ISODEC",
+        "sub_familia": "PIR",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 120.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 77.72,
+          "sale_sin_iva": 93.26,
+          "sale_iva_inc": 113.78,
+          "web_sin_iva": 108.8,
+          "web_iva_inc": 132.74
+        },
+        "original_sku": "CAN.ISDC120"
+      },
+      {
+        "sku": "6802",
+        "name": "Canalón Estandar 150 mm",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 150.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 66.71,
+          "sale_sin_iva": 80.05,
+          "sale_iva_inc": 97.66,
+          "web_sin_iva": 93.39,
+          "web_iva_inc": 113.94
+        }
+      },
+      {
+        "sku": "6803",
+        "name": "Canalón Estandar 200 mm",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 200.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 66.44,
+          "sale_sin_iva": 79.73,
+          "sale_iva_inc": 97.27,
+          "web_sin_iva": 93.02,
+          "web_iva_inc": 113.48
+        }
+      },
+      {
+        "sku": "6804",
+        "name": "Canalón Estandar 250 mm",
+        "familia": "ISODEC",
+        "sub_familia": "EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": 250.0,
+          "length_m": "3.03",
+          "unit_base": "Unit",
+          "largo_min_max": "3.03"
+        },
+        "pricing": {
+          "cost_sin_iva": 86.92,
+          "sale_sin_iva": 104.3,
+          "sale_iva_inc": 127.25,
+          "web_sin_iva": 121.69,
+          "web_iva_inc": 148.46
+        }
+      },
+      {
+        "sku": "6805",
+        "name": "Soporte de Canalón de 3 m",
+        "familia": "ISODEC",
+        "sub_familia": "PIR / EPS",
+        "tipo": "Perfileria / Terminaciones",
+        "specifications": {
+          "thickness_mm": null,
+          "length_m": "3.00",
+          "unit_base": "Unit",
+          "largo_min_max": "3.00"
+        },
+        "pricing": {
+          "cost_sin_iva": 13.28,
+          "sale_sin_iva": 15.94,
+          "sale_iva_inc": 19.44,
+          "web_sin_iva": 18.59,
+          "web_iva_inc": 22.68
+        }
+      }
+    ]
+  }
+}

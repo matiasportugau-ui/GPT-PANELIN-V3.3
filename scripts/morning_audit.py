@@ -47,6 +47,12 @@ class PanelinAudit:
         creds_path = os.getenv("GOOGLE_SHEETS_CREDENTIALS_PATH", "").strip()
         sheet_id = os.getenv("GOOGLE_SHEETS_ID", "").strip()
 
+        if not sheet_id:
+            logger.warning(
+                "⚠️ Google Sheets ID missing. "
+                "Set GOOGLE_SHEETS_ID to enable audit writes to Sheets."
+            )
+            return None
         if not creds_path:
             logger.warning(
                 "⚠️ Google Sheets credentials path missing. "

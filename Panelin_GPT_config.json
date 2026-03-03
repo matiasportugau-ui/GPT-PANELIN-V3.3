@@ -106,7 +106,7 @@
     "audio_transcription_note": "No puede transcribir archivos de audio. Solicitar al usuario que proporcione transcripción en texto.",
     "wolf_api_kb_write": true,
     "wolf_api_kb_write_requires_password": true,
-    "wolf_api_kb_write_password": "mywolfy",
+    "wolf_api_kb_write_password": "SET_VIA_ENV_VAR",
     "wolf_api_kb_write_auth_note": "Before executing ANY KB write operation (conversations, corrections, customers), Panelin MUST ask the user for the KB write password and validate it matches. Read operations (GET /kb/customers) do NOT require password.",
     "wolf_api_kb_write_endpoints": [
       "POST /kb/conversations - Persist conversation summaries and quotation history (REQUIRES PASSWORD)",

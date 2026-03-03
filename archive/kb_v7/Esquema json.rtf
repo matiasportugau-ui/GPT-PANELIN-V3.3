@@ -1,0 +1,820 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \{\
+  "openapi": "3.1.0",\
+  "info": \{\
+    "title": "Panelin Wolf API",\
+    "description": "Secure API for BMC Uruguay panel quotations with KB Write capabilities. Authenticated endpoints require X-API-Key header. Write operations require password.",\
+    "version": "3.0.0"\
+  \},\
+  "servers": [\
+    \{\
+      "url": "https://panelin-api-642127786762.us-central1.run.app",\
+      "description": "Cloud Run Production"\
+    \}\
+  ],\
+  "components": \{\
+    "securitySchemes": \{\
+      "ApiKeyAuth": \{\
+        "type": "apiKey",\
+        "in": "header",\
+        "name": "X-API-Key",\
+        "description": "API key - use your WOLF_API_KEY value"\
+      \}\
+    \},\
+    "schemas": \{\
+      "QuoteRequest": \{\
+        "type": "object",\
+        "required": [\
+          "product_id",\
+          "length_m",\
+          "width_m"\
+        ],\
+        "properties": \{\
+          "product_id": \{\
+            "type": "string",\
+            "description": "Product ID e.g. ISOPANEL_EPS_50mm"\
+          \},\
+          "length_m": \{\
+            "type": "number",\
+            "minimum": 0.5,\
+            "maximum": 14\
+          \},\
+          "width_m": \{\
+            "type": "number",\
+            "minimum": 0.5,\
+            "maximum": 50\
+          \},\
+          "quantity": \{\
+            "type": "integer",\
+            "minimum": 1,\
+            "default": 1\
+          \},\
+          "discount_percent": \{\
+            "type": "number",\
+            "minimum": 0,\
+            "maximum": 30,\
+            "default": 0\
+          \},\
+          "include_accessories": \{\
+            "type": "boolean",\
+            "default": false\
+          \},\
+          "include_tax": \{\
+            "type": "boolean",\
+            "default": true\
+          \},\
+          "installation_type": \{\
+            "type": "string",\
+            "enum": [\
+              "techo",\
+              "pared"\
+            ],\
+            "default": "techo"\
+          \}\
+        \}\
+      \},\
+      "ProductSearchRequest": \{\
+        "type": "object",\
+        "required": [\
+          "query"\
+        ],\
+        "properties": \{\
+          "query": \{\
+            "type": "string",\
+            "minLength": 3\
+          \},\
+          "max_results": \{\
+            "type": "integer",\
+            "minimum": 1,\
+            "maximum": 20,\
+            "default": 5\
+          \}\
+        \}\
+      \},\
+      "ProductPriceRequest": \{\
+        "type": "object",\
+        "required": [\
+          "product_id"\
+        ],\
+        "properties": \{\
+          "product_id": \{\
+            "type": "string"\
+          \}\
+        \}\
+      \},\
+      "JsonObject": \{\
+        "type": "object",\
+        "properties": \{\
+          "detail": \{\
+            "type": "string",\
+            "description": "Optional message or detail"\
+          \}\
+        \}\
+      \},\
+      "FindProductsResponse": \{\
+        "type": "object",\
+        "properties": \{\
+          "results": \{\
+            "type": "array",\
+            "items": \{\
+              "type": "object",\
+              "properties": \{\
+                "product_id": \{\
+                  "type": "string"\
+                \},\
+                "name": \{\
+                  "type": "string"\
+                \},\
+                "family": \{\
+                  "type": "string"\
+                \},\
+                "price_per_m2": \{\
+                  "type": "number"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \},\
+      "ConversationRequest": \{\
+        "type": "object",\
+        "required": [\
+          "client_id",\
+          "summary",\
+          "password"\
+        ],\
+        "properties": \{\
+          "client_id": \{\
+            "type": "string",\
+            "description": "Client identifier"\
+          \},\
+          "summary": \{\
+            "type": "string",\
+            "description": "Conversation summary"\
+          \},\
+          "quotation_ref": \{\
+            "type": "string",\
+            "description": "Optional quotation reference"\
+          \},\
+          "products_discussed": \{\
+            "type": "array",\
+            "items": \{\
+              "type": "string"\
+            \},\
+            "description": "Products discussed"\
+          \},\
+          "password": \{\
+            "type": "string",\
+            "description": "KB write password"\
+          \}\
+        \}\
+      \},\
+      "CorrectionRequest": \{\
+        "type": "object",\
+        "required": [\
+          "source_file",\
+          "field_path",\
+          "old_value",\
+          "new_value",\
+          "reason",\
+          "password"\
+        ],\
+        "properties": \{\
+          "source_file": \{\
+            "type": "string",\
+            "description": "KB file with error"\
+          \},\
+          "field_path": \{\
+            "type": "string",\
+            "description": "JSON path to field"\
+          \},\
+          "old_value": \{\
+            "type": "string",\
+            "description": "Current incorrect value"\
+          \},\
+          "new_value": \{\
+            "type": "string",\
+            "description": "Corrected value"\
+          \},\
+          "reason": \{\
+            "type": "string",\
+            "description": "Reason for correction"\
+          \},\
+          "reported_by": \{\
+            "type": "string",\
+            "description": "Who reported"\
+          \},\
+          "password": \{\
+            "type": "string",\
+            "description": "KB write password"\
+          \}\
+        \}\
+      \},\
+      "CustomerRequest": \{\
+        "type": "object",\
+        "required": [\
+          "name",\
+          "phone",\
+          "password"\
+        ],\
+        "properties": \{\
+          "name": \{\
+            "type": "string",\
+            "description": "Customer full name"\
+          \},\
+          "phone": \{\
+            "type": "string",\
+            "description": "Uruguayan phone format"\
+          \},\
+          "address": \{\
+            "type": "string",\
+            "description": "Work site address"\
+          \},\
+          "city": \{\
+            "type": "string",\
+            "description": "City"\
+          \},\
+          "department": \{\
+            "type": "string",\
+            "description": "Department"\
+          \},\
+          "notes": \{\
+            "type": "string",\
+            "description": "Additional notes"\
+          \},\
+          "password": \{\
+            "type": "string",\
+            "description": "KB write password"\
+          \}\
+        \}\
+      \}\
+    \}\
+  \},\
+  "security": [\
+    \{\
+      "ApiKeyAuth": []\
+    \}\
+  ],\
+  "paths": \{\
+    "/health": \{\
+      "get": \{\
+        "operationId": "health_check",\
+        "summary": "Liveness check - no auth required",\
+        "security": [],\
+        "responses": \{\
+          "200": \{\
+            "description": "OK",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "status": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/ready": \{\
+      "get": \{\
+        "operationId": "ready_check",\
+        "summary": "Readiness check - no auth required",\
+        "security": [],\
+        "responses": \{\
+          "200": \{\
+            "description": "Ready",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "status": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "503": \{\
+            "description": "Not ready",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/": \{\
+      "get": \{\
+        "operationId": "root",\
+        "summary": "API status - requires X-API-Key",\
+        "responses": \{\
+          "200": \{\
+            "description": "Active",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "status": \{\
+                      "type": "string"\
+                    \},\
+                    "system": \{\
+                      "type": "string"\
+                    \},\
+                    "version": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid or missing API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/calculate_quote": \{\
+      "post": \{\
+        "operationId": "calculate_quote",\
+        "summary": "Calculate panel quote",\
+        "requestBody": \{\
+          "required": true,\
+          "content": \{\
+            "application/json": \{\
+              "schema": \{\
+                "$ref": "#/components/schemas/QuoteRequest"\
+              \}\
+            \}\
+          \}\
+        \},\
+        "responses": \{\
+          "200": \{\
+            "description": "Quotation result",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "quotation_id": \{\
+                      "type": "string"\
+                    \},\
+                    "product_id": \{\
+                      "type": "string"\
+                    \},\
+                    "total_usd": \{\
+                      "type": "number"\
+                    \},\
+                    "currency": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "400": \{\
+            "description": "Bad request",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/find_products": \{\
+      "post": \{\
+        "operationId": "find_products",\
+        "summary": "Search products by natural language query",\
+        "requestBody": \{\
+          "required": true,\
+          "content": \{\
+            "application/json": \{\
+              "schema": \{\
+                "$ref": "#/components/schemas/ProductSearchRequest"\
+              \}\
+            \}\
+          \}\
+        \},\
+        "responses": \{\
+          "200": \{\
+            "description": "List of matching products",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/FindProductsResponse"\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/product_price": \{\
+      "post": \{\
+        "operationId": "product_price",\
+        "summary": "Get price for a product by ID",\
+        "requestBody": \{\
+          "required": true,\
+          "content": \{\
+            "application/json": \{\
+              "schema": \{\
+                "$ref": "#/components/schemas/ProductPriceRequest"\
+              \}\
+            \}\
+          \}\
+        \},\
+        "responses": \{\
+          "200": \{\
+            "description": "Price info",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "product_id": \{\
+                      "type": "string"\
+                    \},\
+                    "name": \{\
+                      "type": "string"\
+                    \},\
+                    "price_per_m2": \{\
+                      "type": "number"\
+                    \},\
+                    "currency": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \},\
+          "404": \{\
+            "description": "Product not found",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/check_availability": \{\
+      "post": \{\
+        "operationId": "check_availability",\
+        "summary": "Check product availability by ID",\
+        "requestBody": \{\
+          "required": true,\
+          "content": \{\
+            "application/json": \{\
+              "schema": \{\
+                "$ref": "#/components/schemas/ProductPriceRequest"\
+              \}\
+            \}\
+          \}\
+        \},\
+        "responses": \{\
+          "200": \{\
+            "description": "Availability",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "product_id": \{\
+                      "type": "string"\
+                    \},\
+                    "found": \{\
+                      "type": "boolean"\
+                    \},\
+                    "available": \{\
+                      "type": "boolean"\
+                    \},\
+                    "stock_status": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \},\
+          "404": \{\
+            "description": "Product not found",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/kb/conversations": \{\
+      "post": \{\
+        "operationId": "persist_conversation",\
+        "summary": "Save conversation summary and quotation history - requires password",\
+        "requestBody": \{\
+          "required": true,\
+          "content": \{\
+            "application/json": \{\
+              "schema": \{\
+                "$ref": "#/components/schemas/ConversationRequest"\
+              \}\
+            \}\
+          \}\
+        \},\
+        "responses": \{\
+          "200": \{\
+            "description": "Conversation saved",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "status": \{\
+                      "type": "string"\
+                    \},\
+                    "conversation_id": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "400": \{\
+            "description": "Bad request or invalid password",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/kb/corrections": \{\
+      "post": \{\
+        "operationId": "register_correction",\
+        "summary": "Register KB correction - requires password",\
+        "requestBody": \{\
+          "required": true,\
+          "content": \{\
+            "application/json": \{\
+              "schema": \{\
+                "$ref": "#/components/schemas/CorrectionRequest"\
+              \}\
+            \}\
+          \}\
+        \},\
+        "responses": \{\
+          "200": \{\
+            "description": "Correction registered",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "status": \{\
+                      "type": "string"\
+                    \},\
+                    "correction_id": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "400": \{\
+            "description": "Bad request or invalid password",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \},\
+    "/kb/customers": \{\
+      "post": \{\
+        "operationId": "save_customer",\
+        "summary": "Store customer data - requires password",\
+        "requestBody": \{\
+          "required": true,\
+          "content": \{\
+            "application/json": \{\
+              "schema": \{\
+                "$ref": "#/components/schemas/CustomerRequest"\
+              \}\
+            \}\
+          \}\
+        \},\
+        "responses": \{\
+          "200": \{\
+            "description": "Customer saved",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "status": \{\
+                      "type": "string"\
+                    \},\
+                    "customer_id": \{\
+                      "type": "string"\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "400": \{\
+            "description": "Bad request, invalid phone or password",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \},\
+      "get": \{\
+        "operationId": "lookup_customer",\
+        "summary": "Retrieve customer data by name, phone or address - no password required",\
+        "parameters": [\
+          \{\
+            "name": "search",\
+            "in": "query",\
+            "required": true,\
+            "schema": \{\
+              "type": "string"\
+            \},\
+            "description": "Search query"\
+          \}\
+        ],\
+        "responses": \{\
+          "200": \{\
+            "description": "Customer data",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "type": "object",\
+                  "properties": \{\
+                    "customers": \{\
+                      "type": "array",\
+                      "items": \{\
+                        "type": "object",\
+                        "properties": \{\
+                          "customer_id": \{\
+                            "type": "string"\
+                          \},\
+                          "name": \{\
+                            "type": "string"\
+                          \},\
+                          "phone": \{\
+                            "type": "string"\
+                          \},\
+                          "address": \{\
+                            "type": "string"\
+                          \},\
+                          "city": \{\
+                            "type": "string"\
+                          \},\
+                          "department": \{\
+                            "type": "string"\
+                          \}\
+                        \}\
+                      \}\
+                    \}\
+                  \}\
+                \}\
+              \}\
+            \}\
+          \},\
+          "403": \{\
+            "description": "Invalid API key",\
+            "content": \{\
+              "application/json": \{\
+                "schema": \{\
+                  "$ref": "#/components/schemas/JsonObject"\
+                \}\
+              \}\
+            \}\
+          \}\
+        \}\
+      \}\
+    \}\
+  \}\
+\}}
