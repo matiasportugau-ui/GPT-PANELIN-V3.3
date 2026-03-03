@@ -66,6 +66,12 @@ gpt_config_export/
 # Logs directory
 logs/
 *.log
+!scripts/logs/
+!scripts/logs/.gitkeep
+
+# Morning audit credentials
+scripts/credentials/*.json
+!scripts/credentials/.gitkeep
 
 # Coverage reports
 .coverage
