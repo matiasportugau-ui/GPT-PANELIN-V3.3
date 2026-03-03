@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -17,8 +17,7 @@ from dotenv import load_dotenv
 
 LOG_DIR = Path(__file__).parent / "logs"
 LOG_DIR.mkdir(exist_ok=True)
-LOG_FILE = LOG_DIR / f"audit_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
-DEFAULT_SHEETS_ID = "1RHJ1eQlCWMcWY5NKkHCsH5F5XavC9yebh97bruJilbs"
+LOG_FILE = LOG_DIR / f"audit_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.log"
 TARGET_WORKSHEET = "Daily Audit"
 
 logging.basicConfig(
@@ -37,7 +36,7 @@ class PanelinAudit:
 
     def __init__(self) -> None:
         self.results: dict[str, Any] = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "channels": {},
             "summary": {},
         }
@@ -58,6 +57,13 @@ class PanelinAudit:
             logger.warning(
                 "⚠️ Google Sheets credentials path missing. "
                 "Set GOOGLE_SHEETS_CREDENTIALS_PATH."
+            )
+            return None
+
+        if not sheet_id:
+            logger.warning(
+                "⚠️ Google Sheets ID missing. "
+                "Set GOOGLE_SHEETS_ID to enable audit writes to Sheets."
             )
             return None
 
@@ -162,7 +168,17 @@ class PanelinAudit:
 
         try:
             ws = self.sheet.worksheet(TARGET_WORKSHEET)
-        except Exception:
+        except Exception as exc:
+            # gspread is an optional dependency; import lazily since self.sheet
+            # being non-None guarantees a prior successful import.
+            import gspread
+            if not isinstance(exc, gspread.exceptions.WorksheetNotFound):
+                logger.error(
+                    "❌ Unexpected error accessing worksheet '%s': %s",
+                    TARGET_WORKSHEET,
+                    exc,
+                )
+                raise
             ws = self.sheet.add_worksheet(TARGET_WORKSHEET, rows=1000, cols=8)
 
         try:
@@ -187,7 +203,7 @@ class PanelinAudit:
                 "mercadolibre": "ML",
                 "email": "EM",
             }
-            fecha_hoy = datetime.now().strftime("%d-%m")
+            fecha_hoy = datetime.now(timezone.utc).strftime("%d-%m")
             rows_to_insert: list[list[str]] = []
             pending_keys: set[tuple[str, str, str]] = set()
 
