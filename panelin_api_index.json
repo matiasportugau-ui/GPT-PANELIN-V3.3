@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "version": "4.0.0",
+    "purpose": "API call routing index for Panelin GPT — maps user intent to correct API calls",
+    "rule": "ALL data MUST come from API calls. This file only helps construct correct calls. NEVER use cached/memorized values.",
+    "date": "2026-03-02"
+  },
+
+  "product_id_resolution": {
+    "_note": "Map user natural language → exact product_id for API. When uncertain, use POST /find_products instead.",
+
+    "paneles_techo_pesado_eps": {
+      "isodec eps 100|isodec 100|techo 100mm|cubierta 100": "ISODEC_EPS_100mm",
+      "isodec eps 150|isodec 150|techo 150mm": "ISODEC_EPS_150mm",
+      "isodec eps 200|isodec 200|techo 200mm": "ISODEC_EPS_200mm",
+      "isodec eps 250|isodec 250": "ISODEC_EPS_250mm"
+    },
+    "paneles_techo_pesado_pir": {
+      "isodec pir 50|techo pir 50": "ISODEC_PIR_50mm",
+      "isodec pir 80|techo pir 80": "ISODEC_PIR_80mm"
+    },
+    "paneles_techo_liviano": {
+      "isoroof 30|techo liviano 30": "ISOROOF_PIR_30mm",
+      "isoroof 40|techo liviano 40": "ISOROOF_PIR_40mm",
+      "isoroof 50|techo liviano 50": "ISOROOF_PIR_50mm",
+      "isoroof 80|isoroof plus 80": "ISOROOF_PIR_80mm",
+      "isoroof 100": "ISOROOF_PIR_100mm",
+      "isoroof foil 30|foil 30|agro 30": "ISOROOF_FOIL_PIR_30mm",
+      "isoroof foil 50|foil 50|agro 50": "ISOROOF_FOIL_PIR_50mm"
+    },
+    "paneles_pared_eps": {
+      "isopanel 50|pared 50|fachada 50": "ISOPANEL_EPS_50mm",
+      "isopanel 100|pared 100|fachada 100": "ISOPANEL_EPS_100mm",
+      "isopanel 150|pared 150": "ISOPANEL_EPS_150mm",
+      "isopanel 200|pared 200": "ISOPANEL_EPS_200mm",
+      "isopanel 250|pared 250": "ISOPANEL_EPS_250mm"
+    },
+    "paneles_pared_pir": {
+      "isowall 50|pared pir 50|fachada pir 50": "ISOWALL_PIR_50mm",
+      "isowall 80|pared pir 80|fachada pir 80": "ISOWALL_PIR_80mm",
+      "isowall 100|pared pir 100": "ISOWALL_PIR_100mm"
+    },
+    "paneles_frigorifico": {
+      "isofrig 40|camara 40|frigorifico 40": "ISOFRIG_PIR_40mm",
+      "isofrig 60|camara 60|frigorifico 60": "ISOFRIG_PIR_60mm",
+      "isofrig 80|camara 80|frigorifico 80": "ISOFRIG_PIR_80mm",
+      "isofrig 100|camara 100|frigorifico 100": "ISOFRIG_PIR_100mm",
+      "isofrig 150|camara 150|frigorifico 150": "ISOFRIG_PIR_150mm"
+    },
+    "fallback": "Si no coincide con ninguna clave, usar POST /find_products con el texto del usuario"
+  },
+
+  "call_orchestration": {
+    "_note": "Decision tree: qué endpoints llamar según la intención del usuario",
+
+    "cotizacion_completa": {
+      "description": "El usuario quiere cotización formal con BOM completo",
+      "preferred": "POST /api/quote — enviar el texto del usuario, recibe TODO (BOM + pricing + validación + SAI score)",
+      "params": {"text": "<mensaje del usuario>", "mode": "pre_cotizacion"},
+      "multi_call_alternative": [
+        "1. POST /validate_autoportancia (si conoce la luz)",
+        "2. POST /calculate_quote (cálculo simple) o POST /api/quote (pipeline completo)",
+        "3. POST /sheets/consultations (registrar en tracker)",
+        "4. POST /kb/conversations (persistir resumen si el usuario consiente)"
+      ]
+    },
+    "precio_rapido": {
+      "description": "El usuario solo quiere saber un precio",
+      "endpoint": "POST /product_price",
+      "params": {"product_id": "<resolver de product_id_resolution>"}
+    },
+    "buscar_producto": {
+      "description": "El usuario no sabe qué producto necesita",
+      "endpoint": "POST /find_products",
+      "params": {"query": "<texto de búsqueda del usuario>", "max_results": 5}
+    },
+    "validar_luz": {
+      "description": "El usuario quiere saber si un panel aguanta la luz de su proyecto",
+      "endpoint": "POST /validate_autoportancia",
+      "params": {"familia": "ISODEC", "sub_familia": "EPS", "thickness_mm": 100, "span_m": 5.0}
+    },
+    "comparar_espesores": {
+      "description": "El usuario quiere comparar dos opciones de panel",
+      "endpoint": "POST /compare_options",
+      "params": {"option_a_product_id": "...", "option_b_product_id": "...", "area_m2": 100}
+    },
+    "ver_especificaciones": {
+      "description": "El usuario quiere datos técnicos de un producto",
+      "endpoint": "GET /product_specs/{product_id}"
+    },
+    "ver_catalogo": {
+      "description": "El usuario quiere ver qué productos hay disponibles",
+      "endpoint": "GET /product_catalog",
+      "params_optional": {"tipo": "Panel", "familia": "ISODEC"}
+    },
+    "consultar_reglas": {
+      "description": "Necesito saber IVA, políticas, requisitos",
+      "endpoint": "GET /business_rules"
+    },
+    "buscar_cliente": {
+      "description": "Buscar datos de un cliente existente",
+      "endpoint": "GET /kb/customers",
+      "params": {"search": "<nombre, teléfono o dirección>"}
+    },
+    "guardar_cliente": {
+      "description": "Guardar datos de un cliente nuevo",
+      "endpoint": "POST /kb/customers",
+      "requires_password": true,
+      "params": {"name": "...", "phone": "09XXXXXXX", "address": "...", "city": "...", "department": "..."}
+    },
+    "ver_cotizaciones": {
+      "description": "Consultar tracker de cotizaciones en Google Sheets",
+      "endpoint": "GET /sheets/consultations",
+      "filters": ["estado", "origen", "asignado", "cliente", "fecha"]
+    },
+    "registrar_consulta": {
+      "description": "Registrar nueva consulta en el tracker",
+      "endpoint": "POST /sheets/consultations",
+      "params": {"cliente": "...", "origen": "WA|ML|EM|CL|AM|LO|LL|IN|FB|EE|EC", "consulta": "..."}
+    },
+    "registrar_cotizacion": {
+      "description": "Registrar cotización realizada en tracker",
+      "endpoint": "POST /sheets/quotation_line",
+      "params": {"cliente": "...", "consulta": "productos cotizados", "estado": "Enviado"}
+    },
+    "estadisticas": {
+      "description": "Ver estadísticas del tracker",
+      "endpoint": "GET /sheets/stats"
+    },
+    "disponibilidad": {
+      "description": "Verificar disponibilidad de un producto",
+      "endpoint": "POST /check_availability",
+      "params": {"product_id": "..."}
+    }
+  },
+
+  "parameter_validation": {
+    "_note": "Verificar ANTES de llamar a la API para evitar errores",
+    "length_m": {"min": 0.5, "max": 14.0, "unit": "metros"},
+    "width_m": {"min": 0.5, "max": 50.0, "unit": "metros"},
+    "quantity": {"min": 1, "type": "integer"},
+    "discount_percent": {"min": 0, "max": 30},
+    "phone_uy": {"pattern": "09XXXXXXX (9 dígitos) o +598XXXXXXXX"},
+    "estados_validos": ["Pendiente", "Asignado", "Enviado", "Listo"],
+    "origenes_validos": ["WA", "ML", "EM", "CL", "AM", "LO", "LL", "IN", "FB", "EE", "EC"],
+    "asignados_validos": ["MA", "MO", "RA", "SPRT", "TIN"]
+  }
+}

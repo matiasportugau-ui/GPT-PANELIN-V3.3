@@ -1,9 +1,11 @@
-# Deploy Wolf API to Cloud Run
+# Deploy Panelin API to Cloud Run
 #
-# This workflow deploys the Wolf API FastAPI backend to Google Cloud Run
-# when changes are pushed to the main branch.
+# Deploys the unified Panelin API (Wolf API + v4 Engine) to Google Cloud Run.
+# Uses Dockerfile.production at repo root for the complete container.
+#
+# Triggered on push to main when relevant files change, or manually.
 
-name: Deploy Wolf API to Cloud Run
+name: Deploy Panelin API to Cloud Run
 
 on:
   push:
@@ -11,6 +13,13 @@ on:
       - main
     paths:
       - 'wolf_api/**'
+      - 'panelin_v4/**'
+      - 'app.py'
+      - 'Dockerfile.production'
+      - 'bom_rules.json'
+      - 'accessories_catalog.json'
+      - 'bromyros_pricing_gpt_optimized.json'
+      - 'BMC_Base_Conocimiento_GPT-2.json'
       - '.github/workflows/deploy-wolf-api.yml'
   workflow_dispatch:
 
@@ -26,9 +35,9 @@ env:
 
 jobs:
   deploy:
-    name: Deploy Wolf API
+    name: Deploy Panelin API
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,7 +59,11 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           IMAGE_NAME="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/cloud-run-repo/wolf-api"
-          docker build -t "${IMAGE_NAME}:${{ github.sha }}" -t "${IMAGE_NAME}:latest" wolf_api/
+          docker build \
+            -f Dockerfile.production \
+            -t "${IMAGE_NAME}:${{ github.sha }}" \
+            -t "${IMAGE_NAME}:latest" \
+            .
           docker push "${IMAGE_NAME}:${{ github.sha }}"
           docker push "${IMAGE_NAME}:latest"
 
@@ -66,6 +79,7 @@ jobs:
             KB_GCS_PREFIX=kb/conversations
             KB_GCS_MODE=daily_jsonl
             KB_GCS_MAX_RETRIES=5
+            CATALOG_PATH=/app/catalog.json
           env_vars_update_strategy: merge
           service_account: ${{ secrets.GCP_RUNTIME_SA_EMAIL }}
           flags: |
@@ -81,5 +95,11 @@ jobs:
           SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} \
             --region=${{ env.REGION }} \
             --format='value(status.url)')
-          echo "Wolf API deployed to: $SERVICE_URL"
-          echo "OpenAPI docs available at: $SERVICE_URL/docs"
+          echo "Panelin API deployed to: $SERVICE_URL"
+          echo "OpenAPI docs: $SERVICE_URL/docs"
+          echo ""
+          echo "Endpoints available:"
+          echo "  Legacy:  /calculate_quote, /find_products, /product_price, /check_availability"
+          echo "  Engine:  /api/quote, /api/validate, /api/sai-score"
+          echo "  KB:      /kb/conversations, /kb/corrections, /kb/customers"
+          echo "  Sheets:  /sheets/consultations, /sheets/quotation_line, /sheets/update_row, etc."

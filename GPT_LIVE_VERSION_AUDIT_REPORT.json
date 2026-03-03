@@ -1,0 +1,1008 @@
+{
+  "report_meta": {
+    "title": "Panelin GPT — Live Version Configuration Audit & KB Restructuring Plan",
+    "version": "1.0.0",
+    "date": "2026-03-02",
+    "analyst": "Cursor Cloud Agent",
+    "branch": "cursor/gpt-live-version-configuration-6ddf",
+    "scope": "Complete analysis of all files configuring the Panelin GPT live version, data redundancy audit, and restructuring plan",
+    "gpt_name": "Panelin - BMC Assistant Pro",
+    "gpt_instructions_version": "2.5 Canonical",
+    "kb_version": "7.0",
+    "panelin_version": "3.4",
+    "wolf_api_version": "3.0.0"
+  },
+
+  "executive_summary": {
+    "total_files_analyzed": 40,
+    "kb_files_current": 18,
+    "kb_files_proposed": 5,
+    "current_total_size_kb": 1361,
+    "current_estimated_tokens": 453726,
+    "gpt4o_context_window_tokens": 128000,
+    "context_overflow_ratio": 3.54,
+    "waste_percentage": 75,
+    "wasted_tokens": 338000,
+    "proposed_total_size_kb": 220,
+    "proposed_estimated_tokens": 115000,
+    "size_reduction_percent": 84,
+    "token_reduction_percent": 75,
+    "critical_issues_found": 10,
+    "duplicate_files_found": 3,
+    "files_with_no_gpt_value": 3,
+    "triple_stored_data_sets": 2,
+    "api_schema_outdated": true
+  },
+
+  "system_architecture": {
+    "overview": "Custom GPT on OpenAI backed by a FastAPI backend (Wolf API) deployed to GCP Cloud Run, with multi-level Knowledge Base, Google Sheets integration, and PDF generation capabilities.",
+    "components": {
+      "gpt_builder": {
+        "platform": "OpenAI Custom GPT Builder",
+        "instructions_source": "Instrucciones GPT.rtf (v3.4)",
+        "actions_schema_source": "Esquema json.rtf (v3.0.0)",
+        "capabilities_enabled": ["Code Interpreter", "Canvas", "Web Browsing", "Image Generation"],
+        "capabilities_disabled": ["Audio transcription"]
+      },
+      "wolf_api": {
+        "runtime": "GCP Cloud Run",
+        "url": "https://panelin-api-642127786762.us-central1.run.app",
+        "framework": "FastAPI",
+        "version": "3.0.0",
+        "docker_image": "wolf_api/Dockerfile",
+        "port": 8080,
+        "auth": "X-API-Key header (HMAC comparison)"
+      },
+      "storage": {
+        "kb_persistence": "Google Cloud Storage (GCS)",
+        "sheets_integration": "Google Sheets (gspread)",
+        "catalog_source": "Local catalog.json in container"
+      },
+      "deployment": {
+        "ci_cd": ".github/workflows/deploy-wolf-api.yml",
+        "gpt_package": ".github/workflows/generate-gpt-config.yml",
+        "gcp_project": "chatbot-bmc-live",
+        "region": "us-central1"
+      }
+    },
+    "data_flow": "GPT Builder → (HTTP + X-API-Key) → Wolf API (Cloud Run) → GCS / Google Sheets / Local Catalog"
+  },
+
+  "complete_file_inventory": {
+    "layer_1_gpt_builder_configuration": {
+      "description": "Files that define the GPT's identity, instructions, and action schema in OpenAI GPT Builder",
+      "files": [
+        {
+          "file": "Panelin_GPT_config.json",
+          "size_kb": 32.3,
+          "purpose": "Master configuration — instructions (v2.5 Canonical), KB hierarchy, actions definitions, capabilities, business rules v6.0, deployment manifest",
+          "version": "2.5.0",
+          "status": "current",
+          "contains": ["GPT instructions", "KB hierarchy definition", "10 action definitions", "business rules", "deployment file list", "conversation starters"],
+          "issues_found": ["Contains wolf_api_kb_write_password 'mywolfy' in plain text"]
+        },
+        {
+          "file": "Instrucciones GPT.rtf",
+          "size_kb": 10.4,
+          "purpose": "Condensed system instructions in RTF format pasted into GPT Builder",
+          "version": "3.4 (2026-02-14)",
+          "status": "current",
+          "contains": ["Identity", "Personalization rules", "Data collection flow", "Source hierarchy", "Quotation process", "Autoportancia v3.1", "Wolf API KB Write v3.4", "Commands"],
+          "issues_found": []
+        },
+        {
+          "file": "Esquema json.rtf",
+          "size_kb": 23.1,
+          "purpose": "OpenAPI v3.0.0 schema in RTF format — copy-pasted into GPT Builder Actions panel",
+          "version": "3.0.0",
+          "status": "current — matches user-provided schema",
+          "contains": ["All 17 API endpoints", "Request/response schemas", "Security definitions"],
+          "issues_found": []
+        }
+      ]
+    },
+
+    "layer_2_openapi_schema_repo": {
+      "description": "Machine-readable OpenAPI schema in the repository",
+      "files": [
+        {
+          "file": "gpt_actions_openapi_schema.json",
+          "size_kb": 14.0,
+          "purpose": "Machine-readable OpenAPI schema for GPT Actions — intended to match what's in GPT Builder",
+          "version": "2.2.0",
+          "status": "OUTDATED",
+          "contains": ["Only 4 endpoints: /health, /kb/conversations, /kb/corrections, /kb/customers"],
+          "missing_endpoints": ["/calculate_quote", "/find_products", "/product_price", "/check_availability", "/ready", "/sheets/consultations", "/sheets/quotation_line", "/sheets/update_row", "/sheets/search", "/sheets/stats", "/sheets/row/{row_number}"],
+          "issues_found": ["Schema version 2.2.0 does not match live v3.0.0", "Missing 13 API endpoints that exist in production"]
+        }
+      ]
+    },
+
+    "layer_3_knowledge_base_files": {
+      "description": "18 files uploaded to GPT Builder as Knowledge Base, organized by priority level",
+      "total_files": 18,
+      "total_size_kb": 1361,
+      "estimated_tokens": 453726,
+
+      "level_1_master": {
+        "description": "Source of truth for panel prices, formulas, and specifications",
+        "files": [
+          {
+            "file": "BMC_Base_Conocimiento_GPT-2.json",
+            "size_kb": 16.4,
+            "estimated_tokens": 5454,
+            "purpose": "Core KB — panel prices, quotation formulas, business rules, institutional info, kits fijación, energy formulas",
+            "version": "6.0-Unified",
+            "status": "KEEP — merge into panelin_core.json",
+            "unique_content": ["formulas_cotizacion (14 formulas)", "formulas_ahorro_energetico", "datos_referencia_uruguay", "reglas_negocio", "institucional", "identidad"],
+            "duplicated_content": ["autoportancia (also in bom_rules + Unificada)", "kits_fijacion (also in bom_rules + Unificada)", "product prices (also in bromyros + Unificada)"],
+            "products_count": 9,
+            "issues_found": ["user_corrections has 4 stale/duplicate MCP_Memory entries", "ISOFRIG_PIR espesores have no prices ('Consultar')"]
+          },
+          {
+            "file": "bromyros_pricing_master.json",
+            "size_kb": 141.9,
+            "estimated_tokens": 47294,
+            "purpose": "Complete BROMYROS product base — Level 1 pricing reference",
+            "version": "1.0.0",
+            "status": "DELETE — 100% duplicate of bromyros_pricing_gpt_optimized.json",
+            "verification": {
+              "method": "Python programmatic comparison of all fields",
+              "indices_identical": true,
+              "familia_groups_identical": true,
+              "products_identical": true,
+              "metadata_identical": true,
+              "skus_in_master": 96,
+              "skus_in_optimized": 96,
+              "intersection": 96,
+              "only_in_master": 0,
+              "only_in_optimized": 0
+            },
+            "explanation": "bromyros_pricing_master.json wraps the exact same data as bromyros_pricing_gpt_optimized.json inside a {meta, data} envelope. The meta field adds a 'generated_from' note. All actual data (indices, familia_groups, products, metadata) is byte-for-byte identical.",
+            "waste_tokens": 47294,
+            "issues_found": ["100% duplicate of optimized version — pure waste of 142KB"]
+          }
+        ]
+      },
+
+      "level_1_2_accessories": {
+        "files": [
+          {
+            "file": "accessories_catalog.json",
+            "size_kb": 48.7,
+            "estimated_tokens": 16223,
+            "purpose": "Accessory catalog with real prices — goteros, babetas, fijaciones, selladores",
+            "version": "1.0.0",
+            "status": "MERGE into panelin_catalog_ref.json — 95% overlaps bromyros",
+            "total_skus": 56,
+            "overlap_with_bromyros": {
+              "overlapping_skus": 55,
+              "unique_to_accessories": 1,
+              "unique_sku": "BBAL",
+              "overlap_percentage": 98.2
+            },
+            "waste_tokens": 14000,
+            "issues_found": ["Duplicate SKU 6805 used for both 'Arandela Plana' and 'Arandela Carrocero'", "95% of content already in bromyros_pricing"]
+          }
+        ]
+      },
+
+      "level_1_3_bom_rules": {
+        "files": [
+          {
+            "file": "bom_rules.json",
+            "size_kb": 20.7,
+            "estimated_tokens": 6895,
+            "purpose": "Parametric BOM rules for 6 construction systems, autoportancia table, kits fijación",
+            "version": "1.0.0",
+            "status": "KEEP — merge into panelin_core.json",
+            "systems_defined": ["techo_isodec_eps", "techo_isodec_pir", "techo_isoroof_3g", "pared_isopanel_eps", "pared_isowall_pir", "pared_isofrig_pir"],
+            "autoportancia_families": ["ISODEC_EPS", "ISODEC_PIR", "ISOROOF_3G", "ISOPANEL_EPS"],
+            "kits_defined": ["metal", "hormigon", "madera_isoroof"],
+            "unique_content": ["Parametric BOM formulas per system", "ejemplo_calculo (worked example)", "convenciones (rounding, units)"],
+            "duplicated_content": ["autoportancia (also in BMC_Base + Unificada)", "kits_fijacion_detalle (also in BMC_Base + Unificada)"],
+            "issues_found": ["Autoportancia for ISOWALL_PIR and ISOFRIG_PIR not included in autoportancia.tablas"]
+          }
+        ]
+      },
+
+      "level_1_5_pricing_optimized": {
+        "files": [
+          {
+            "file": "bromyros_pricing_gpt_optimized.json",
+            "size_kb": 132.0,
+            "estimated_tokens": 43990,
+            "purpose": "Optimized pricing database with multi-level indexing for fast lookups",
+            "version": "1.0.0",
+            "status": "KEEP — becomes panelin_catalog_ref.json",
+            "total_products": 96,
+            "total_familias": 11,
+            "product_types": {
+              "Panel": 24,
+              "non_Panel": 72
+            },
+            "indices": ["by_sku (96)", "by_familia (11)", "by_tipo", "by_sub_familia"],
+            "issues_found": ["Missing indices: by_espesor, by_uso (would improve lookup)", "Is identical to bromyros_pricing_master.json"]
+          }
+        ]
+      },
+
+      "level_1_6_catalog": {
+        "files": [
+          {
+            "file": "shopify_catalog_v1.json",
+            "size_kb": 759.7,
+            "estimated_tokens": 253246,
+            "purpose": "Product descriptions, variants, images from Shopify store",
+            "version": "1.0.0 (2026-01-25)",
+            "status": "REBUILD — 89% bloat, slim to ~75KB",
+            "total_products": 97,
+            "total_variants": 335,
+            "total_images": 261,
+            "bloat_analysis": {
+              "body_html_chars": 247283,
+              "body_html_percent": 36.1,
+              "search_document_chars": 66709,
+              "search_document_percent": 9.7,
+              "variant_metadata_chars": 139307,
+              "variant_metadata_percent": 20.4,
+              "images_chars": 37967,
+              "images_percent": 5.5,
+              "metafields_chars": 3962,
+              "metafields_percent": 0.6,
+              "core_useful_chars": 189244,
+              "core_useful_percent": 27.6,
+              "total_chars": 684472
+            },
+            "slim_version_size_kb": 74,
+            "reduction_percent": 89,
+            "fields_to_keep": ["handle", "title", "type", "vendor", "body_text (trimmed 200 chars)", "variants (sku + options + weight only)", "images (src URLs, max 2)"],
+            "fields_to_remove": ["body_html", "search_document", "metafields", "google_shopping", "seo_title", "seo_description", "variant.barcode", "variant.inventory_tracker", "variant.inventory_policy", "variant.fulfillment_service", "variant.taxable", "variant.requires_shipping", "variant.tax_code"],
+            "issues_found": ["Largest file at 760KB — dominates token budget", "89% of content unused by GPT", "body_html is raw Shopify HTML, not useful for GPT reasoning"]
+          },
+          {
+            "file": "shopify_catalog_index_v1.csv",
+            "size_kb": 50.2,
+            "estimated_tokens": 16736,
+            "purpose": "Quick index for Code Interpreter lookups",
+            "version": "1.0.0",
+            "status": "DELETE — indices folded into panelin_catalog_ref.json",
+            "total_rows": 335,
+            "columns": ["handle", "title", "vendor", "product_type", "category", "sku", "variant_index", "option1", "option2", "option3", "published", "status"],
+            "issues_found": ["Redundant with shopify_catalog indices and bromyros indices"]
+          }
+        ]
+      },
+
+      "level_2_validation": {
+        "files": [
+          {
+            "file": "BMC_Base_Unificada_v4.json",
+            "size_kb": 10.8,
+            "estimated_tokens": 3608,
+            "purpose": "Cross-reference validation against 31 real budgets",
+            "version": "4.0.0",
+            "status": "DELETE — 95% duplicate of BMC_Base_Conocimiento",
+            "price_comparison": {
+              "products_compared": 16,
+              "prices_matching": 16,
+              "prices_different": 0,
+              "match_rate_percent": 100
+            },
+            "unique_content": {
+              "products_only_in_unificada": ["ISOROOF_PLUS", "ISOROOF_FOIL"],
+              "note": "Both products already exist in bromyros_pricing with full pricing data",
+              "validated_formulas": "12 formulas with 'validado: true' flag — but identical formulas exist in BMC_Base",
+              "sistemas_fijacion": "Detailed fixing system pricing — but overlaps with BMC_Base kits_fijacion and bom_rules kits_fijacion_detalle"
+            },
+            "waste_tokens": 3608,
+            "issues_found": ["All prices identical to BMC_Base_Conocimiento", "Only 2 unique products (ISOROOF_PLUS, ISOROOF_FOIL) — already in bromyros", "Creates confusion about which is the 'real' source of truth"]
+          }
+        ]
+      },
+
+      "level_3_dynamic": {
+        "files": [
+          {
+            "file": "panelin_truth_bmcuruguay_web_only_v2.json",
+            "size_kb": 6.5,
+            "estimated_tokens": 2176,
+            "purpose": "Web snapshot for price verification and stock status",
+            "version": "2.0",
+            "status": "KEEP — rename to panelin_web_snapshot.json",
+            "last_verified": "2026-01-15T17:52:05Z",
+            "products_tracked": 8,
+            "unique_content": ["stock_status per product", "web URLs", "option_values per product", "recrawl_policy"],
+            "issues_found": ["Stale — last verified Jan 15, nearly 2 months old", "Contains recrawl_policy instructions but no automation exists to execute them"]
+          }
+        ]
+      },
+
+      "level_4_support": {
+        "description": "Operational instructions and reference documents",
+        "files": [
+          {
+            "file": "PANELIN_QUOTATION_PROCESS.md",
+            "size_kb": 6.9,
+            "estimated_tokens": 2302,
+            "purpose": "5-phase quotation process with formulas and examples",
+            "status": "MERGE into panelin_operations.md §1",
+            "issues_found": []
+          },
+          {
+            "file": "PANELIN_TRAINING_GUIDE.md",
+            "size_kb": 7.2,
+            "estimated_tokens": 2396,
+            "purpose": "Sales evaluation + training guide with competency metrics",
+            "status": "MERGE into panelin_operations.md §4",
+            "issues_found": []
+          },
+          {
+            "file": "GPT_INSTRUCTIONS_PRICING.md",
+            "size_kb": 6.4,
+            "estimated_tokens": 2124,
+            "purpose": "BROMYROS pricing lookup instructions — how to query indices",
+            "status": "MERGE into panelin_operations.md §2",
+            "issues_found": ["References bromyros_pricing_gpt_optimized.json directly — needs update after restructuring"]
+          },
+          {
+            "file": "GPT_PDF_INSTRUCTIONS.md",
+            "size_kb": 11.7,
+            "estimated_tokens": 3896,
+            "purpose": "PDF generation workflow v2.0 with template design spec",
+            "status": "MERGE into panelin_operations.md §3",
+            "issues_found": []
+          },
+          {
+            "file": "panelin_context_consolidacion_sin_backend.md",
+            "size_kb": 1.1,
+            "estimated_tokens": 363,
+            "purpose": "SOP commands (/estado, /checkpoint, /consolidar, etc.)",
+            "status": "MERGE into panelin_operations.md §5",
+            "issues_found": []
+          },
+          {
+            "file": "Aleros -2.rtf",
+            "size_kb": 0.5,
+            "estimated_tokens": 153,
+            "purpose": "Technical rules for overhangs/eaves — 5 rules",
+            "status": "MERGE into panelin_operations.md §6",
+            "issues_found": ["RTF format may cause parsing issues in OpenAI — should be plain text"]
+          },
+          {
+            "file": "PANELIN_KNOWLEDGE_BASE_GUIDE.md",
+            "size_kb": 14.2,
+            "estimated_tokens": 4724,
+            "purpose": "Meta-guide explaining how to use the KB itself",
+            "status": "REMOVE from KB — content belongs in GPT system instructions, not KB",
+            "issues_found": ["Self-referential: a KB file explaining how to use KB files", "Content is already covered in Panelin_GPT_config.json instructions"]
+          },
+          {
+            "file": "GPT_OPTIMIZATION_ANALYSIS.md",
+            "size_kb": 10.6,
+            "estimated_tokens": 3546,
+            "purpose": "Internal analysis report from Feb 2026 — diagnostic findings",
+            "status": "REMOVE from KB — internal report, not operational",
+            "issues_found": ["Historical analysis document — confuses RAG retrieval with non-operational content"]
+          },
+          {
+            "file": "README.md",
+            "size_kb": 115.8,
+            "estimated_tokens": 38600,
+            "purpose": "Project README — development history, deployment guides, architecture docs",
+            "status": "REMOVE from KB — project docs, zero GPT operational value",
+            "issues_found": ["116KB of development documentation", "Contains PR analysis, branch cleanup guides, deployment checklists", "3rd largest file by token count — massive noise for RAG"]
+          }
+        ]
+      }
+    },
+
+    "layer_4_backend_api": {
+      "description": "Wolf API — the live FastAPI backend serving GPT Actions",
+      "files": [
+        {
+          "file": "wolf_api/main.py",
+          "purpose": "FastAPI app v3.0.0 — ALL endpoints inline (quotation, KB persistence, Google Sheets)",
+          "version": "3.0.0",
+          "endpoints_count": 17,
+          "endpoints": {
+            "health": ["GET /health", "GET /ready"],
+            "quotation": ["POST /calculate_quote", "POST /find_products", "POST /product_price", "POST /check_availability"],
+            "kb_persistence": ["POST /kb/conversations", "POST /kb/corrections", "POST /kb/customers", "GET /kb/customers"],
+            "sheets": ["GET /sheets/consultations", "POST /sheets/consultations", "POST /sheets/quotation_line", "PATCH /sheets/update_row", "GET /sheets/row/{row_number}", "GET /sheets/search", "GET /sheets/stats", "GET /sheets/inspect"]
+          }
+        },
+        {
+          "file": "wolf_api/Dockerfile",
+          "purpose": "Production Docker image (python:3.11-slim, port 8080, uvicorn)"
+        },
+        {
+          "file": "wolf_api/sheets_routes.py",
+          "purpose": "Modular Google Sheets router — EXISTS but NOT imported by main.py",
+          "status": "DEAD CODE — main.py has inline sheets implementation",
+          "issues_found": ["Python syntax/indentation errors in multiple places", "Never imported — duplicate of inline code in main.py"]
+        },
+        {
+          "file": "wolf_api/kb_routes.py",
+          "purpose": "Event-sourced KB architecture routes (/api/kb/architecture/*)"
+        },
+        {
+          "file": "wolf_api/kb_auth.py",
+          "purpose": "API key validation + write password authentication"
+        },
+        {
+          "file": "wolf_api/kb_service.py",
+          "purpose": "KB version management service layer"
+        },
+        {
+          "file": "wolf_api/kb_models.py",
+          "purpose": "SQLAlchemy models for KB versioning"
+        },
+        {
+          "file": "wolf_api/kb_schemas.py",
+          "purpose": "Pydantic schemas for KB API"
+        },
+        {
+          "file": "wolf_api/kb_database.py",
+          "purpose": "Database session management"
+        },
+        {
+          "file": "app.py",
+          "purpose": "Extended entrypoint that imports wolf_api.main.app and adds Panelin v4 engine routes (/api/quote, /api/validate, /api/sai-score)",
+          "issues_found": ["wolf_api/Dockerfile runs 'main:app' from wolf_api/ directly — v4 engine routes likely NOT running in production"]
+        }
+      ]
+    },
+
+    "layer_5_deployment": {
+      "files": [
+        {
+          "file": ".github/workflows/deploy-wolf-api.yml",
+          "purpose": "CD — Deploy Wolf API Docker image to Cloud Run on push to main",
+          "triggers": ["push to main (wolf_api/** paths)", "manual workflow_dispatch"],
+          "target": "panelin-api service on Cloud Run"
+        },
+        {
+          "file": ".github/workflows/generate-gpt-config.yml",
+          "purpose": "CI — Generate GPT deployment package artifact when KB files change",
+          "triggers": ["push to main (KB file paths)", "manual workflow_dispatch"],
+          "note": "Cannot auto-deploy to OpenAI — manual upload required (~15 min)"
+        },
+        {
+          "file": "wolf_api/Dockerfile",
+          "purpose": "Production Docker image for Wolf API (port 8080)"
+        },
+        {
+          "file": "Dockerfile",
+          "purpose": "MCP server Docker image (port 8000) — separate from Wolf API"
+        },
+        {
+          "file": "cloudbuild.yaml",
+          "purpose": "Google Cloud Build config for backend/frontend services — separate from Wolf API"
+        }
+      ]
+    },
+
+    "layer_6_supporting_config": {
+      "files": [
+        {
+          "file": "config/production.yaml",
+          "purpose": "Server config, security, monitoring, business logic, feature flags",
+          "version_stated": "3.2.0"
+        },
+        {
+          "file": ".env.example",
+          "purpose": "Environment variables template",
+          "version_stated": "3.2.0"
+        },
+        {
+          "file": "schemas_consolidated.json",
+          "purpose": "Consolidated reference of BOM rules + metrics + GPT config",
+          "version_stated": "3.3"
+        },
+        {
+          "file": "bmc_logo.png",
+          "purpose": "Logo for PDF generation"
+        },
+        {
+          "file": "Panelin_GPT_config.json",
+          "purpose": "Master GPT configuration (also in Layer 1)"
+        }
+      ]
+    },
+
+    "layer_7_panelin_v4_engine": {
+      "description": "Calculation engine mounted via app.py — may not run in production",
+      "files": [
+        {"file": "panelin_v4/engine/quotation_engine.py", "purpose": "Full quotation processing"},
+        {"file": "panelin_v4/engine/bom_engine.py", "purpose": "BOM calculations"},
+        {"file": "panelin_v4/engine/pricing_engine.py", "purpose": "Pricing logic"},
+        {"file": "panelin_v4/engine/validation_engine.py", "purpose": "Quotation validation"},
+        {"file": "panelin_v4/engine/classifier.py", "purpose": "Request mode classification (informativo/pre_cotizacion/formal)"},
+        {"file": "panelin_v4/engine/parser.py", "purpose": "Natural language request parsing"},
+        {"file": "panelin_v4/engine/sre_engine.py", "purpose": "SRE calculations"},
+        {"file": "panelin_v4/evaluator/sai_engine.py", "purpose": "SAI scoring engine"}
+      ]
+    }
+  },
+
+  "critical_findings": {
+    "finding_01_duplicate_pricing_files": {
+      "severity": "CRITICAL",
+      "title": "bromyros_pricing_master.json is 100% identical to bromyros_pricing_gpt_optimized.json",
+      "evidence": {
+        "method": "Python programmatic field-by-field comparison",
+        "indices_identical": true,
+        "familia_groups_identical": true,
+        "products_identical": true,
+        "metadata_identical": true,
+        "skus_compared": 96,
+        "differences_found": 0
+      },
+      "explanation": "Master wraps the exact same data inside {meta: {generated_from: 'bromyros_pricing_gpt_optimized.json'}, data: <identical_content>}. The data object is byte-for-byte identical.",
+      "impact": "142KB / ~47K tokens of pure waste uploaded to GPT KB",
+      "recommendation": "DELETE bromyros_pricing_master.json"
+    },
+
+    "finding_02_shopify_catalog_bloat": {
+      "severity": "CRITICAL",
+      "title": "shopify_catalog_v1.json is 89% bloat — 760KB file dominates token budget",
+      "evidence": {
+        "total_size_kb": 760,
+        "body_html_percent": 36.1,
+        "search_document_percent": 9.7,
+        "variant_metadata_percent": 20.4,
+        "metafields_percent": 0.6,
+        "useful_content_percent": 27.6,
+        "slim_version_size_kb": 74,
+        "reduction_achievable_percent": 89
+      },
+      "impact": "~253K tokens — 56% of entire KB budget consumed by one bloated file",
+      "recommendation": "Rebuild as slim panelin_products.json with only title, description (200 chars), SKUs, image URLs"
+    },
+
+    "finding_03_unificada_duplicate": {
+      "severity": "HIGH",
+      "title": "BMC_Base_Unificada_v4.json is 95% duplicate of BMC_Base_Conocimiento_GPT-2.json",
+      "evidence": {
+        "price_comparisons": 16,
+        "prices_matching": 16,
+        "match_rate_percent": 100,
+        "unique_products_in_unificada": ["ISOROOF_PLUS", "ISOROOF_FOIL"],
+        "unique_products_note": "Both already exist in bromyros_pricing with full data"
+      },
+      "impact": "11KB / ~3.6K tokens of near-duplicate data, creates source-of-truth confusion",
+      "recommendation": "DELETE — fold 2 unique product specs into panelin_core.json"
+    },
+
+    "finding_04_accessories_overlap": {
+      "severity": "HIGH",
+      "title": "accessories_catalog.json is 95% duplicate of bromyros_pricing",
+      "evidence": {
+        "accessories_skus": 56,
+        "overlapping_with_bromyros": 55,
+        "unique_to_accessories": 1,
+        "unique_sku": "BBAL (Babeta de Atornillar Lateral)",
+        "overlap_percent": 98.2
+      },
+      "impact": "49KB / ~16K tokens mostly redundant with bromyros data",
+      "recommendation": "DELETE — add the 1 unique SKU (BBAL) to panelin_catalog_ref.json"
+    },
+
+    "finding_05_triple_stored_autoportancia": {
+      "severity": "HIGH",
+      "title": "Autoportancia data stored in 3 files with identical values",
+      "evidence": {
+        "locations": [
+          "BMC_Base_Conocimiento_GPT-2.json → products.{family}.espesores.{mm}.autoportancia",
+          "bom_rules.json → autoportancia.tablas.{family}.{mm}.luz_max_m",
+          "BMC_Base_Unificada_v4.json → productos.{family}.espesores.{mm}mm.autoportancia"
+        ],
+        "values_compared": 10,
+        "all_matching": true,
+        "sample_comparisons": [
+          {"product": "ISODEC_EPS", "thickness": "100mm", "bmc_base": 5.5, "bom_rules": 5.5, "unificada": 5.5},
+          {"product": "ISODEC_EPS", "thickness": "200mm", "bmc_base": 9.1, "bom_rules": 9.1, "unificada": 9.1},
+          {"product": "ISODEC_PIR", "thickness": "120mm", "bmc_base": 7.6, "bom_rules": 7.6, "unificada": 7.6},
+          {"product": "ISOROOF_3G", "thickness": "80mm", "bmc_base": 4.0, "bom_rules": 4.0, "unificada": 4.0}
+        ]
+      },
+      "impact": "Inconsistency risk — updating one file but not the others creates contradictions",
+      "recommendation": "Single source in panelin_core.json → autoportancia section"
+    },
+
+    "finding_06_triple_stored_kits_fijacion": {
+      "severity": "HIGH",
+      "title": "Kits fijación data stored in 3 files with different structures",
+      "evidence": {
+        "locations": [
+          "BMC_Base_Conocimiento_GPT-2.json → kits_fijacion (metal, hormigon, madera_isoroof, perfileria)",
+          "bom_rules.json → kits_fijacion_detalle (metal, hormigon, madera_isoroof)",
+          "BMC_Base_Unificada_v4.json → sistemas_fijacion (varilla_tuerca, caballete_tornillo, hormigon) + tipos_fijacion"
+        ],
+        "structures_differ": true,
+        "data_equivalent": true
+      },
+      "impact": "Same data in 3 different structures — GPT may reference wrong one or get confused",
+      "recommendation": "Single source in panelin_core.json → kits_fijacion section"
+    },
+
+    "finding_07_non_operational_files_in_kb": {
+      "severity": "MEDIUM",
+      "title": "3 files with zero GPT operational value are in the KB",
+      "files": [
+        {"file": "README.md", "size_kb": 115.8, "tokens": 38600, "reason": "Project documentation — development history, PR guides, deployment checklists"},
+        {"file": "GPT_OPTIMIZATION_ANALYSIS.md", "size_kb": 10.6, "tokens": 3546, "reason": "Internal analysis report from Feb 2026 — historical diagnostic"},
+        {"file": "PANELIN_KNOWLEDGE_BASE_GUIDE.md", "size_kb": 14.2, "tokens": 4724, "reason": "Meta-guide about how to use KB files — belongs in system instructions, not KB"}
+      ],
+      "total_waste_tokens": 46870,
+      "impact": "These files pollute RAG retrieval — GPT may retrieve README content instead of actual product data",
+      "recommendation": "REMOVE all 3 from GPT KB"
+    },
+
+    "finding_08_fragmented_instructions": {
+      "severity": "MEDIUM",
+      "title": "6 separate instruction files fragment operational knowledge",
+      "files": ["PANELIN_QUOTATION_PROCESS.md", "GPT_INSTRUCTIONS_PRICING.md", "GPT_PDF_INSTRUCTIONS.md", "PANELIN_TRAINING_GUIDE.md", "panelin_context_consolidacion_sin_backend.md", "Aleros -2.rtf"],
+      "impact": "RAG may retrieve wrong instruction file for a given query. User asking about PDF gets quotation process instead.",
+      "recommendation": "MERGE all into single panelin_operations.md with clear sections"
+    },
+
+    "finding_09_api_schema_outdated": {
+      "severity": "CRITICAL",
+      "title": "gpt_actions_openapi_schema.json (v2.2.0) is severely outdated vs live API (v3.0.0)",
+      "evidence": {
+        "repo_schema_version": "2.2.0",
+        "live_api_version": "3.0.0",
+        "endpoints_in_repo_schema": 4,
+        "endpoints_in_live_api": 17,
+        "missing_endpoints": 13,
+        "missing_categories": ["quotation (4 endpoints)", "sheets (7 endpoints)", "readiness check (1 endpoint)", "root (1 endpoint)"]
+      },
+      "impact": "Repo does not accurately represent the live API. Anyone using the repo to configure the GPT would get an incomplete schema.",
+      "recommendation": "Replace with user-provided v3.0.0 schema"
+    },
+
+    "finding_10_version_inconsistencies": {
+      "severity": "MEDIUM",
+      "title": "Version numbers inconsistent across 5 configuration files",
+      "evidence": {
+        "wolf_api_main_py": "3.0.0",
+        "config_production_yaml": "3.2.0",
+        "env_example": "3.2.0",
+        "panelin_gpt_config_json": "3.4 (panelin_version)",
+        "schemas_consolidated_json": "3.3",
+        "gpt_actions_openapi_schema_json": "2.2.0"
+      },
+      "impact": "Unclear what the actual current version is — confusing for development and debugging",
+      "recommendation": "Standardize to single version (3.4.0) across all files"
+    }
+  },
+
+  "security_findings": {
+    "finding_s1_password_in_repo": {
+      "severity": "HIGH",
+      "title": "KB write password exposed in Panelin_GPT_config.json",
+      "location": "Panelin_GPT_config.json → capabilities.wolf_api_kb_write_password",
+      "value": "mywolfy",
+      "recommendation": "Remove password from committed config file. Reference as environment variable only."
+    },
+    "finding_s2_cors_wildcard": {
+      "severity": "LOW",
+      "location": "wolf_api/main.py → CORSMiddleware(allow_origins=['*'])",
+      "recommendation": "Restrict CORS origins in production"
+    }
+  },
+
+  "data_redundancy_matrix": {
+    "description": "Shows which data exists in multiple files",
+    "autoportancia": {
+      "files": ["BMC_Base_Conocimiento_GPT-2.json", "bom_rules.json", "BMC_Base_Unificada_v4.json"],
+      "copies": 3,
+      "values_consistent": true,
+      "proposed_single_source": "panelin_core.json"
+    },
+    "kits_fijacion": {
+      "files": ["BMC_Base_Conocimiento_GPT-2.json", "bom_rules.json", "BMC_Base_Unificada_v4.json"],
+      "copies": 3,
+      "structures_differ": true,
+      "proposed_single_source": "panelin_core.json"
+    },
+    "product_prices": {
+      "files": ["BMC_Base_Conocimiento_GPT-2.json", "bromyros_pricing_master.json", "bromyros_pricing_gpt_optimized.json", "BMC_Base_Unificada_v4.json", "panelin_truth_bmcuruguay_web_only_v2.json"],
+      "copies": 5,
+      "values_consistent": true,
+      "proposed_single_source": "Wolf API /product_price (primary) + panelin_catalog_ref.json (fallback)"
+    },
+    "quotation_formulas": {
+      "files": ["BMC_Base_Conocimiento_GPT-2.json", "bom_rules.json", "BMC_Base_Unificada_v4.json"],
+      "copies": 3,
+      "proposed_single_source": "panelin_core.json"
+    },
+    "accessory_catalog": {
+      "files": ["accessories_catalog.json", "bromyros_pricing_gpt_optimized.json", "bromyros_pricing_master.json"],
+      "copies": 3,
+      "overlap_percent": 95,
+      "proposed_single_source": "panelin_catalog_ref.json"
+    },
+    "institutional_info": {
+      "files": ["BMC_Base_Conocimiento_GPT-2.json", "BMC_Base_Unificada_v4.json"],
+      "copies": 2,
+      "proposed_single_source": "panelin_core.json"
+    }
+  },
+
+  "api_kb_integration_analysis": {
+    "current_state": "GPT carries ~180KB of static pricing data in KB that duplicates Wolf API capabilities",
+    "api_can_serve_dynamically": {
+      "product_pricing": {
+        "endpoint": "POST /product_price",
+        "replaces_static": "bromyros_pricing (132KB)",
+        "advantage": "Real-time prices, never stale"
+      },
+      "product_search": {
+        "endpoint": "POST /find_products",
+        "replaces_static": "bromyros indices",
+        "advantage": "Natural language search"
+      },
+      "quotation_calculation": {
+        "endpoint": "POST /calculate_quote",
+        "replaces_static": "Manual formula application from BMC_Base",
+        "advantage": "Decimal precision, server-side math, deterministic"
+      },
+      "availability": {
+        "endpoint": "POST /check_availability",
+        "replaces_static": "panelin_truth stock_status",
+        "advantage": "Real-time stock"
+      },
+      "customer_lookup": {
+        "endpoint": "GET /kb/customers",
+        "replaces_static": "Nothing — already API-only",
+        "advantage": "Persistent customer data"
+      },
+      "consultation_history": {
+        "endpoint": "GET /sheets/consultations",
+        "replaces_static": "Nothing — already API-only",
+        "advantage": "Live Google Sheets data"
+      }
+    },
+    "gpt_needs_in_kb_for_reasoning": {
+      "product_classification": "Families, types, espesores — to understand what user wants BEFORE calling API",
+      "autoportancia_validation": "Must validate span/thickness BEFORE calling /calculate_quote",
+      "bom_rules": "Must know which accessories to include per construction system",
+      "business_rules": "IVA, derivation policy, minimum slope, etc.",
+      "instructions": "How to use the API correctly, quotation process, PDF generation",
+      "descriptions_images": "Customer-facing product presentations"
+    },
+    "proposed_strategy": {
+      "rule_1": "For PRICES → call API first, KB catalog as fallback",
+      "rule_2": "For TECHNICAL VALIDATION → use KB (autoportancia, BOM)",
+      "rule_3": "For BUSINESS RULES → use KB",
+      "rule_4": "For PRESENTATION → use KB (descriptions, images)",
+      "rule_5": "For PRODUCT SEARCH → call API",
+      "rule_6": "If API fails → use panelin_catalog_ref.json as backup"
+    }
+  },
+
+  "restructuring_plan": {
+    "summary": "Consolidate 18 files into 5 optimized files, eliminate all redundancy, leverage API for dynamic data",
+
+    "proposed_files": {
+      "file_1_panelin_core": {
+        "filename": "panelin_core.json",
+        "role": "THE BRAIN — single source of truth for rules, formulas, validation",
+        "estimated_size_kb": 90,
+        "estimated_tokens": 30000,
+        "merges_from": ["BMC_Base_Conocimiento_GPT-2.json", "bom_rules.json", "BMC_Base_Unificada_v4.json (2 products only)"],
+        "contains": ["institucional", "products (specs, NO prices)", "autoportancia (SINGLE COPY)", "bom_systems (6 systems)", "formulas_cotizacion", "formulas_ahorro_energetico", "kits_fijacion (SINGLE COPY)", "reglas_negocio", "convenciones", "ejemplo_calculo", "precios_referencia_rapida"],
+        "removes": ["Duplicate autoportancia", "Duplicate kits", "Static product prices", "Stale user_corrections"]
+      },
+      "file_2_panelin_catalog_ref": {
+        "filename": "panelin_catalog_ref.json",
+        "role": "REFERENCE — unified pricing catalog with enhanced indices",
+        "estimated_size_kb": 45,
+        "estimated_tokens": 15000,
+        "merges_from": ["bromyros_pricing_gpt_optimized.json", "accessories_catalog.json (1 unique SKU)"],
+        "eliminates": ["bromyros_pricing_master.json (100% duplicate)", "shopify_catalog_index_v1.csv (indices here)", "accessories_catalog.json (95% overlap)"],
+        "new_indices": ["by_espesor", "by_uso"],
+        "gpt_usage": "Fallback pricing when API unavailable. GPT should PREFER calling /product_price API."
+      },
+      "file_3_panelin_products": {
+        "filename": "panelin_products.json",
+        "role": "DISPLAY — slim product descriptions and images for presentation",
+        "estimated_size_kb": 75,
+        "estimated_tokens": 25000,
+        "rebuilds_from": ["shopify_catalog_v1.json (89% slimmer)"],
+        "keeps": ["handle", "title", "type", "vendor", "body_text (trimmed 200 chars)", "variants (sku + options + weight)", "images (URLs, max 2 per product)"],
+        "removes": ["body_html", "search_document", "metafields", "google_shopping", "seo fields", "variant metadata (barcode, inventory, fulfillment, taxable)"]
+      },
+      "file_4_panelin_operations": {
+        "filename": "panelin_operations.md",
+        "role": "PLAYBOOK — all operational instructions in one searchable document",
+        "estimated_size_kb": 35,
+        "estimated_tokens": 12000,
+        "merges_from": ["PANELIN_QUOTATION_PROCESS.md → §1", "GPT_INSTRUCTIONS_PRICING.md → §2", "GPT_PDF_INSTRUCTIONS.md → §3", "PANELIN_TRAINING_GUIDE.md → §4", "panelin_context_consolidacion_sin_backend.md → §5", "Aleros -2.rtf → §6"],
+        "adds": ["§7: Wolf API usage instructions (NEW)"],
+        "eliminates_from_kb": ["README.md", "GPT_OPTIMIZATION_ANALYSIS.md", "PANELIN_KNOWLEDGE_BASE_GUIDE.md"]
+      },
+      "file_5_panelin_web_snapshot": {
+        "filename": "panelin_web_snapshot.json",
+        "role": "DYNAMIC — web price cross-reference",
+        "estimated_size_kb": 7,
+        "estimated_tokens": 2000,
+        "source": "panelin_truth_bmcuruguay_web_only_v2.json (renamed, kept as-is)",
+        "note": "Small and focused — no changes needed"
+      }
+    },
+
+    "migration_map": {
+      "BMC_Base_Conocimiento_GPT-2.json": "→ panelin_core.json",
+      "bom_rules.json": "→ panelin_core.json",
+      "BMC_Base_Unificada_v4.json": "→ panelin_core.json (2 unique products only)",
+      "bromyros_pricing_gpt_optimized.json": "→ panelin_catalog_ref.json",
+      "bromyros_pricing_master.json": "→ DELETE (100% duplicate)",
+      "accessories_catalog.json": "→ panelin_catalog_ref.json (1 unique SKU)",
+      "shopify_catalog_v1.json": "→ panelin_products.json (89% reduction)",
+      "shopify_catalog_index_v1.csv": "→ DELETE (indices in catalog_ref)",
+      "PANELIN_QUOTATION_PROCESS.md": "→ panelin_operations.md §1",
+      "GPT_INSTRUCTIONS_PRICING.md": "→ panelin_operations.md §2",
+      "GPT_PDF_INSTRUCTIONS.md": "→ panelin_operations.md §3",
+      "PANELIN_TRAINING_GUIDE.md": "→ panelin_operations.md §4",
+      "panelin_context_consolidacion_sin_backend.md": "→ panelin_operations.md §5",
+      "Aleros -2.rtf": "→ panelin_operations.md §6",
+      "panelin_truth_bmcuruguay_web_only_v2.json": "→ panelin_web_snapshot.json (renamed)",
+      "README.md": "→ REMOVE from KB",
+      "GPT_OPTIMIZATION_ANALYSIS.md": "→ REMOVE from KB",
+      "PANELIN_KNOWLEDGE_BASE_GUIDE.md": "→ REMOVE from KB"
+    },
+
+    "token_budget": {
+      "current": {
+        "files": 18,
+        "size_kb": 1361,
+        "estimated_tokens": 453726
+      },
+      "proposed": {
+        "files": 5,
+        "size_kb": 252,
+        "estimated_tokens": 84000
+      },
+      "reduction": {
+        "files_percent": 72,
+        "size_percent": 81,
+        "tokens_percent": 81
+      }
+    },
+
+    "quality_improvements": {
+      "single_source_autoportancia": "3 copies → 1 copy in panelin_core.json",
+      "single_source_kits": "3 copies → 1 copy in panelin_core.json",
+      "single_source_pricing": "5 copies → 1 file + API",
+      "instruction_coherence": "6 fragments → 1 organized document",
+      "rag_accuracy": "Fewer, focused files = better retrieval",
+      "no_noise_files": "0 non-operational files in KB (was 3)",
+      "api_first_pricing": "Real-time prices, never stale"
+    }
+  },
+
+  "additional_config_updates_needed": {
+    "panelin_gpt_config_json": {
+      "update_instructions": "Replace FUENTE DE VERDAD hierarchy (7 levels) with new 4-source API-first hierarchy",
+      "update_knowledge_base": "Replace 18-file hierarchy with 5 new files",
+      "update_deployment": "Update files_to_upload list to 5 new filenames",
+      "remove_password": "Remove wolf_api_kb_write_password from plain text config"
+    },
+    "instrucciones_gpt_rtf": {
+      "update_source_hierarchy": "Match new 4-source hierarchy from GPT config",
+      "add_api_first_strategy": "Add rules for when to call API vs use KB"
+    },
+    "gpt_actions_openapi_schema_json": {
+      "action": "Replace entire content with user-provided v3.0.0 schema",
+      "from_version": "2.2.0",
+      "to_version": "3.0.0",
+      "endpoints_added": 13
+    },
+    "generate_gpt_config_workflow": {
+      "update_file_paths": "Reference new KB filenames in trigger paths and package generation"
+    },
+    "validate_gpt_files_py": {
+      "update_expected_files": "Validate new 5-file set instead of old 18-file set"
+    },
+    "autoconfig_gpt_py": {
+      "update_package_contents": "Generate deployment package with new files"
+    }
+  },
+
+  "implementation_phases": {
+    "phase_1_build_new_files": {
+      "description": "Generate the 5 new KB files — additive, no risk",
+      "tasks": [
+        "Generate panelin_core.json from BMC_Base + bom_rules + Unificada unique data",
+        "Generate panelin_catalog_ref.json from bromyros + 1 unique accessory + new indices",
+        "Generate panelin_products.json by slimming shopify_catalog (89% reduction)",
+        "Generate panelin_operations.md by consolidating 6 instruction files + new API section",
+        "Copy/rename panelin_truth → panelin_web_snapshot.json"
+      ]
+    },
+    "phase_2_update_configuration": {
+      "description": "Update all configuration files to reference new structure",
+      "tasks": [
+        "Update Panelin_GPT_config.json instructions + file references + remove password",
+        "Update Instrucciones GPT.rtf to match",
+        "Replace gpt_actions_openapi_schema.json with v3.0.0",
+        "Ensure Esquema json.rtf matches"
+      ]
+    },
+    "phase_3_update_pipeline": {
+      "description": "Update deployment automation",
+      "tasks": [
+        "Update .github/workflows/generate-gpt-config.yml file paths",
+        "Update validate_gpt_files.py expected file set",
+        "Update autoconfig_gpt.py package contents"
+      ]
+    },
+    "phase_4_validation": {
+      "description": "Verify zero data loss and correctness",
+      "tasks": [
+        "Automated validation: every product/price/formula in old files exists in new files",
+        "Verify API endpoints match v3.0.0 schema",
+        "Verify total KB size under 250KB target",
+        "Test GPT with new KB files manually"
+      ]
+    },
+    "phase_5_archive": {
+      "description": "Preserve old files without polluting the active codebase",
+      "tasks": [
+        "Move all 18 replaced files to archive/kb_v7/",
+        "Update .gitignore if needed",
+        "Commit with clear message about migration"
+      ]
+    }
+  },
+
+  "risks_and_mitigations": [
+    {
+      "risk": "Data loss during merge — a product, formula, or rule gets dropped",
+      "probability": "medium",
+      "impact": "high",
+      "mitigation": "Automated validation script that compares every data point between old and new files"
+    },
+    {
+      "risk": "API becomes single point of failure for pricing",
+      "probability": "low",
+      "impact": "medium",
+      "mitigation": "panelin_catalog_ref.json contains full pricing as offline fallback"
+    },
+    {
+      "risk": "RAG retrieval quality degrades with restructured files",
+      "probability": "low",
+      "impact": "medium",
+      "mitigation": "Fewer, more focused files should IMPROVE RAG accuracy vs current noise"
+    },
+    {
+      "risk": "Team members reference old file names in conversations/workflows",
+      "probability": "high",
+      "impact": "low",
+      "mitigation": "Archive old files (don't delete), update all automation references, document migration"
+    },
+    {
+      "risk": "GPT instructions become too long after adding API-first strategy",
+      "probability": "low",
+      "impact": "low",
+      "mitigation": "New instructions are actually shorter — removing 7-level hierarchy for 4-source hierarchy"
+    }
+  ],
+
+  "acceptance_criteria": [
+    "5 new KB files generated, all valid JSON/Markdown",
+    "Total KB size < 250KB (currently 1,361KB)",
+    "Zero data loss: every product, price, formula, rule from old files exists in new files",
+    "No duplicate data: autoportancia in 1 place, kits in 1 place, pricing in 1 place",
+    "gpt_actions_openapi_schema.json matches v3.0.0 schema (17 endpoints)",
+    "Panelin_GPT_config.json references new 5-file structure",
+    "Deployment manifest lists correct 5 files",
+    "Validation script passes with 0 errors",
+    "Old files archived in archive/kb_v7/ (not deleted)",
+    "No passwords or secrets in committed files"
+  ]
+}

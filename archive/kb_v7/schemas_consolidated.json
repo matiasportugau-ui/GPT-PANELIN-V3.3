@@ -1,0 +1,370 @@
+{
+  "_meta": {
+    "title": "GPT-PANELIN V3.3 - All Schemas Consolidated",
+    "description": "Consolidated file containing all project schemas for easy reference and copy-paste.",
+    "generated": "2026-02-17",
+    "schemas_included": [
+      "bom_rules.json",
+      "observability/metrics_schema.json",
+      "Panelin_GPT_config.json"
+    ]
+  },
+  "bom_rules": {
+    "meta": {
+      "version": "1.0.0",
+      "fecha": "2026-02-06",
+      "descripcion": "Reglas parametricas de BOM (Bill of Materials) por sistema constructivo. Define como calcular cantidades de accesorios a partir de las dimensiones del proyecto.",
+      "autor": "BMC Uruguay / Panelin Team",
+      "nota": "Todas las cantidades se calculan con redondeo hacia arriba (ceil). Los precios se obtienen de accessories_catalog.json."
+    },
+    "convenciones": {
+      "unidades_estandar": {
+        "area": "m2",
+        "longitud": "ml",
+        "cantidad": "unid",
+        "sellador": "tubo",
+        "kit": "kit"
+      },
+      "redondeo": {
+        "paneles": "ceil (siempre redondear hacia arriba)",
+        "perfiles": "ceil(longitud_total / largo_std_perfil)",
+        "fijaciones": "ceil (nunca dejar puntos sin fijar)",
+        "sellador": "ceil(perimetro / rendimiento_tubo)"
+      },
+      "iva": {
+        "incluido_en_precios": true,
+        "tasa": 0.22,
+        "nota": "Los precios de accessories_catalog.json YA incluyen IVA. NO sumar IVA adicional."
+      },
+      "moneda": "USD"
+    },
+    "sistemas": {
+      "techo_isodec_eps": {
+        "nombre": "Techo con ISODEC EPS (cubierta pesada)",
+        "producto_ref": "ISODEC_EPS",
+        "ancho_util_m": 1.12,
+        "sistema_fijacion": "varilla_tuerca",
+        "pendiente_minima_pct": 7,
+        "parametros_entrada": {
+          "largo_m": "Largo del techo en metros (direccion del panel)",
+          "ancho_m": "Ancho del techo en metros (perpendicular al panel)",
+          "espesor_mm": "Espesor del panel (100, 150, 200, 250)",
+          "tipo_estructura": "metal | hormigon | madera",
+          "finish": {
+            "material": "GP (galvanizado prepintado) | AL (aluzinc)",
+            "espesor_chapa_mm": "0.5 por defecto",
+            "color": "Blanco | Gris | Terracota"
+          }
+        },
+        "formulas": {
+          "area_m2": "largo_m x ancho_m",
+          "paneles_necesarios": "ceil(ancho_m / ancho_util_m)",
+          "apoyos_por_panel": "ceil(largo_m / autoportancia_m) + 1",
+          "puntos_fijacion": "ceil((paneles_necesarios x apoyos_por_panel x 2) + (largo_m x 2 / 2.5))",
+          "varilla_cantidad": "ceil(puntos_fijacion / 4)",
+          "tuercas_metal": "puntos_fijacion x 2",
+          "tuercas_hormigon": "puntos_fijacion x 1",
+          "tacos_hormigon": "puntos_fijacion x 1 (solo si tipo_estructura == hormigon)",
+          "arandelas_carrocero": "puntos_fijacion x 1",
+          "tortugas_pvc": "puntos_fijacion x 1",
+          "gotero_frontal_piezas": "ceil((paneles_necesarios x ancho_util_m) / largo_std_gotero_frontal)",
+          "gotero_lateral_piezas": "ceil((largo_m x 2) / largo_std_gotero_lateral)",
+          "babeta_lateral_ml": "largo_m x 2",
+          "babeta_lateral_piezas": "ceil(babeta_lateral_ml / largo_std_babeta)",
+          "encuentro_muro_ml": "ancho_m (si aplica)",
+          "encuentro_muro_piezas": "ceil(encuentro_muro_ml / largo_std_babeta)",
+          "cumbrera_piezas": "ceil(ancho_m / largo_std_cumbrera) (si aplica)",
+          "fijaciones_perfileria": "ceil(metros_lineales_totales_perfiles / 0.30)",
+          "silicona_tubos": "ceil(perimetro_expuesto_ml / 8)",
+          "cinta_butilo_rollos": "ceil(perimetro_expuesto_ml / 22.5)"
+        }
+      },
+      "techo_isodec_pir": {
+        "nombre": "Techo con ISODEC PIR (cubierta pesada ignifuga)",
+        "producto_ref": "ISODEC_PIR",
+        "ancho_util_m": 1.12,
+        "sistema_fijacion": "varilla_tuerca",
+        "pendiente_minima_pct": 7,
+        "hereda_de": "techo_isodec_eps",
+        "diferencias": {
+          "espesores_disponibles": [50, 80, 120],
+          "perfileria_especifica": "Goteros y perfiles para ISODEC PIR tienen SKUs y precios diferentes",
+          "nota_seguridad": "Recomendado para industrias, depositos y proyectos con requerimientos de resistencia al fuego"
+        }
+      },
+      "techo_isoroof_3g": {
+        "nombre": "Techo con ISOROOF 3G (cubierta liviana)",
+        "producto_ref": "ISOROOF_3G",
+        "ancho_util_m": 1.0,
+        "sistema_fijacion": "caballete_tornillo",
+        "pendiente_minima_pct": 7,
+        "formulas": {
+          "area_m2": "largo_m x ancho_m",
+          "paneles_necesarios": "ceil(ancho_m / 1.0)",
+          "caballetes": "paneles_necesarios x apoyos_por_panel",
+          "tornillo_aguja_5": "caballetes x 1",
+          "tornillo_t1_perfileria": "ceil(metros_lineales_totales_perfiles / 0.30)",
+          "gotero_frontal_piezas": "ceil((paneles_necesarios x 1.0) / 3.03)",
+          "gotero_lateral_piezas": "ceil((largo_m x 2) / 3.0)",
+          "babeta_superior_piezas": "ceil(ancho_m / 3.03)",
+          "babeta_lateral_piezas": "ceil((largo_m x 2) / 3.0)",
+          "cumbrera_piezas": "ceil(ancho_m / 3.0)",
+          "silicona_tubos": "ceil(perimetro_expuesto_ml / 8)",
+          "cinta_butilo_rollos": "ceil(perimetro_expuesto_ml / 22.5)"
+        }
+      },
+      "pared_isopanel_eps": {
+        "nombre": "Pared/Fachada con ISOPANEL EPS",
+        "producto_ref": "ISOPANEL_EPS",
+        "ancho_util_m": 1.14,
+        "sistema_fijacion": "varilla_tuerca",
+        "formulas": {
+          "area_m2": "largo_m x alto_m",
+          "paneles_necesarios": "ceil(largo_m / ancho_util_m)",
+          "perfil_u_inferior_piezas": "ceil(largo_m / 3.0)",
+          "perfil_u_superior_piezas": "ceil(largo_m / 3.0)",
+          "perfil_angular_piezas": "ceil((alto_m x esquinas) / 3.0)",
+          "fijaciones_por_panel": "ceil(alto_m / 0.6) x 2",
+          "fijaciones_total": "paneles_necesarios x fijaciones_por_panel",
+          "silicona_tubos": "ceil(juntas_ml / 8)",
+          "cinta_butilo_rollos": "ceil(juntas_ml / 22.5)"
+        }
+      },
+      "pared_isowall_pir": {
+        "nombre": "Pared/Fachada con ISOWALL PIR",
+        "producto_ref": "ISOWALL_PIR",
+        "ancho_util_m": 1.1,
+        "hereda_de": "pared_isopanel_eps",
+        "diferencias": {
+          "espesores_disponibles": [50, 80],
+          "nota_seguridad": "Recomendado para industrias y proyectos con requerimientos de resistencia al fuego"
+        }
+      },
+      "pared_isofrig_pir": {
+        "nombre": "Camara Frigorifica con ISOFRIG PIR",
+        "producto_ref": "ISOFRIG_PIR",
+        "ancho_util_m": 1.1,
+        "hereda_de": "pared_isopanel_eps",
+        "diferencias": {
+          "espesores_disponibles": [40, 60, 80, 100, 150, 200],
+          "perfileria_especifica": "Usar perfiles ISOFRIG especificos del accessories_catalog",
+          "nota": "Para camaras frigorificas, el calculo incluye techo y paredes. Considerar puerta frigorifica."
+        }
+      }
+    },
+    "autoportancia": {
+      "descripcion": "Tabla de cargas y luces maximas por producto y espesor.",
+      "regla": "Si luz_proyecto > autoportancia_max -> sugerir espesor mayor o apoyo adicional",
+      "tablas": {
+        "ISODEC_EPS": {
+          "100": { "luz_max_m": 5.5, "peso_kg_m2": 12.5 },
+          "150": { "luz_max_m": 7.5, "peso_kg_m2": 14.5 },
+          "200": { "luz_max_m": 9.1, "peso_kg_m2": 16.5 },
+          "250": { "luz_max_m": 10.4, "peso_kg_m2": 18.5 }
+        },
+        "ISODEC_PIR": {
+          "50": { "luz_max_m": 3.5, "peso_kg_m2": 10.0 },
+          "80": { "luz_max_m": 5.5, "peso_kg_m2": 11.5 },
+          "120": { "luz_max_m": 7.6, "peso_kg_m2": 13.5 }
+        },
+        "ISOROOF_3G": {
+          "30": { "luz_max_m": 2.8, "peso_kg_m2": 5.0 },
+          "50": { "luz_max_m": 3.3, "peso_kg_m2": 6.5 },
+          "80": { "luz_max_m": 4.0, "peso_kg_m2": 8.5 }
+        },
+        "ISOPANEL_EPS": {
+          "50": { "luz_max_m": 3.0, "peso_kg_m2": 10.0 },
+          "100": { "luz_max_m": 5.5, "peso_kg_m2": 12.5 },
+          "150": { "luz_max_m": 7.5, "peso_kg_m2": 14.5 },
+          "200": { "luz_max_m": 9.1, "peso_kg_m2": 16.5 }
+        }
+      }
+    },
+    "kits_fijacion_detalle": {
+      "metal": {
+        "descripcion": "Fijacion a estructura metalica",
+        "componentes_por_punto": {
+          "varilla_3_8": { "cantidad": 0.25, "nota": "1 varilla de 1m = 4 puntos de fijacion" },
+          "tuerca_3_8": { "cantidad": 2 },
+          "arandela_carrocero_3_8": { "cantidad": 1 },
+          "arandela_plana_3_8": { "cantidad": 1 },
+          "tortuga_pvc": { "cantidad": 1 }
+        }
+      },
+      "hormigon": {
+        "descripcion": "Fijacion a estructura de hormigon",
+        "componentes_por_punto": {
+          "varilla_3_8": { "cantidad": 0.25, "nota": "1 varilla de 1m = 4 puntos de fijacion" },
+          "tuerca_3_8": { "cantidad": 1 },
+          "taco_expansivo_3_8": { "cantidad": 1 },
+          "arandela_carrocero_3_8": { "cantidad": 1 },
+          "tortuga_pvc": { "cantidad": 1 }
+        }
+      },
+      "madera_isoroof": {
+        "descripcion": "Fijacion a madera para ISOROOF 3G",
+        "componentes_por_punto": {
+          "caballete": { "cantidad": 1 },
+          "tornillo_aguja_5": { "cantidad": 1 }
+        },
+        "perfileria": {
+          "tornillo_t1": { "cada_cm": 30, "nota": "1 cada 30cm para babetas y perfileria" }
+        }
+      }
+    },
+    "ejemplo_calculo": {
+      "descripcion": "Ejemplo: Techo ISODEC EPS 100mm, 5m largo x 11m ancho, estructura metal",
+      "entrada": {
+        "sistema": "techo_isodec_eps",
+        "espesor_mm": 100,
+        "largo_m": 5.0,
+        "ancho_m": 11.0,
+        "tipo_estructura": "metal"
+      },
+      "calculo": {
+        "area_m2": 55.0,
+        "paneles_necesarios": "ceil(11.0 / 1.12) = 10",
+        "autoportancia_check": "5.0m <= 5.5m -> CUMPLE",
+        "apoyos_por_panel": "ceil(5.0 / 5.5) + 1 = 2",
+        "puntos_fijacion": "ceil((10 x 2 x 2) + (5.0 x 2 / 2.5)) = ceil(40 + 4) = 44",
+        "varilla_cantidad": "ceil(44 / 4) = 11",
+        "tuercas_metal": "44 x 2 = 88",
+        "arandelas_carrocero": 44,
+        "tortugas_pvc": 44,
+        "gotero_frontal_piezas": "ceil((10 x 1.12) / 3.03) = ceil(3.70) = 4",
+        "gotero_lateral_piezas": "ceil((5.0 x 2) / 3.0) = ceil(3.33) = 4",
+        "silicona_tubos": "ceil(32.0 / 8) = 4",
+        "cinta_butilo_rollos": "ceil(32.0 / 22.5) = 2"
+      }
+    }
+  },
+  "metrics_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "GPT-PANELIN MCP Observability Metrics Schema",
+    "type": "object",
+    "required": ["tokens_by_session", "tool_invocations", "tool_errors", "cache_efficiency"],
+    "properties": {
+      "tokens_by_session": {
+        "description": "Input/output token accounting grouped by session_id.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["date", "session_id", "token_input", "token_output", "total_tokens"],
+          "properties": {
+            "date": { "type": "string", "format": "date" },
+            "session_id": { "type": "string", "minLength": 1 },
+            "token_input": { "type": "integer", "minimum": 0 },
+            "token_output": { "type": "integer", "minimum": 0 },
+            "total_tokens": { "type": "integer", "minimum": 0 },
+            "estimated_cost_usd": { "type": "number", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "tool_invocations": {
+        "description": "Tool call count and latency by tool.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["date", "tool_name", "call_count", "latency_p50_ms", "latency_p95_ms", "latency_avg_ms"],
+          "properties": {
+            "date": { "type": "string", "format": "date" },
+            "tool_name": { "type": "string", "minLength": 1 },
+            "call_count": { "type": "integer", "minimum": 0 },
+            "latency_p50_ms": { "type": "number", "minimum": 0 },
+            "latency_p95_ms": { "type": "number", "minimum": 0 },
+            "latency_avg_ms": { "type": "number", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "tool_errors": {
+        "description": "Tool error rates by normalized error_code.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["date", "tool_name", "error_code", "error_count", "error_rate"],
+          "properties": {
+            "date": { "type": "string", "format": "date" },
+            "tool_name": { "type": "string", "minLength": 1 },
+            "error_code": { "type": "string", "minLength": 1 },
+            "error_count": { "type": "integer", "minimum": 0 },
+            "error_rate": { "type": "number", "minimum": 0, "maximum": 1 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "cache_efficiency": {
+        "description": "Cache hit/miss ratio by cacheable tool and day.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["date", "tool_name", "cache_hits", "cache_misses", "hit_ratio"],
+          "properties": {
+            "date": { "type": "string", "format": "date" },
+            "tool_name": { "type": "string", "minLength": 1 },
+            "cache_hits": { "type": "integer", "minimum": 0 },
+            "cache_misses": { "type": "integer", "minimum": 0 },
+            "hit_ratio": { "type": "number", "minimum": 0, "maximum": 1 }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": false
+  },
+  "gpt_config": {
+    "name": "Panelin - BMC Assistant Pro",
+    "instructions_version": "2.5 Canonical",
+    "kb_version": "7.0",
+    "panelin_version": "3.4",
+    "knowledge_base_hierarchy": {
+      "level_1_master": ["BMC_Base_Conocimiento_GPT-2.json", "bromyros_pricing_master.json"],
+      "level_1_2_accessories": ["accessories_catalog.json"],
+      "level_1_3_bom_rules": ["bom_rules.json"],
+      "level_1_5_pricing_optimized": ["bromyros_pricing_gpt_optimized.json"],
+      "level_1_6_catalog": ["shopify_catalog_v1.json", "shopify_catalog_index_v1.csv"],
+      "level_2_validation": ["BMC_Base_Unificada_v4.json"],
+      "level_3_dynamic": ["panelin_truth_bmcuruguay_web_only_v2.json"],
+      "level_4_support": ["Aleros -2.rtf", "panelin_context_consolidacion_sin_backend.md", "PANELIN_QUOTATION_PROCESS.md", "PANELIN_TRAINING_GUIDE.md", "GPT_INSTRUCTIONS_PRICING.md", "GPT_PDF_INSTRUCTIONS.md"]
+    },
+    "capabilities": {
+      "web_browsing": true,
+      "code_interpreter": true,
+      "image_generation": true,
+      "canvas": true,
+      "pdf_generation": true,
+      "wolf_api_kb_write": true,
+      "audio_transcription": false
+    },
+    "business_rules_v6": {
+      "currency": "USD",
+      "iva_rate": "22%",
+      "iva_included_in_prices": true,
+      "min_roof_slope": "7%",
+      "default_shipping_usd": 280.0,
+      "derivation_policy": "strict_internal_only",
+      "service_scope": "materials_and_advisory_only",
+      "official_website": "https://bmcuruguay.com.uy"
+    },
+    "actions": [
+      "generate_quotation",
+      "generate_pdf_quotation",
+      "lookup_product_fast",
+      "get_product_details",
+      "evaluate_sales_person",
+      "provide_training",
+      "persist_conversation",
+      "register_correction",
+      "save_customer",
+      "lookup_customer"
+    ],
+    "wolf_api_endpoints": {
+      "base_url": "https://panelin-api-642127786762.us-central1.run.app",
+      "conversations": "POST /kb/conversations",
+      "corrections": "POST /kb/corrections",
+      "customers_write": "POST /kb/customers",
+      "customers_read": "GET /kb/customers?search={query}"
+    }
+  }
+}

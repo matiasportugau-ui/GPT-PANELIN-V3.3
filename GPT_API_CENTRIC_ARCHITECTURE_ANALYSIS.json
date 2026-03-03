@@ -1,0 +1,576 @@
+{
+  "report_meta": {
+    "title": "Panelin GPT — API-Centric Architecture Analysis: KB as Pure API Call Router",
+    "version": "1.0.0",
+    "date": "2026-03-02",
+    "question": "What if all KB files were efficiently adapted to be just indexes for assembling the most specific, correct, current, and valid API call — aligned with the corresponding backend endpoint infrastructure — for maximum speed, economy, and above all correctness?",
+    "conclusion": "The vision is exactly right and represents the optimal architecture. But the current API CANNOT support it — the production quotation endpoints are non-functional (empty catalog), and the full calculation engine exists but is not deployed."
+  },
+
+  "the_vision": {
+    "principle": "The GPT should NEVER store data that can be served by the API. The KB should contain ONLY the minimum context needed to correctly translate user intent into precise API calls.",
+    "why_this_is_optimal": {
+      "correctness": "API serves live data from a single canonical source — no stale copies, no conflicting versions, no 'which file has the right price?' problem",
+      "currency": "Prices, stock, customer data always up-to-date — no need to re-upload KB files when a price changes",
+      "consistency": "One place to update data (API/backend), zero risk of forgetting to update 1 of 5 copies",
+      "economy": "Minimal token usage (~10K vs ~453K), faster RAG retrieval, lower OpenAI costs",
+      "speed": "Fewer KB files = faster retrieval = faster GPT responses",
+      "reliability": "Deterministic server-side math (Decimal precision) instead of LLM attempting arithmetic",
+      "validity": "API validates inputs (min/max ranges, product existence) before processing — impossible to quote a non-existent product"
+    },
+    "architecture": {
+      "gpt_kb_role": "ROUTER — maps user intent → correct endpoint + correct parameters",
+      "api_role": "ENGINE — serves all data, does all calculations, stores all state",
+      "gpt_instructions_role": "BEHAVIOR — defines personality, policies, formatting, and call orchestration",
+      "diagram": "User → GPT (reads KB index to understand intent) → GPT constructs API call → Wolf API (returns data) → GPT formats response for user"
+    }
+  },
+
+  "current_reality": {
+    "critical_discovery": {
+      "title": "THE PRODUCTION API QUOTATION ENDPOINTS ARE NON-FUNCTIONAL",
+      "severity": "BLOCKER",
+      "evidence": {
+        "step_1": "wolf_api/main.py line 81-88: _load_catalog() loads from os.environ.get('CATALOG_PATH', 'catalog.json')",
+        "step_2": "catalog.json does NOT EXIST anywhere in the repository",
+        "step_3": "wolf_api/Dockerfile: 'COPY . /app/' copies only wolf_api/ directory — which contains no catalog file",
+        "step_4": ".github/workflows/deploy-wolf-api.yml env_vars section does NOT set CATALOG_PATH",
+        "step_5": "Therefore at runtime: CATALOG = {} (empty dict)",
+        "step_6": "Every call to /calculate_quote, /find_products, /product_price, /check_availability → CATALOG.get(product_id) returns None → HTTPException 404"
+      },
+      "affected_endpoints": [
+        {"endpoint": "POST /calculate_quote", "status": "BROKEN — returns 404 for all products", "reason": "CATALOG is empty dict"},
+        {"endpoint": "POST /find_products", "status": "BROKEN — returns 0 results always", "reason": "Iterates over empty CATALOG"},
+        {"endpoint": "POST /product_price", "status": "BROKEN — returns 404 for all products", "reason": "CATALOG.get() returns None"},
+        {"endpoint": "POST /check_availability", "status": "BROKEN — returns 404 for all products", "reason": "CATALOG.get() returns None"}
+      ],
+      "working_endpoints": [
+        {"endpoint": "GET /health", "status": "OK", "verified": "live test returned {status: ok}"},
+        {"endpoint": "GET /ready", "status": "OK", "verified": "live test returned {status: ready, version: 3.0.1, gcs_configured: true, sheets_configured: true}"},
+        {"endpoint": "POST /kb/conversations", "status": "OK", "depends_on": "GCS bucket (configured)"},
+        {"endpoint": "POST /kb/corrections", "status": "OK", "depends_on": "GCS bucket (configured)"},
+        {"endpoint": "POST/GET /kb/customers", "status": "OK", "depends_on": "GCS bucket (configured)"},
+        {"endpoint": "GET/POST /sheets/*", "status": "OK", "depends_on": "Google Sheets (configured)"},
+        {"endpoint": "PATCH /sheets/update_row", "status": "OK", "depends_on": "Google Sheets (configured)"}
+      ]
+    },
+
+    "the_undeployed_engine": {
+      "title": "PANELIN V4 ENGINE — Full logic exists but is NOT in production",
+      "location": "panelin_v4/engine/ (6 modules) + panelin_v4/evaluator/ (1 module)",
+      "entrypoint": "app.py imports wolf_api.main.app and adds v4 routes",
+      "routes_exposed": [
+        {"route": "POST /api/quote", "does": "Full pipeline: parse natural language → classify mode → calculate SRE risk → generate BOM → price all items → validate → output structured quotation"},
+        {"route": "POST /api/validate", "does": "Multi-layer validation: autoportancia check + BOM verification + pricing validation + mode compliance"},
+        {"route": "POST /api/sai-score", "does": "Quotation quality scoring (SAI index)"}
+      ],
+      "modules": {
+        "classifier.py": "Determines operating mode (informativo/pre_cotizacion/formal) and request type",
+        "parser.py": "Parses natural language into structured QuoteRequest with all parameters",
+        "sre_engine.py": "Calculates Safety-Risk-Exposure score for the quotation",
+        "bom_engine.py": "Generates complete Bill of Materials — reads bom_rules.json + accessories_catalog.json — uses autoportancia tables, parametric formulas, accessory matching with priority system",
+        "pricing_engine.py": "Values every BOM item using Decimal precision — reads accessories_catalog.json + bromyros_pricing_master.json — enforces IVA rules, unit_base logic",
+        "validation_engine.py": "Multi-layer validation of the complete quotation",
+        "quotation_engine.py": "Orchestrates the full pipeline from text input to structured output"
+      },
+      "why_not_deployed": {
+        "dockerfile_mismatch": "wolf_api/Dockerfile runs 'uvicorn main:app' (wolf_api/main.py) — NOT 'uvicorn app:app' (root app.py)",
+        "missing_kb_files": "wolf_api/Dockerfile only copies wolf_api/ directory. bom_rules.json, accessories_catalog.json, bromyros_pricing_master.json are in repo root — NOT copied into container",
+        "no_panelin_v4_in_container": "panelin_v4/ directory is never COPYed into the Docker image"
+      }
+    },
+
+    "what_the_gpt_actually_does_today": {
+      "description": "Because the API quotation endpoints are broken, the GPT does ALL computation itself",
+      "flow": [
+        "1. User asks for a quotation",
+        "2. GPT reads BMC_Base_Conocimiento_GPT-2.json from KB (via RAG retrieval)",
+        "3. GPT reads bom_rules.json from KB for BOM formulas",
+        "4. GPT reads accessories_catalog.json from KB for accessory prices",
+        "5. GPT reads bromyros_pricing_gpt_optimized.json from KB for panel prices",
+        "6. GPT manually applies formulas (as LLM text operations — NOT Decimal precision)",
+        "7. GPT calls /kb/conversations to persist the quotation summary",
+        "8. GPT calls /sheets/consultations to record in tracker",
+        "9. GPT formats response to user"
+      ],
+      "problems_with_this": [
+        "LLM arithmetic is imprecise — floating point errors, rounding mistakes",
+        "RAG may retrieve wrong file or wrong section from a large file",
+        "453K tokens of KB means poor retrieval accuracy (needle in haystack)",
+        "Prices can be stale (static files, not real-time)",
+        "5 copies of the same data creates contradiction risk",
+        "GPT token costs are much higher than API compute costs",
+        "No validation — GPT might quote a product that doesn't exist or misapply a formula"
+      ]
+    }
+  },
+
+  "gap_analysis": {
+    "title": "What's needed to reach the API-centric vision",
+
+    "layer_1_fix_broken_endpoints": {
+      "priority": "P0 — BLOCKER",
+      "description": "The 4 quotation endpoints need a catalog to work",
+      "options": [
+        {
+          "option": "A — Generate catalog.json and include in wolf_api/",
+          "effort": "LOW",
+          "description": "Script that transforms bromyros_pricing_gpt_optimized.json into the flat {product_id: {price_usd, name, ...}} format that wolf_api/main.py expects",
+          "pros": "Fast fix, no architecture changes",
+          "cons": "Still uses the simple area×price calculation (no BOM), catalog becomes another static file to maintain"
+        },
+        {
+          "option": "B — Switch Dockerfile to use app.py entrypoint (deploy v4 engine)",
+          "effort": "MEDIUM",
+          "description": "Change wolf_api/Dockerfile to: (1) COPY panelin_v4/ into image, (2) COPY KB data files into image, (3) CMD uvicorn app:app. This deploys the FULL quotation pipeline",
+          "pros": "Gets full BOM + pricing + validation for free (code already written), natural language input via /api/quote",
+          "cons": "Bigger container, needs KB files in container, requires testing"
+        },
+        {
+          "option": "C — Merge v4 engine logic INTO wolf_api/main.py endpoints",
+          "effort": "HIGH",
+          "description": "Refactor /calculate_quote to use bom_engine + pricing_engine internally instead of simple area×price",
+          "pros": "Single codebase, cleaner architecture",
+          "cons": "Significant refactoring, risk of regressions"
+        }
+      ],
+      "recommendation": "Option B — fastest path to a fully functional API with minimal risk. The v4 engine code is already tested."
+    },
+
+    "layer_2_missing_api_capabilities": {
+      "priority": "P1 — Required for full API-centric",
+      "description": "Endpoints that don't exist yet but are needed for the GPT to be a pure router",
+      "missing_endpoints": [
+        {
+          "endpoint": "POST /validate_autoportancia",
+          "why_needed": "GPT must validate span vs thickness BEFORE calling /calculate_quote. Currently this data is in KB files. If the API validates it server-side, the GPT doesn't need autoportancia tables at all.",
+          "request": {"familia": "ISODEC", "sub_familia": "EPS", "thickness_mm": 100, "span_m": 5.0},
+          "response": {"valid": true, "max_span_m": 5.5, "safe_span_m": 4.675, "margin_percent": 15, "status": "ok|warning|blocked", "recommendation": "string"},
+          "note": "v4 engine already has _get_autoportancia_m() — just needs an HTTP wrapper",
+          "effort": "LOW — function exists, needs endpoint"
+        },
+        {
+          "endpoint": "GET /product_specs/{product_id}",
+          "why_needed": "GPT needs technical specs (autoportancia, coef_termico, resistencia_termica, ancho_util) to reason about recommendations. Currently only in KB files.",
+          "response": {"product_id": "ISODEC_EPS_100mm", "autoportancia_m": 5.5, "coef_termico": 0.035, "resistencia_termica": 2.86, "ancho_util_m": 1.12, "sistema_fijacion": "varilla_tuerca", "tipo": "cubierta_pesada"},
+          "note": "Data exists in BMC_Base_Conocimiento and bom_rules.json — needs to be loaded into API",
+          "effort": "LOW — data exists, needs loading + endpoint"
+        },
+        {
+          "endpoint": "POST /calculate_full_bom",
+          "why_needed": "Complete BOM calculation with all accessories priced. The current /calculate_quote only does area×price with no accessories.",
+          "request": {"product_id": "ISODEC_EPS_100mm", "length_m": 5.0, "width_m": 11.0, "structure_type": "metal", "installation_type": "techo"},
+          "response": {"panels": {"count": 10, "unit_price": 46.07, "total": 2576.72}, "accessories": [{"sku": "6838", "name": "Gotero Frontal 100mm", "qty": 4, "price": 19.12, "total": 76.48}], "fixings": [], "sealants": [], "grand_total": 3200.00, "autoportancia_check": "ok"},
+          "note": "v4 engine calculate_bom() + calculate_pricing() already does this — the /api/quote endpoint returns all this data. Option B (deploy v4) gives this for free.",
+          "effort": "FREE if using Option B, MEDIUM if building separately"
+        },
+        {
+          "endpoint": "POST /compare_options",
+          "why_needed": "Energy savings comparison between two thicknesses. Currently GPT reads formulas_ahorro_energetico from KB and does the math (imprecisely).",
+          "request": {"option_a": {"product_id": "ISODEC_EPS_100mm"}, "option_b": {"product_id": "ISODEC_EPS_150mm"}, "area_m2": 100, "usage": "residencial"},
+          "response": {"thermal_resistance_diff": 1.43, "annual_savings_usd": 118.50, "payback_years": 3.2, "recommendation": "string"},
+          "effort": "MEDIUM — formulas exist in KB, need to be coded into endpoint"
+        },
+        {
+          "endpoint": "GET /business_rules",
+          "why_needed": "IVA rate, derivation policy, minimum slope, shipping defaults. Currently only in KB files.",
+          "response": {"iva_rate": 0.22, "iva_included_in_prices": true, "currency": "USD", "min_roof_slope_pct": 7, "default_shipping_usd": 280, "derivation_policy": "internal_only", "official_website": "https://bmcuruguay.com.uy"},
+          "note": "Small endpoint but eliminates the need for reglas_negocio in KB",
+          "effort": "LOW — static data, trivial endpoint"
+        },
+        {
+          "endpoint": "GET /product_catalog",
+          "why_needed": "List all products with slim metadata for GPT to understand what's available. Replaces the need for bromyros indices and shopify catalog in KB.",
+          "response": {"products": [{"id": "ISODEC_EPS_100mm", "name": "ISODEC EPS 100mm", "familia": "ISODEC", "tipo": "Panel", "uso": "techo", "thickness_mm": 100}], "total": 96},
+          "note": "Could be a cached response updated when catalog changes",
+          "effort": "LOW — data exists, needs endpoint"
+        }
+      ]
+    },
+
+    "layer_3_what_can_never_be_api": {
+      "description": "Things that MUST stay in GPT instructions or KB because they define BEHAVIOR, not DATA",
+      "items": [
+        {
+          "item": "Personality and personalization rules",
+          "why_not_api": "Mauro/Martin/Rami/Carolina personalization, tone, style — these are LLM behavioral instructions, not data to query",
+          "stays_in": "GPT system instructions"
+        },
+        {
+          "item": "Conversation flow orchestration",
+          "why_not_api": "When to ask for data, how to handle evasive clients, when to offer PDF — these are behavioral patterns",
+          "stays_in": "GPT system instructions"
+        },
+        {
+          "item": "API call orchestration logic",
+          "why_not_api": "The decision tree of 'first validate autoportancia, then calculate BOM, then persist' is GPT reasoning, not API data",
+          "stays_in": "GPT system instructions or KB playbook"
+        },
+        {
+          "item": "Product ID mapping from natural language",
+          "why_not_api": "User says 'isodec 100 para techo' — GPT needs a mapping to know product_id = 'ISODEC_EPS_100mm'. This is a tiny lookup table.",
+          "stays_in": "KB index file (~2K tokens)",
+          "alternative": "Or use POST /find_products to resolve — but this requires a working API"
+        },
+        {
+          "item": "Presentation formatting",
+          "why_not_api": "How to display a quotation, what sections to include, how to format tables — GPT presentation logic",
+          "stays_in": "GPT system instructions"
+        },
+        {
+          "item": "PDF generation workflow",
+          "why_not_api": "Uses Code Interpreter + ReportLab — runs in GPT sandbox, not API",
+          "stays_in": "GPT KB (panelin_reports/ code)"
+        },
+        {
+          "item": "Sales evaluation and training",
+          "why_not_api": "Conversational capabilities — evaluate vendor knowledge, simulate scenarios",
+          "stays_in": "GPT system instructions"
+        },
+        {
+          "item": "SOP commands (/estado, /checkpoint, etc.)",
+          "why_not_api": "GPT behavioral commands for conversation management",
+          "stays_in": "GPT system instructions"
+        }
+      ]
+    }
+  },
+
+  "ideal_architecture": {
+    "title": "The Fully API-Centric Architecture (target state)",
+    "description": "What the system looks like when the API serves everything and KB is a pure router",
+
+    "diagram": {
+      "layers": [
+        "USER: 'Necesito cotización ISODEC 100mm, 5x11m, estructura metal'",
+        "↓",
+        "GPT SYSTEM INSTRUCTIONS: Personality, behavior, orchestration rules (~3K tokens)",
+        "↓",
+        "GPT reads KB INDEX: Maps 'isodec 100mm' → product_id, determines endpoints needed (~2K tokens)",
+        "↓",
+        "GPT CALL 1: POST /validate_autoportancia {familia: ISODEC, thickness_mm: 100, span_m: 5} → {valid: true}",
+        "GPT CALL 2: POST /calculate_full_bom {product_id: ISODEC_EPS_100mm, length_m: 5, width_m: 11, structure_type: metal} → {full BOM + pricing}",
+        "GPT CALL 3: POST /sheets/consultations {cliente: ..., consulta: ..., origen: WA} → {row_number: 45}",
+        "GPT CALL 4: POST /kb/conversations {client_id: ..., summary: ...} → {ok: true}",
+        "↓",
+        "GPT formats response using presentation rules from instructions",
+        "↓",
+        "USER receives: formatted quotation with BOM, prices, autoportancia validation, recommendations"
+      ]
+    },
+
+    "kb_files_in_ideal_state": {
+      "total_files": 2,
+      "total_tokens": "~10K-12K",
+      "file_1": {
+        "name": "panelin_api_index.json",
+        "estimated_tokens": 3000,
+        "purpose": "Minimal routing index — maps user intent to correct API calls",
+        "structure": {
+          "product_id_map": {
+            "description": "Natural language → product_id resolution table",
+            "example_entries": {
+              "isodec eps 100|isodec 100|panel techo 100mm": "ISODEC_EPS_100mm",
+              "isodec eps 150|isodec 150": "ISODEC_EPS_150mm",
+              "isopanel 50|panel pared 50mm": "ISOPANEL_EPS_50mm",
+              "isoroof 30|techo liviano 30": "ISOROOF_3G_30mm"
+            },
+            "note": "This table enables the GPT to resolve product_id without calling /find_products first — saves 1 API call when the product is clear"
+          },
+          "endpoint_routing": {
+            "description": "Maps user intent to the correct API endpoint(s) and required parameters",
+            "routes": {
+              "cotizacion_formal": {
+                "description": "User wants a formal quotation",
+                "steps": [
+                  {"order": 1, "call": "POST /validate_autoportancia", "required_params": ["familia", "sub_familia", "thickness_mm", "span_m"], "when": "span_m > 3.0"},
+                  {"order": 2, "call": "POST /calculate_full_bom", "required_params": ["product_id", "length_m", "width_m", "structure_type", "installation_type"]},
+                  {"order": 3, "call": "POST /sheets/consultations", "required_params": ["cliente", "origen", "consulta"], "when": "quotation completed"},
+                  {"order": 4, "call": "POST /kb/conversations", "required_params": ["client_id", "summary"], "when": "user consents"}
+                ]
+              },
+              "precio_simple": {
+                "steps": [
+                  {"order": 1, "call": "POST /product_price", "required_params": ["product_id"]}
+                ]
+              },
+              "buscar_producto": {
+                "steps": [
+                  {"order": 1, "call": "POST /find_products", "required_params": ["query"]}
+                ]
+              },
+              "disponibilidad": {
+                "steps": [
+                  {"order": 1, "call": "POST /check_availability", "required_params": ["product_id"]}
+                ]
+              },
+              "comparar_opciones": {
+                "steps": [
+                  {"order": 1, "call": "POST /compare_options", "required_params": ["option_a", "option_b", "area_m2"]}
+                ]
+              },
+              "historial_cliente": {
+                "steps": [
+                  {"order": 1, "call": "GET /kb/customers?search={query}", "required_params": ["search"]},
+                  {"order": 2, "call": "GET /sheets/search?q={query}", "required_params": ["q"], "when": "customer not found in KB"}
+                ]
+              }
+            }
+          },
+          "pre_call_validation": {
+            "description": "Quick checks the GPT must do BEFORE calling the API — avoids wasting API calls on invalid requests",
+            "rules": {
+              "length_m": {"min": 0.5, "max": 14.0},
+              "width_m": {"min": 0.5, "max": 50.0},
+              "discount_percent": {"min": 0, "max": 30},
+              "phone_format": "09XXXXXXX or +598XXXXXXXX",
+              "required_for_formal_quote": ["nombre", "telefono", "direccion_obra"]
+            }
+          }
+        }
+      },
+      "file_2": {
+        "name": "panelin_operations.md",
+        "estimated_tokens": 8000,
+        "purpose": "Behavioral playbook — what CAN'T be an API call",
+        "sections": [
+          "Quotation presentation format (how to display API results to user)",
+          "PDF generation workflow (Code Interpreter + ReportLab)",
+          "Sales evaluation methodology",
+          "Training simulation guides",
+          "SOP commands (/estado, /checkpoint, /consolidar)",
+          "Aleros technical rules (5 bullet points)",
+          "Energy comparison presentation template"
+        ],
+        "note": "This file contains ZERO data — only behavioral instructions and formatting templates"
+      }
+    },
+
+    "system_instructions_in_ideal_state": {
+      "estimated_tokens": 3000,
+      "contains": [
+        "Identity: Panelin, BMC Assistant Pro",
+        "Personalization rules (Mauro, Martin, Rami, Carolina)",
+        "Client data collection flow (nombre, teléfono, dirección)",
+        "API-first strategy: ALWAYS call API for data, NEVER use cached/memorized values",
+        "Error handling: if API returns error, inform user clearly",
+        "Business policies: IVA included, derivation internal only, no fabrication",
+        "Guardrails checklist",
+        "Audio policy",
+        "Capabilities policy (web, code interpreter, canvas, image gen)"
+      ]
+    }
+  },
+
+  "comparison": {
+    "title": "Current vs Intermediate (5-file plan) vs Ideal (API-centric)",
+    "metrics": {
+      "current_18_files": {
+        "kb_files": 18,
+        "kb_tokens": 453000,
+        "data_sources_for_prices": 5,
+        "api_calls_for_quotation": 0,
+        "calculation_precision": "LLM floating point (imprecise)",
+        "staleness_risk": "HIGH — static files, manual upload to update",
+        "single_point_of_truth": "NO — 5 overlapping sources",
+        "api_status": "4 of 17 endpoints broken (quotation)"
+      },
+      "intermediate_5_files": {
+        "kb_files": 5,
+        "kb_tokens": 115000,
+        "data_sources_for_prices": 2,
+        "api_calls_for_quotation": "1-2 (with KB fallback)",
+        "calculation_precision": "Mixed — API when available, LLM fallback",
+        "staleness_risk": "MEDIUM — API is primary, KB is backup",
+        "single_point_of_truth": "PARTIAL — most data unified, API preferred",
+        "api_status": "Requires fixing broken endpoints"
+      },
+      "ideal_api_centric": {
+        "kb_files": 2,
+        "kb_tokens": 11000,
+        "data_sources_for_prices": 1,
+        "api_calls_for_quotation": "2-4 (all data from API)",
+        "calculation_precision": "Decimal precision (server-side Python)",
+        "staleness_risk": "ZERO — all data is live from API",
+        "single_point_of_truth": "YES — API is the only source",
+        "api_status": "Requires: fix broken endpoints + deploy v4 engine + add 4-5 new endpoints"
+      }
+    },
+    "token_comparison": {
+      "current": {"files": 18, "tokens": 453000, "cost_per_1M_tokens_usd": 2.50, "estimated_monthly_cost_at_1000_queries": "HIGH"},
+      "intermediate": {"files": 5, "tokens": 115000, "reduction_percent": 75},
+      "ideal": {"files": 2, "tokens": 11000, "reduction_percent": 97.6}
+    }
+  },
+
+  "implementation_roadmap": {
+    "phase_0_fix_api": {
+      "title": "UNBLOCK: Fix broken quotation endpoints",
+      "priority": "P0 — Nothing else works without this",
+      "effort": "1-2 days",
+      "tasks": [
+        {
+          "id": "0.1",
+          "task": "Generate catalog.json from bromyros_pricing_gpt_optimized.json",
+          "description": "Transform the 96-product bromyros pricing into the flat {product_id: {price_usd, name, description}} format that wolf_api/main.py _load_catalog() expects",
+          "file": "wolf_api/catalog.json (new) or scripts/generate_catalog.py"
+        },
+        {
+          "id": "0.2",
+          "task": "Add CATALOG_PATH to deploy-wolf-api.yml OR include catalog.json in wolf_api/",
+          "description": "Ensure the catalog file is available at runtime in the Cloud Run container"
+        },
+        {
+          "id": "0.3",
+          "task": "Test all 4 quotation endpoints with real product IDs",
+          "description": "Verify /calculate_quote, /find_products, /product_price, /check_availability return correct data"
+        }
+      ]
+    },
+    "phase_1_deploy_v4_engine": {
+      "title": "Deploy the Panelin v4 calculation engine to production",
+      "priority": "P1 — Enables full BOM + pricing via API",
+      "effort": "2-3 days",
+      "tasks": [
+        {
+          "id": "1.1",
+          "task": "Update wolf_api/Dockerfile to use app.py entrypoint",
+          "changes": [
+            "COPY panelin_v4/ /app/panelin_v4/",
+            "COPY bom_rules.json accessories_catalog.json bromyros_pricing_master.json BMC_Base_Conocimiento_GPT-2.json /app/",
+            "COPY app.py /app/",
+            "CMD ['uvicorn', 'app:app', '--host', '0.0.0.0', '--port', '8080']"
+          ]
+        },
+        {
+          "id": "1.2",
+          "task": "Test /api/quote with natural language input",
+          "test": "POST /api/quote {text: 'ISODEC EPS 100mm, 5x11m, estructura metal, techo'}"
+        },
+        {
+          "id": "1.3",
+          "task": "Test /api/validate with edge cases",
+          "test": "Verify autoportancia warnings, blocked quotations, missing data handling"
+        }
+      ]
+    },
+    "phase_2_add_missing_endpoints": {
+      "title": "Add endpoints needed for full API-centric operation",
+      "priority": "P2 — Enables KB to become pure router",
+      "effort": "3-5 days",
+      "tasks": [
+        {
+          "id": "2.1",
+          "task": "POST /validate_autoportancia — wraps _get_autoportancia_m()",
+          "effort": "~30 lines of code, function already exists"
+        },
+        {
+          "id": "2.2",
+          "task": "GET /product_specs/{product_id} — returns technical specs from loaded KB data",
+          "effort": "~50 lines, data already loaded"
+        },
+        {
+          "id": "2.3",
+          "task": "GET /product_catalog — returns slim product listing",
+          "effort": "~20 lines, iterator over CATALOG"
+        },
+        {
+          "id": "2.4",
+          "task": "GET /business_rules — returns static rules configuration",
+          "effort": "~15 lines, static dict"
+        },
+        {
+          "id": "2.5",
+          "task": "POST /compare_options — energy savings comparison",
+          "effort": "~80 lines, formulas from BMC_Base"
+        },
+        {
+          "id": "2.6",
+          "task": "Update OpenAPI schema to include all new endpoints",
+          "effort": "Schema update + operationId mapping"
+        }
+      ]
+    },
+    "phase_3_rebuild_kb_as_index": {
+      "title": "Replace 18 KB files with 2 API router files",
+      "priority": "P3 — Only after API is fully functional",
+      "effort": "1-2 days",
+      "tasks": [
+        {
+          "id": "3.1",
+          "task": "Generate panelin_api_index.json — product mapping + endpoint routing",
+          "estimated_tokens": 3000
+        },
+        {
+          "id": "3.2",
+          "task": "Generate panelin_operations.md — behavioral playbook only",
+          "estimated_tokens": 8000
+        },
+        {
+          "id": "3.3",
+          "task": "Rewrite GPT system instructions for API-first architecture",
+          "estimated_tokens": 3000
+        },
+        {
+          "id": "3.4",
+          "task": "Update GPT Builder: remove all 18 old files, upload 2 new files"
+        },
+        {
+          "id": "3.5",
+          "task": "End-to-end testing: verify GPT constructs correct API calls for all scenarios"
+        }
+      ]
+    },
+    "phase_4_archive_and_cleanup": {
+      "title": "Archive old files and clean up",
+      "tasks": [
+        "Move old KB files to archive/kb_v7/",
+        "Remove password from Panelin_GPT_config.json",
+        "Standardize version numbers across all config files",
+        "Remove dead code (wolf_api/sheets_routes.py)",
+        "Update README, deployment docs"
+      ]
+    }
+  },
+
+  "risks": [
+    {
+      "risk": "API downtime = GPT can't quote at all (no fallback)",
+      "probability": "low",
+      "impact": "critical",
+      "mitigation": "Cloud Run auto-scaling + health checks already configured. Can keep panelin_catalog_ref.json as emergency fallback in KB.",
+      "note": "This is the ONE argument for keeping a small pricing file in KB — but it means maintaining two data sources"
+    },
+    {
+      "risk": "Added latency from multiple API calls per quotation",
+      "probability": "medium",
+      "impact": "low",
+      "mitigation": "Cloud Run is in same GCP region. Each call ~200-500ms. 4 calls = ~1-2 seconds total, acceptable for a conversational GPT.",
+      "optimization": "Could create a single POST /full_quotation endpoint that does autoportancia + BOM + pricing in one call"
+    },
+    {
+      "risk": "OpenAI rate limits on Actions (API calls)",
+      "probability": "low",
+      "impact": "medium",
+      "mitigation": "GPT Actions have generous limits. Typical quotation = 2-4 calls, well within limits."
+    },
+    {
+      "risk": "API changes break GPT behavior",
+      "probability": "medium",
+      "impact": "medium",
+      "mitigation": "OpenAPI schema in GPT Builder defines the contract. API must maintain backward compatibility."
+    }
+  ],
+
+  "final_recommendation": {
+    "verdict": "The API-centric architecture (KB as pure router) is the correct target. But execution must be phased because the API isn't ready today.",
+    "immediate_action": "Phase 0 — Fix the broken quotation endpoints. Without this, neither the current system nor any future architecture works properly.",
+    "short_term": "Phase 1 — Deploy v4 engine. This gives you a fully functional API with BOM + pricing + validation in production.",
+    "medium_term": "Phase 2 — Add missing endpoints (autoportancia, specs, catalog, business rules). This completes the API surface needed for full routing.",
+    "target_state": "Phase 3 — Rebuild KB as 2 tiny index files (~11K tokens). The GPT becomes a thin intelligent router that always gets correct, current, validated data from the API.",
+    "token_reduction": "453K → 11K tokens (97.6% reduction)",
+    "correctness_improvement": "From LLM floating-point arithmetic to Decimal-precision server-side computation",
+    "currency_improvement": "From static files (updated manually) to live API data (always current)",
+    "consistency_improvement": "From 5 overlapping data sources to 1 canonical API"
+  }
+}
