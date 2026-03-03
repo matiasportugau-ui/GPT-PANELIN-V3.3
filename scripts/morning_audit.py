@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -37,7 +37,7 @@ class PanelinAudit:
 
     def __init__(self) -> None:
         self.results: dict[str, Any] = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "channels": {},
             "summary": {},
         }
