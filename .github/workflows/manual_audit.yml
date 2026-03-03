@@ -1,0 +1,56 @@
+name: 🌅 Manual Morning Audit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Run PANELIN morning audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🔐 Setup credentials
+        env:
+          GOOGLE_SHEETS_CREDS: ${{ secrets.GOOGLE_SHEETS_CREDS }}
+        run: |
+          if [ -z "$GOOGLE_SHEETS_CREDS" ]; then
+            echo "❌ Missing required secret: GOOGLE_SHEETS_CREDS"
+            exit 1
+          fi
+          mkdir -p scripts/credentials
+          printf '%s' "$GOOGLE_SHEETS_CREDS" > scripts/credentials/service_account.json
+
+      - name: 🌅 Run morning audit
+        env:
+          GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
+          GOOGLE_SHEETS_CREDENTIALS_PATH: ./scripts/credentials/service_account.json
+        run: |
+          if [ -z "$GOOGLE_SHEETS_ID" ]; then
+            echo "❌ Missing required secret: GOOGLE_SHEETS_ID"
+            exit 1
+          fi
+          python scripts/morning_audit.py
+
+      - name: 📊 Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-logs
+          path: scripts/logs/
