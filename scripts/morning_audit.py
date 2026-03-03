@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -17,8 +17,7 @@ from dotenv import load_dotenv
 
 LOG_DIR = Path(__file__).parent / "logs"
 LOG_DIR.mkdir(exist_ok=True)
-LOG_FILE = LOG_DIR / f"audit_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
-DEFAULT_SHEETS_ID = "1RHJ1eQlCWMcWY5NKkHCsH5F5XavC9yebh97bruJilbs"
+LOG_FILE = LOG_DIR / f"audit_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.log"
 TARGET_WORKSHEET = "Daily Audit"
 
 logging.basicConfig(
@@ -37,7 +36,7 @@ class PanelinAudit:
 
     def __init__(self) -> None:
         self.results: dict[str, Any] = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "channels": {},
             "summary": {},
         }
@@ -46,7 +45,14 @@ class PanelinAudit:
     def _connect_sheets(self) -> Any | None:
         """Connect to Google Sheets if configuration is present."""
         creds_path = os.getenv("GOOGLE_SHEETS_CREDENTIALS_PATH", "").strip()
-        sheet_id = os.getenv("GOOGLE_SHEETS_ID", DEFAULT_SHEETS_ID).strip()
+        sheet_id = os.getenv("GOOGLE_SHEETS_ID", "").strip()
+
+        if not sheet_id:
+            logger.warning(
+                "⚠️ Google Sheets ID missing. "
+                "Set GOOGLE_SHEETS_ID to enable audit writes to Sheets."
+            )
+            return None
 
         if not creds_path:
             logger.warning(
@@ -156,7 +162,13 @@ class PanelinAudit:
 
         try:
             ws = self.sheet.worksheet(TARGET_WORKSHEET)
-        except Exception:
+        except Exception as exc:
+            import gspread  # already installed if self.sheet is set
+            if not isinstance(exc, gspread.exceptions.WorksheetNotFound):
+                logger.error(
+                    "❌ Failed to access worksheet '%s': %s", TARGET_WORKSHEET, exc
+                )
+                return
             ws = self.sheet.add_worksheet(TARGET_WORKSHEET, rows=1000, cols=8)
 
         try:
