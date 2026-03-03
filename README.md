@@ -1077,9 +1077,9 @@ curl -H "X-API-Key: YOUR_WOLF_API_KEY" \
 
 | Endpoint | Method | Auth | Description |
 |----------|--------|------|-------------|
-| `/api/quote` | POST | ✅ Yes | v4.0 full quotation (SRE + BOM + pricing + SAI score) |
-| `/api/validate` | POST | ✅ Yes | Multi-layer validation with non-blocking modes |
-| `/api/sai-score` | POST | ✅ Yes | Calculate SAI quality index for a quotation |
+| `/api/quote` | POST | ❌ No | v4.0 full quotation (SRE + BOM + pricing + SAI score) |
+| `/api/validate` | POST | ❌ No | Multi-layer validation with non-blocking modes |
+| `/api/sai-score` | POST | ❌ No | Calculate SAI quality index for a quotation |
 
 **New in v4.0:** The API now exposes the full v4.0 quotation engine. `/api/quote` runs the complete pipeline: classifier → parser → SRE → BOM → pricing → validation → SAI score — returning a structured JSON result. Regression suite: 19/19 pass rate (100%).
 
