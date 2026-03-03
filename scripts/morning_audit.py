@@ -160,10 +160,15 @@ class PanelinAudit:
             logger.warning("⚠️ Skipping Google Sheets write (no sheet connection).")
             return
 
+        import gspread
+
         try:
             ws = self.sheet.worksheet(TARGET_WORKSHEET)
-        except Exception:
+        except gspread.exceptions.WorksheetNotFound:
             ws = self.sheet.add_worksheet(TARGET_WORKSHEET, rows=1000, cols=8)
+        except Exception:
+            logger.exception("❌ Unexpected error accessing worksheet '%s'", TARGET_WORKSHEET)
+            raise
 
         try:
             all_rows = ws.get_all_values()
