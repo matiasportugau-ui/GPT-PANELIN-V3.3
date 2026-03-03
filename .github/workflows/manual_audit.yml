@@ -36,6 +36,7 @@ jobs:
           fi
           mkdir -p scripts/credentials
           printf '%s' "$GOOGLE_SHEETS_CREDS" > scripts/credentials/service_account.json
+          chmod 600 scripts/credentials/service_account.json
 
       - name: 🌅 Run morning audit
         env:
@@ -43,6 +44,10 @@ jobs:
           GOOGLE_SHEETS_CREDENTIALS_PATH: ./scripts/credentials/service_account.json
         run: |
           python scripts/morning_audit.py
+
+      - name: 🔒 Remove credentials
+        if: always()
+        run: rm -f scripts/credentials/service_account.json
 
       - name: 📊 Upload logs
         if: always()
