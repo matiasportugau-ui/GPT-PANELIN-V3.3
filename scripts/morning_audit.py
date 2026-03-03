@@ -149,7 +149,7 @@ class PanelinAudit:
             return None
 
     def write_to_sheets(self) -> None:
-        """Write rows to 'Atead' worksheet (columns A-H) if configured."""
+        """Write rows to 'Daily Audit' worksheet (columns A-H) if configured."""
         if not self.sheet:
             logger.warning("⚠️ Skipping Google Sheets write (no sheet connection).")
             return
