@@ -99,6 +99,9 @@ def _load_catalog():
 @app.on_event("startup")
 async def startup():
     _load_catalog()
+    # Inject catalog into v2 Smart Quote Engine
+    from wolf_api.quote_engine import set_catalog
+    set_catalog(CATALOG)
 
 
 @app.get("/health")
@@ -918,3 +921,9 @@ async def inspect_sheet(
         return result
     except Exception as e:
         raise HTTPException(500, f"Cannot inspect sheet {sheet_id}: {e}")
+
+
+# ─── v2 Smart Quote Engine ────────────────────────────────────────────
+from wolf_api.quote_engine import router as quote_engine_router  # noqa: E402
+
+app.include_router(quote_engine_router)
