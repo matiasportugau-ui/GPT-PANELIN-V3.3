@@ -1,0 +1,385 @@
+{
+  "meta": {
+    "name": "BMC Uruguay - Base Unificada de Presupuestación",
+    "version": "4.0.0",
+    "generated_at": "2026-01-15",
+    "validated_against": "31 presupuestos reales Enero 2026",
+    "currency": "USD",
+    "notes": [
+      "Fórmulas validadas contra presupuestos reales",
+      "Precios de venta se extraen de Shopify, NO se calculan",
+      "Sistema ISOROOF a madera es diferente (caballetes+tornillos)"
+    ]
+  },
+  "institucional": {
+    "empresa": "BMC Uruguay",
+    "descripcion": "BMC Uruguay no fabrica. Suministra/comercializa sistemas constructivos y brinda asesoramiento técnico-comercial para definir la solución correcta según la obra.",
+    "diferencial": "Soluciones técnicas optimizadas para generar confort, ahorrar presupuesto, ahorrar estructura, reducir tiempos de obra y evitar problemas a futuro."
+  },
+  "catalogo": {
+    "lineas_mencionadas": {
+      "techo_y_cubiertas": [
+        "Isodec EPS",
+        "Isodec PIR",
+        "Isoroof",
+        "Chapas convencionales",
+        "Otros sistemas (no especificados)"
+      ],
+      "paredes_y_fachadas": [
+        "Isopanel EPS",
+        "Isowall PIR",
+        "Isofrig PIR"
+      ]
+    },
+    "nota": "Este catálogo es un inventario de líneas mencionadas. Si una línea no tiene precios/espesores en `productos`, NO cotizar sin validar con el equipo."
+  },
+  "capabilities": {
+    "audio": {
+      "policy": "No transcribir ni afirmar contenido literal de audios si no existe un flujo/herramienta de transcripción disponible. Si el usuario comparte un audio (por ejemplo WhatsApp .ogg), solicitar transcripción o un resumen textual, y recién entonces analizar y dar feedback."
+    }
+  },
+  "productos": {
+    "ISODEC_EPS": {
+      "nombre": "ISODEC EPS (Techos y Cubiertas)",
+      "tipo": "cubierta",
+      "unidad": "m2",
+      "ancho_util": 1.12,
+      "largo_min": 2.3,
+      "largo_max": 14.0,
+      "pendiente_min": 0.07,
+      "sistema_fijacion": "varilla_tuerca",
+      "varilla_diametro": "3/8\"",
+      "varilla_ratio": 4,
+      "espesores": {
+        "100mm": {
+          "autoportancia": 5.5,
+          "precio_shopify": 46.07
+        },
+        "150mm": {
+          "autoportancia": 7.5,
+          "precio_shopify": 51.5
+        },
+        "200mm": {
+          "autoportancia": 9.1,
+          "precio_shopify": 57.0
+        },
+        "250mm": {
+          "autoportancia": 10.4,
+          "precio_shopify": 62.5
+        }
+      }
+    },
+    "ISODEC_PIR": {
+      "nombre": "ISODEC PIR (Techos y Cubiertas)",
+      "tipo": "cubierta",
+      "unidad": "m2",
+      "ancho_util": 1.12,
+      "largo_min": 3.5,
+      "largo_max": 14.0,
+      "pendiente_min": 0.07,
+      "sistema_fijacion": "varilla_tuerca",
+      "varilla_diametro": "3/8\"",
+      "varilla_ratio": 4,
+      "espesores": {
+        "50mm": {
+          "autoportancia": 3.5,
+          "precio_shopify": 51.02
+        },
+        "80mm": {
+          "autoportancia": 5.5,
+          "precio_shopify": 55.0
+        },
+        "120mm": {
+          "autoportancia": 7.6,
+          "precio_shopify": 62.0
+        }
+      }
+    },
+    "ISOPANEL_EPS": {
+      "nombre": "ISOPANEL EPS (Paredes y Fachadas)",
+      "tipo": "pared",
+      "unidad": "m2",
+      "ancho_util": 1.1,
+      "largo_min": 2.3,
+      "largo_max": 12.0,
+      "sistema_fijacion": "varilla_tuerca",
+      "varilla_diametro": "3/8\"",
+      "varilla_ratio": 4,
+      "nota": "Fórmula puntos fijación diferente para paredes",
+      "espesores": {
+        "50mm": {
+          "precio_shopify": 41.88
+        },
+        "100mm": {
+          "precio_shopify": 46.0
+        },
+        "150mm": {
+          "precio_shopify": 51.5
+        },
+        "200mm": {
+          "precio_shopify": 57.0
+        },
+        "250mm": {
+          "precio_shopify": 62.5
+        }
+      }
+    },
+    "ISOROOF_3G": {
+      "nombre": "ISOROOF 3G (Techos)",
+      "tipo": "cubierta_trapezoidal",
+      "unidad": "m2",
+      "ancho_util": 1.0,
+      "largo_max": 8.5,
+      "pendiente_min": 0.07,
+      "sistema_fijacion": "caballete_tornillo",
+      "varilla_diametro": null,
+      "varilla_ratio": null,
+      "nota_fijacion": "A madera: caballetes + tornillos aguja. Sin varilla ni tuercas.",
+      "espesores": {
+        "30mm": {
+          "autoportancia": 2.8,
+          "precio_shopify": 48.74
+        },
+        "50mm": {
+          "autoportancia": 3.3,
+          "precio_shopify": 53.0
+        },
+        "80mm": {
+          "autoportancia": 4.0,
+          "precio_shopify": 62.0
+        }
+      }
+    },
+    "ISOROOF_PLUS": {
+      "nombre": "ISOROOF PLUS 3G",
+      "tipo": "cubierta_trapezoidal",
+      "unidad": "m2",
+      "ancho_util": 1.0,
+      "sistema_fijacion": "caballete_tornillo",
+      "espesores": {
+        "80mm": {
+          "autoportancia": 4.0,
+          "precio_shopify": 71.76
+        }
+      }
+    },
+    "ISOROOF_FOIL": {
+      "nombre": "ISOROOF FOIL 3G",
+      "tipo": "cubierta_trapezoidal",
+      "unidad": "m2",
+      "ancho_util": 1.0,
+      "sistema_fijacion": "caballete_tornillo",
+      "espesores": {
+        "30mm": {
+          "autoportancia": 2.8,
+          "precio_shopify": 39.54
+        },
+        "50mm": {
+          "autoportancia": 3.3,
+          "precio_shopify": 44.0
+        }
+      }
+    },
+    "ISOWALL_PIR": {
+      "nombre": "ISOWALL PIR (Fachadas)",
+      "tipo": "pared",
+      "unidad": "m2",
+      "ancho_util": 1.1,
+      "sistema_fijacion": "varilla_tuerca",
+      "varilla_diametro": "3/8\"",
+      "varilla_ratio": 4,
+      "espesores": {
+        "50mm": {
+          "precio_shopify": 54.65
+        },
+        "80mm": {
+          "precio_shopify": 64.0
+        }
+      }
+    },
+    "ISOFRIG_PIR": {
+      "nombre": "ISOFRIG PIR (Cámaras frigoríficas / Cerramientos)",
+      "tipo": "pared",
+      "unidad": "m2",
+      "ancho_util": null,
+      "largo_min": null,
+      "largo_max": null,
+      "sistema_fijacion": "varilla_tuerca",
+      "varilla_diametro": "3/8\"",
+      "varilla_ratio": 4,
+      "espesores": {},
+      "nota": "Línea comercial mencionada. Faltan espesores/precios/ficha técnica en esta base; NO cotizar sin validación técnica/comercial."
+    }
+  },
+  "formulas_validadas": {
+    "costo_panel": {
+      "formula": "PRECIO_SHOPIFY × LARGO × CANTIDAD × ANCHO_UTIL",
+      "ejemplo": "46.07 × 6.5 × 4 × 1.12 = $1,341.16",
+      "validado": true
+    },
+    "apoyos": {
+      "formula": "ROUNDUP((LARGO / AUTOPORTANCIA) + 1)",
+      "ejemplo": "ROUNDUP((6.5 / 5.5) + 1) = 3 apoyos",
+      "validado": true
+    },
+    "puntos_fijacion_techo": {
+      "formula": "Σ ROUNDUP(((CANTIDAD × APOYOS) × 2) + (LARGO × 2 / 2.5))",
+      "precision": "±4 puntos (permite ajuste manual)",
+      "validado": true,
+      "nota": "Para paredes la fórmula es diferente"
+    },
+    "varilla_pesados": {
+      "formula": "ROUNDUP(PUNTOS_FIJACION / 4)",
+      "aplica_a": [
+        "ISODEC_EPS",
+        "ISODEC_PIR",
+        "ISOPANEL_EPS",
+        "ISOWALL_PIR"
+      ],
+      "diametro": "3/8\"",
+      "validado": true,
+      "precision": "100% coincidencia en 16 casos"
+    },
+    "tuercas_metal": {
+      "formula": "PUNTOS_FIJACION × 2",
+      "descripcion": "2 tuercas por punto (arriba y abajo)",
+      "validado": true
+    },
+    "tuercas_hormigon": {
+      "formula": "PUNTOS_FIJACION × 1",
+      "descripcion": "1 tuerca por punto (solo arriba)",
+      "nota": "Los tacos reemplazan la tuerca inferior",
+      "validado": true
+    },
+    "tuercas_mixto": {
+      "formula": "(PUNTOS_METAL × 2) + (PUNTOS_HORMIGON × 1)",
+      "descripcion": "Combinación metal + hormigón",
+      "validado": true,
+      "nota": "Muy común en presupuestos reales"
+    },
+    "tacos_hormigon": {
+      "formula": "PUNTOS_HORMIGON",
+      "descripcion": "1 taco por punto en hormigón",
+      "validado": true
+    },
+    "arandelas": {
+      "formula": "PUNTOS_FIJACION",
+      "tipos": [
+        "carrocero",
+        "plana",
+        "polipropileno"
+      ],
+      "validado": true
+    },
+    "remaches": {
+      "formula": "ROUNDUP(Σ CANTIDAD_PERFILES × 20)",
+      "validado": true
+    },
+    "gotero_frontal_isodec": {
+      "formula": "ROUNDUP((CANTIDAD_PANELES × 1.12) / 3)",
+      "largo_perfil": 3.03,
+      "validado": true
+    },
+    "gotero_lateral": {
+      "formula": "ROUNDUP((LARGO × 2) / 3)",
+      "largo_perfil": 3.0,
+      "validado": true
+    }
+  },
+  "sistemas_fijacion": {
+    "varilla_tuerca": {
+      "descripcion": "Sistema para paneles pesados (ISODEC, ISOPANEL, ISOWALL)",
+      "componentes": {
+        "varilla_roscada": {
+          "formula": "ROUNDUP(PUNTOS/4)",
+          "precio": 19.9
+        },
+        "tuercas": {
+          "formula": "PUNTOS×2 (metal) o PUNTOS×1 (H°)",
+          "precio": 2.0
+        },
+        "arandela_carrocero": {
+          "formula": "PUNTOS",
+          "precio": 32.7
+        },
+        "arandela_plana": {
+          "formula": "PUNTOS",
+          "precio": 4.0
+        },
+        "arandela_pp": {
+          "formula": "PUNTOS",
+          "precio": 26.2
+        },
+        "taco_expansivo": {
+          "formula": "PUNTOS (solo H°)",
+          "precio": 8.7,
+          "condicional": true
+        }
+      }
+    },
+    "caballete_tornillo": {
+      "descripcion": "Sistema para ISOROOF a madera",
+      "componentes": {
+        "caballete": {
+          "formula": "PUNTOS",
+          "precio": 9.2
+        },
+        "tornillo_aguja_5": {
+          "formula": "PUNTOS",
+          "precio": 17.0
+        },
+        "tornillo_t1": {
+          "formula": "Σ PERFILES × 20",
+          "precio": 5.0
+        }
+      },
+      "NO_usar": [
+        "varilla",
+        "tuercas",
+        "tacos",
+        "arandela_carrocero"
+      ]
+    },
+    "hormigon": {
+      "descripcion": "Anclaje directo a hormigón",
+      "componentes": {
+        "kit_anclaje": {
+          "formula": "PUNTOS",
+          "precio": 11.8
+        },
+        "tornillo_mecha": {
+          "formula": "PUNTOS",
+          "precio": 14.4
+        }
+      }
+    }
+  },
+  "tipos_fijacion": {
+    "metal": {
+      "descripcion": "Fijación pasante en estructura metálica",
+      "tuercas_por_punto": 2,
+      "requiere_taco": false
+    },
+    "hormigon": {
+      "descripcion": "Anclaje en losa o viga de hormigón",
+      "tuercas_por_punto": 1,
+      "requiere_taco": true
+    },
+    "mixto": {
+      "descripcion": "Parte a metal + parte a hormigón",
+      "formula_tuercas": "(PUNTOS_METAL × 2) + (PUNTOS_HORMIGON × 1)",
+      "formula_tacos": "PUNTOS_HORMIGON"
+    },
+    "madera": {
+      "descripcion": "Fijación a estructura de madera (solo ISOROOF)",
+      "usa_caballetes": true,
+      "usa_tornillos_aguja": true,
+      "NO_usa_varilla": true
+    }
+  },
+  "configuracion": {
+    "iva": 0.22,
+    "pais": "Uruguay",
+    "margen_display": "NO CALCULAR - usar precio Shopify directo"
+  }
+}
