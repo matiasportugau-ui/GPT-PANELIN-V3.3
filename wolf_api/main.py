@@ -102,6 +102,10 @@ async def startup():
     # Inject catalog into v2 Smart Quote Engine
     from wolf_api.quote_engine import set_catalog
     set_catalog(CATALOG)
+    # Inject catalog + BMC KB into v2 Panel Selector
+    from wolf_api.panel_selector import set_data as set_panel_data
+    bmc_kb = _load_bmc_kb()
+    set_panel_data(CATALOG, bmc_kb)
 
 
 @app.get("/health")
@@ -925,5 +929,7 @@ async def inspect_sheet(
 
 # ─── v2 Smart Quote Engine ────────────────────────────────────────────
 from wolf_api.quote_engine import router as quote_engine_router  # noqa: E402
+from wolf_api.panel_selector import router as panel_selector_router  # noqa: E402
 
 app.include_router(quote_engine_router)
+app.include_router(panel_selector_router)
