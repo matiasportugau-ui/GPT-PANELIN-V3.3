@@ -293,7 +293,7 @@ GPT-PANELIN-V3.3/
 │       ├── evaluator/                           # Quality measurement
 │       │   ├── sai_engine.py                    # SAI quality score (0-100)
 │       │   ├── regression_suite.py              # 19 expert regression test cases
-│       │   └── stress_test_runner.py            # 30-case mixed stress test
+│       │   └── stress_test_runner.py            # 33-case mixed stress test
 │       ├── data/
 │       │   └── default_assumptions.json         # Configurable defaults for missing data
 │       └── tests/                               # Unit test suite (34 tests)
