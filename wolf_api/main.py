@@ -183,6 +183,404 @@ async def api_check_availability(req: ProductPriceRequest, _=Security(require_ap
         "stock": product.get("stock", "consultar"),
     }
 
+
+# ─── Technical Validation & Product Data Endpoints ────────────────────
+# These endpoints enable the GPT to be a pure API router — no KB data needed.
+
+_BMC_KB: Optional[dict] = None
+_BOM_RULES: Optional[dict] = None
+
+
+def _load_bmc_kb() -> dict:
+    """Load BMC_Base_Conocimiento for product specs and formulas."""
+    global _BMC_KB
+    if _BMC_KB is None:
+        kb_path = os.environ.get("BMC_KB_PATH", "BMC_Base_Conocimiento_GPT-2.json")
+        if os.path.exists(kb_path):
+            with open(kb_path, encoding="utf-8") as f:
+                _BMC_KB = json.load(f)
+        else:
+            _BMC_KB = {}
+            logger.warning(f"BMC KB not found at {kb_path}")
+    return _BMC_KB
+
+
+def _load_bom_rules() -> dict:
+    """Load BOM rules for autoportancia tables."""
+    global _BOM_RULES
+    if _BOM_RULES is None:
+        rules_path = os.environ.get("BOM_RULES_PATH", "bom_rules.json")
+        if os.path.exists(rules_path):
+            with open(rules_path, encoding="utf-8") as f:
+                _BOM_RULES = json.load(f)
+        else:
+            _BOM_RULES = {}
+            logger.warning(f"BOM rules not found at {rules_path}")
+    return _BOM_RULES
+
+
+def _find_autoportancia(familia: str, sub_familia: str, thickness_mm: int) -> Optional[dict]:
+    """Look up autoportancia entry from BOM rules tables."""
+    rules = _load_bom_rules()
+    tables = rules.get("autoportancia", {}).get("tablas", {})
+    # Build lookup key: ISODEC_EPS, ISOROOF_3G, ISOPANEL_EPS, etc.
+    key = f"{familia}_{sub_familia}".upper()
+    if familia.upper() == "ISOROOF":
+        key = "ISOROOF_3G"
+    return tables.get(key, {}).get(str(thickness_mm))
+
+
+def _find_product_specs(familia: str, thickness_mm: int) -> Optional[dict]:
+    """Look up product specs from BMC KB."""
+    kb = _load_bmc_kb()
+    products = kb.get("products", {})
+    # Try exact familia key first
+    prod = products.get(familia)
+    if not prod:
+        # Try common aliases
+        aliases = {
+            "ISODEC": "ISODEC_EPS", "ISOPANEL": "ISOPANEL_EPS",
+            "ISOROOF": "ISOROOF_3G", "ISOWALL": "ISOWALL_PIR",
+            "ISOFRIG": "ISOFRIG_PIR",
+        }
+        prod = products.get(aliases.get(familia.upper(), ""))
+    if not prod:
+        # Search all products
+        for key, val in products.items():
+            if familia.upper() in key.upper():
+                prod = val
+                break
+    if not prod:
+        return None
+    espesores = prod.get("espesores", {})
+    esp_data = espesores.get(str(thickness_mm))
+    if not esp_data:
+        return None
+    return {**esp_data, "_product": prod}
+
+
+def _suggest_alternatives(familia: str, sub_familia: str, span_m: float) -> list:
+    """Find thicknesses that support the given span."""
+    rules = _load_bom_rules()
+    tables = rules.get("autoportancia", {}).get("tablas", {})
+    key = f"{familia}_{sub_familia}".upper()
+    if familia.upper() == "ISOROOF":
+        key = "ISOROOF_3G"
+    family_table = tables.get(key, {})
+    alternatives = []
+    for thick_str, data in family_table.items():
+        max_span = data.get("luz_max_m", 0)
+        if max_span >= span_m:
+            alternatives.append({
+                "thickness_mm": int(thick_str),
+                "max_span_m": max_span,
+                "safe_span_m": round(max_span * 0.85, 2),
+                "peso_kg_m2": data.get("peso_kg_m2"),
+            })
+    alternatives.sort(key=lambda x: x["thickness_mm"])
+    return alternatives
+
+
+class AutoportanciaRequest(BaseModel):
+    familia: str = Field(..., description="Product family: ISODEC, ISOROOF, ISOPANEL, ISOWALL, ISOFRIG")
+    sub_familia: str = Field("EPS", description="Sub-family: EPS, PIR, 3G")
+    thickness_mm: int = Field(..., ge=20, le=250, description="Panel thickness in mm")
+    span_m: float = Field(..., gt=0, le=20, description="Project span between supports in meters")
+
+
+@app.post("/validate_autoportancia")
+async def validate_autoportancia(req: AutoportanciaRequest, _=Security(require_api_key)):
+    """Validate if a panel can span the requested distance.
+
+    Returns ok/warning/blocked status with safety margins and alternatives.
+    """
+    entry = _find_autoportancia(req.familia, req.sub_familia, req.thickness_mm)
+    if not entry:
+        raise HTTPException(
+            404,
+            f"No autoportancia data for {req.familia} {req.sub_familia} {req.thickness_mm}mm. "
+            f"Check /product_catalog for available products.",
+        )
+
+    max_span = entry["luz_max_m"]
+    safe_span = round(max_span * 0.85, 2)  # 15% safety margin
+
+    if req.span_m <= safe_span:
+        status = "ok"
+    elif req.span_m <= max_span:
+        status = "warning"
+    else:
+        status = "blocked"
+
+    result = {
+        "valid": status != "blocked",
+        "status": status,
+        "familia": req.familia,
+        "sub_familia": req.sub_familia,
+        "thickness_mm": req.thickness_mm,
+        "requested_span_m": req.span_m,
+        "max_span_m": max_span,
+        "safe_span_m": safe_span,
+        "peso_kg_m2": entry.get("peso_kg_m2"),
+        "margin_percent": round((1 - req.span_m / max_span) * 100, 1) if max_span > 0 else 0,
+    }
+
+    if status == "warning":
+        result["recommendation"] = (
+            f"La luz de {req.span_m}m está entre el límite seguro ({safe_span}m) y el máximo absoluto ({max_span}m). "
+            f"Recomendamos un espesor mayor o un apoyo intermedio."
+        )
+        result["alternatives"] = _suggest_alternatives(req.familia, req.sub_familia, req.span_m)
+    elif status == "blocked":
+        result["recommendation"] = (
+            f"La luz de {req.span_m}m excede el máximo de {max_span}m para {req.familia} {req.thickness_mm}mm. "
+            f"Se requiere un espesor mayor o estructura de apoyo adicional."
+        )
+        result["alternatives"] = _suggest_alternatives(req.familia, req.sub_familia, req.span_m)
+
+    return result
+
+
+@app.get("/product_specs/{product_id}")
+async def get_product_specs(product_id: str, _=Security(require_api_key)):
+    """Get technical specifications for a product.
+
+    Accepts product_id in formats: ISODEC_EPS_100mm, ISD100EPS, etc.
+    Returns autoportancia, thermal coefficients, dimensions, fixing system.
+    """
+    # Try to find in CATALOG first for metadata
+    catalog_entry = CATALOG.get(product_id, {})
+
+    # Parse product_id to extract familia + thickness
+    familia = catalog_entry.get("familia", "")
+    thickness = catalog_entry.get("thickness_mm")
+    sub_familia = catalog_entry.get("sub_familia", "EPS")
+
+    # If not found in catalog, try parsing the key (e.g. ISODEC_EPS_100mm)
+    if not familia or thickness is None:
+        parts = product_id.replace("mm", "").split("_")
+        if len(parts) >= 2:
+            familia_candidates = ["_".join(parts[:2]), parts[0]]
+            for fc in familia_candidates:
+                for fkey in ["ISODEC_EPS", "ISODEC_PIR", "ISOROOF_3G", "ISOPANEL_EPS",
+                             "ISOWALL_PIR", "ISOFRIG_PIR"]:
+                    if fc.upper() == fkey:
+                        familia = fkey
+                        break
+                if familia:
+                    break
+            try:
+                thickness = int(parts[-1])
+            except (ValueError, IndexError):
+                pass
+
+    if not familia or thickness is None:
+        raise HTTPException(404, f"Cannot resolve product specs for '{product_id}'")
+
+    # Split familia key for BMC lookup
+    familia_base = familia.split("_")[0]
+    specs = _find_product_specs(familia, thickness)
+
+    # Get autoportancia from BOM rules
+    sub = sub_familia or (familia.split("_")[1] if "_" in familia else "EPS")
+    auto_entry = _find_autoportancia(familia_base, sub, thickness)
+
+    result = {
+        "product_id": product_id,
+        "familia": familia_base,
+        "sub_familia": sub,
+        "thickness_mm": thickness,
+        "name": catalog_entry.get("name", f"{familia} {thickness}mm"),
+    }
+
+    if specs:
+        prod = specs.pop("_product", {})
+        result.update({
+            "autoportancia_m": specs.get("autoportancia"),
+            "coef_termico": specs.get("coeficiente_termico"),
+            "resistencia_termica": specs.get("resistencia_termica"),
+            "ancho_util_m": prod.get("ancho_util"),
+            "sistema_fijacion": prod.get("sistema_fijacion"),
+            "tipo": prod.get("tipo"),
+            "ignifugo": prod.get("ignifugo"),
+            "precio_usd_m2": specs.get("precio"),
+        })
+    elif auto_entry:
+        result.update({
+            "autoportancia_m": auto_entry.get("luz_max_m"),
+            "peso_kg_m2": auto_entry.get("peso_kg_m2"),
+        })
+
+    if catalog_entry:
+        result["price_usd"] = catalog_entry.get("price_usd")
+        result["unit"] = catalog_entry.get("unit")
+
+    return result
+
+
+@app.get("/product_catalog")
+async def get_product_catalog(
+    tipo: Optional[str] = Query(None, description="Filter by type: Panel, Accesorio, etc."),
+    familia: Optional[str] = Query(None, description="Filter by family: ISODEC, ISOROOF, etc."),
+    _=Security(require_api_key),
+):
+    """Get a slim listing of all products available in the catalog.
+
+    Optionally filter by tipo (Panel, Accesorio) or familia (ISODEC, ISOROOF).
+    """
+    products = []
+    for pid, p in CATALOG.items():
+        if tipo and p.get("tipo", "").lower() != tipo.lower():
+            continue
+        if familia and familia.lower() not in p.get("familia", "").lower():
+            continue
+        products.append({
+            "product_id": pid,
+            "name": p.get("name"),
+            "familia": p.get("familia"),
+            "sub_familia": p.get("sub_familia"),
+            "tipo": p.get("tipo"),
+            "thickness_mm": p.get("thickness_mm"),
+            "unit": p.get("unit"),
+            "price_usd": p.get("price_usd"),
+        })
+    return {"total": len(products), "products": products}
+
+
+@app.get("/business_rules")
+async def get_business_rules(_=Security(require_api_key)):
+    """Get current business rules and policies.
+
+    Returns IVA rate, currency, derivation policy, shipping defaults, etc.
+    """
+    kb = _load_bmc_kb()
+    reglas = kb.get("reglas_negocio", {})
+    return {
+        "iva_rate": reglas.get("iva", 0.22),
+        "iva_included_in_prices": True,
+        "currency": reglas.get("moneda", "USD"),
+        "min_roof_slope_pct": 7,
+        "default_shipping_usd": 280.0,
+        "derivation_policy": "internal_only",
+        "derivation_rule": reglas.get("derivacion", {}).get("regla_oro",
+            "NUNCA derivar a proveedor externo. SIEMPRE derivar a agentes de ventas BMC Uruguay."),
+        "service_scope": "materials_and_advisory_only",
+        "official_website": "https://bmcuruguay.com.uy",
+        "phone_format": "09XXXXXXX (9 dígitos) or +598XXXXXXXX",
+        "required_for_formal_quote": ["nombre", "telefono", "direccion_obra"],
+        "audio_transcription": False,
+    }
+
+
+class CompareOptionsRequest(BaseModel):
+    option_a_product_id: str = Field(..., description="First product ID (e.g. ISODEC_EPS_100mm)")
+    option_b_product_id: str = Field(..., description="Second product ID (e.g. ISODEC_EPS_150mm)")
+    area_m2: float = Field(..., gt=0, le=10000, description="Project area in m²")
+    usage: str = Field("residencial", description="Usage type: residencial or comercial")
+
+
+@app.post("/compare_options")
+async def compare_options(req: CompareOptionsRequest, _=Security(require_api_key)):
+    """Compare two panel options: pricing, thermal performance, and energy savings.
+
+    Returns the price difference, thermal resistance comparison, estimated annual
+    energy savings in USD, and payback period.
+    """
+    # Get specs for both options
+    cat_a = CATALOG.get(req.option_a_product_id)
+    cat_b = CATALOG.get(req.option_b_product_id)
+    if not cat_a:
+        raise HTTPException(404, f"Product not found: {req.option_a_product_id}")
+    if not cat_b:
+        raise HTTPException(404, f"Product not found: {req.option_b_product_id}")
+
+    price_a = float(cat_a.get("price_usd", 0))
+    price_b = float(cat_b.get("price_usd", 0))
+
+    # Get thermal data from BMC KB
+    kb = _load_bmc_kb()
+    ref = kb.get("datos_referencia_uruguay", {})
+    kwh_price = ref.get("precio_kwh_uruguay", {}).get(req.usage, 0.12)
+    calef = ref.get("estacion_calefaccion", {})
+    grados_dia = calef.get("grados_dia_promedio", 8)
+    horas_dia = calef.get("horas_dia_promedio", 12)
+    dias_estacion = calef.get("meses", 9) * 30
+
+    # Try to get thermal resistance for both
+    familia_a = cat_a.get("familia", "").split(" ")[0]
+    familia_b = cat_b.get("familia", "").split(" ")[0]
+    thick_a = cat_a.get("thickness_mm")
+    thick_b = cat_b.get("thickness_mm")
+
+    res_a = None
+    res_b = None
+
+    if familia_a and thick_a:
+        specs_a = _find_product_specs(familia_a, int(thick_a))
+        if specs_a:
+            res_a = specs_a.get("resistencia_termica")
+
+    if familia_b and thick_b:
+        specs_b = _find_product_specs(familia_b, int(thick_b))
+        if specs_b:
+            res_b = specs_b.get("resistencia_termica")
+
+    result = {
+        "option_a": {
+            "product_id": req.option_a_product_id,
+            "name": cat_a.get("name"),
+            "price_usd_m2": price_a,
+            "total_usd": round(price_a * req.area_m2, 2),
+            "thickness_mm": thick_a,
+            "resistencia_termica": res_a,
+        },
+        "option_b": {
+            "product_id": req.option_b_product_id,
+            "name": cat_b.get("name"),
+            "price_usd_m2": price_b,
+            "total_usd": round(price_b * req.area_m2, 2),
+            "thickness_mm": thick_b,
+            "resistencia_termica": res_b,
+        },
+        "area_m2": req.area_m2,
+        "price_diff_per_m2": round(abs(price_b - price_a), 2),
+        "price_diff_total": round(abs(price_b - price_a) * req.area_m2, 2),
+    }
+
+    # Calculate energy savings if thermal data available
+    if res_a is not None and res_b is not None and res_a != res_b:
+        diff = abs(res_b - res_a)
+        annual_savings = round(
+            req.area_m2 * diff * grados_dia * kwh_price * horas_dia * dias_estacion, 2
+        )
+        cheaper = "a" if price_a <= price_b else "b"
+        better_thermal = "b" if (res_b or 0) > (res_a or 0) else "a"
+        price_premium = abs(price_b - price_a) * req.area_m2
+        payback = round(price_premium / annual_savings, 1) if annual_savings > 0 and cheaper != better_thermal else 0
+
+        result["energy_comparison"] = {
+            "thermal_resistance_diff_m2kw": round(diff, 2),
+            "better_insulation": req.option_b_product_id if better_thermal == "b" else req.option_a_product_id,
+            "annual_energy_savings_usd": annual_savings,
+            "usage": req.usage,
+            "kwh_price_usd": kwh_price,
+            "heating_season_days": dias_estacion,
+            "payback_years": payback,
+            "recommendation": (
+                f"El panel con mayor espesor ofrece mejor aislamiento (R={max(res_a, res_b)} vs R={min(res_a, res_b)}). "
+                f"Ahorro energético estimado: USD {annual_savings}/año. "
+                + (f"Retorno de inversión: {payback} años." if payback > 0 else "")
+            ),
+        }
+    else:
+        result["energy_comparison"] = {
+            "available": False,
+            "reason": "Thermal resistance data not available for one or both products.",
+        }
+
+    return result
+
+
 @app.post("/kb/conversations")
 async def persist_conversation(data: dict, _=Security(require_api_key)):
     now = datetime.now(timezone.utc).isoformat()
