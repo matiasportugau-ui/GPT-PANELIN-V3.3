@@ -136,16 +136,37 @@ def _find_panel_price_m2(familia: str, sub_familia: str, thickness_mm: int) -> O
     """Find panel price per m2 from pricing master."""
     products = _load_pricing_master()
 
-    norm_familia = familia.upper().replace("_", "").replace("-", "")
-    norm_sub = sub_familia.upper() if sub_familia else ""
+    def _normalize_token(value: str) -> str:
+        return (
+            value.upper()
+            .replace("_", "")
+            .replace("-", "")
+            .replace(" ", "")
+            .replace("/", "")
+        )
+
+    norm_familia = _normalize_token(familia)
+    norm_sub = _normalize_token(sub_familia) if sub_familia else ""
 
     for product in products:
         if not isinstance(product, dict):
             continue
 
-        sku = str(product.get("sku", product.get("SKU", ""))).upper().replace("_", "").replace("-", "")
-        name = str(product.get("nombre", product.get("name", ""))).upper()
-        fam = str(product.get("familia", product.get("family", ""))).upper()
+        sku_raw = str(product.get("sku", product.get("SKU", "")))
+        name_raw = str(product.get("nombre", product.get("name", "")))
+        fam_raw = str(product.get("familia", product.get("family", "")))
+        sub_raw = str(
+            product.get(
+                "sub_familia",
+                product.get("subfamily", product.get("sub_family", product.get("core", ""))),
+            )
+            or ""
+        )
+
+        sku = _normalize_token(sku_raw)
+        name = _normalize_token(name_raw)
+        fam = _normalize_token(fam_raw)
+        sub = _normalize_token(sub_raw)
 
         thickness = product.get("espesor_mm", product.get("thickness"))
         if thickness is None:
@@ -161,6 +182,16 @@ def _find_panel_price_m2(familia: str, sub_familia: str, thickness_mm: int) -> O
                 continue
         else:
             continue
+
+        if norm_sub:
+            # Prioritize explicit sub-family match when catalog data provides it.
+            if sub:
+                if norm_sub not in sub and sub not in norm_sub:
+                    continue
+            else:
+                searchable = f"{sku}{name}"
+                if norm_sub not in searchable:
+                    continue
 
         if norm_familia in sku or norm_familia in name or norm_familia in fam:
             pricing = product.get("pricing", {})

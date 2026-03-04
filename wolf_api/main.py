@@ -16,9 +16,6 @@ from fastapi.security.api_key import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
-from .pdf_cotizacion import router as pdf_router
-from .sheet_mover import router as mover_router
-from .pdf_drive_integration import router as pdf_drive_router
 
 logger = logging.getLogger(__name__)
 app = FastAPI(
@@ -30,17 +27,34 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+def _parse_cors_origins(raw_value: str | None) -> list[str]:
+    if not raw_value:
+        return []
+    return [origin.strip() for origin in raw_value.split(",") if origin.strip()]
+
+
+_cors_origins = _parse_cors_origins(os.getenv("WOLF_CORS_ALLOW_ORIGINS"))
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(pdf_router)
-app.include_router(mover_router)
-app.include_router(pdf_drive_router)
+def _include_optional_router(module_path: str, router_name: str = "router") -> None:
+    try:
+        module = __import__(module_path, fromlist=[router_name])
+        router = getattr(module, router_name, None)
+        if router is not None:
+            app.include_router(router)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Optional router '%s' not loaded: %s", module_path, exc)
+
+
+_include_optional_router("wolf_api.pdf_cotizacion")
+_include_optional_router("wolf_api.sheet_mover")
+_include_optional_router("wolf_api.pdf_drive_integration")
 
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
 WOLF_API_KEY = os.environ.get("WOLF_API_KEY", "")
@@ -86,21 +100,31 @@ CATALOG = {}
 
 
 def _load_catalog():
-    global CATALOG
+    global CATALOG, _storage_client
     try:
-        bucket = storage_client.bucket(KB_GCS_BUCKET)
-        blob = bucket.blob("catalog.json")
-        CATALOG = json.loads(blob.download_as_text())
-        logger.info(f"Loaded catalog from GCS: {len(CATALOG)} products")
+        if KB_GCS_BUCKET:
+            from google.cloud import storage
+
+            if _storage_client is None:
+                _storage_client = storage.Client()
+            bucket = _storage_client.bucket(KB_GCS_BUCKET)
+            blob = bucket.blob("catalog.json")
+            CATALOG = json.loads(blob.download_as_text())
+            logger.info("Loaded catalog from GCS: %s products", len(CATALOG))
+            return
     except Exception as e:
-        logger.warning(f"Catalog not found in GCS: {e}")
+        logger.warning("Catalog not found in GCS: %s", e)
+
+    try:
         catalog_path = os.environ.get("CATALOG_PATH", "catalog.json")
         if os.path.exists(catalog_path):
             with open(catalog_path) as f:
                 CATALOG = json.load(f)
-            logger.info(f"Loaded catalog from local: {len(CATALOG)} products")
+            logger.info("Loaded catalog from local: %s products", len(CATALOG))
         else:
             logger.warning("Catalog not found anywhere — /find_products will return empty")
+    except Exception as e:
+        logger.warning("Failed to load catalog from local fallback: %s", e)
 
 
 @app.on_event("startup")

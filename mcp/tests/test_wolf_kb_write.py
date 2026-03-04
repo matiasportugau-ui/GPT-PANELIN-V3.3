@@ -9,8 +9,11 @@ This test suite validates that the v3.4 Wolf API KB Write handlers:
 These tests run in CI via .github/workflows/mcp-tests.yml
 """
 
+import os
 import pytest
 from unittest.mock import MagicMock
+
+os.environ.setdefault("WOLF_KB_WRITE_PASSWORD", "test-password")
 
 from mcp.handlers.wolf_kb_write import (
     handle_persist_conversation,

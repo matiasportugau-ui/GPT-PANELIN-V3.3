@@ -7,6 +7,8 @@ Tests new handlers:
 - Enhanced report_error: With better error handling
 """
 
+import os
+
 import pytest
 
 from mcp.handlers.governance import (
@@ -15,6 +17,9 @@ from mcp.handlers.governance import (
     handle_batch_validate_corrections,
 )
 from mcp.handlers.errors import handle_report_error
+
+
+TEST_KB_PASSWORD = os.environ.get("WOLF_KB_WRITE_PASSWORD", "test-password")
 
 
 class TestListCorrections:
@@ -93,7 +98,7 @@ class TestUpdateCorrectionStatus:
         result = await handle_update_correction_status({
             "correction_id": "COR-001",
             "new_status": "invalid",
-            "password": "mywolfy",
+            "password": TEST_KB_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "INVALID_STATUS"
@@ -104,7 +109,7 @@ class TestUpdateCorrectionStatus:
         result = await handle_update_correction_status({
             "correction_id": "COR-999999",
             "new_status": "applied",
-            "password": "mywolfy",
+            "password": TEST_KB_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "CORRECTION_NOT_FOUND"

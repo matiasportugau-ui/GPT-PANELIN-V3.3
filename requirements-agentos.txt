@@ -1,0 +1,26 @@
+# Panelin AgentOS runtime dependencies
+fastapi>=0.135.1
+uvicorn[standard]>=0.41.0
+pydantic>=2.12.5
+pydantic-settings>=2.13.1
+python-dotenv>=1.2.2
+
+# Agno stack
+agno>=2.5.6
+openai>=2.24.0
+anthropic>=0.84.0
+mcp>=1.26.0
+
+# Postgres / vector
+sqlalchemy>=2.0.48
+psycopg>=3.3.3
+psycopg-binary>=3.3.3
+pgvector>=0.4.2
+
+# Existing integrations
+google-cloud-storage>=2.10.0
+gspread>=6.0.0
+google-auth>=2.27.0
+google-api-python-client>=2.100.0
+httpx>=0.28.1
+reportlab>=4.0.0

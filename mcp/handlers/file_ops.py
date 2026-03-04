@@ -10,6 +10,7 @@ Read operations do not require a password (mirrors lookup_customer precedent).
 
 from __future__ import annotations
 
+import hmac
 import logging
 import os
 import re
@@ -27,8 +28,8 @@ logger = logging.getLogger(__name__)
 # Project root — same derivation as governance.py
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
-# KB write password — reuse the same env var as wolf_kb_write.py
-KB_WRITE_PASSWORD = os.getenv("WOLF_KB_WRITE_PASSWORD", "mywolfy")
+# KB write password — must be explicitly configured
+KB_WRITE_PASSWORD = os.getenv("WOLF_KB_WRITE_PASSWORD", "")
 
 # Maximum file size: 1 MB (prevents accidental large writes)
 MAX_FILE_SIZE_BYTES = 1_048_576
@@ -78,6 +79,16 @@ BINARY_EXTENSIONS = {
 
 def _validate_password(arguments: dict[str, Any]) -> dict[str, Any] | None:
     """Validate the KB write password. Returns error envelope or None if valid."""
+    if not KB_WRITE_PASSWORD:
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": WRITE_FILE_ERROR_CODES["INTERNAL_ERROR"],
+                "message": "WOLF_KB_WRITE_PASSWORD is not configured.",
+            },
+        }
+
     password = arguments.get("password")
     if not password:
         return {
@@ -88,7 +99,7 @@ def _validate_password(arguments: dict[str, Any]) -> dict[str, Any] | None:
                 "message": "KB write password is required for write operations.",
             },
         }
-    if password != KB_WRITE_PASSWORD:
+    if not hmac.compare_digest(str(password), KB_WRITE_PASSWORD):
         return {
             "ok": False,
             "contract_version": CONTRACT_VERSION,

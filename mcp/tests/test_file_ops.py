@@ -12,7 +12,10 @@ Validates that write_file and read_file handlers:
 These tests run in CI via .github/workflows/mcp-tests.yml
 """
 
+import os
 import pytest
+
+os.environ.setdefault("WOLF_KB_WRITE_PASSWORD", "test-password")
 
 from mcp.handlers.file_ops import (
     handle_write_file,
