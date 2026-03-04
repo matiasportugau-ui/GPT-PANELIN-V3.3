@@ -20,3 +20,11 @@ google-cloud-storage>=2.10.0
 gspread>=6.0.0
 google-auth>=2.0.0
 python-dotenv>=1.0.0
+
+# Agno agentic architecture
+agno[postgres,openai]>=2.5.6
+anthropic>=0.84.0
+sqlalchemy>=2.0.0
+psycopg>=3.3.0
+pgvector>=0.4.2
+toolbox-core>=0.5.10

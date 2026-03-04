@@ -9,3 +9,10 @@ gspread>=6.0.0
 google-auth>=2.27.0
 reportlab>=4.0.0
 google-api-python-client>=2.100.0
+
+# Agno agentic stack
+agno[postgres,openai]>=2.5.6
+anthropic>=0.84.0
+psycopg>=3.3.0
+pgvector>=0.4.2
+toolbox-core>=0.5.10
