@@ -116,7 +116,7 @@ resource "google_sql_database_instance" "postgres_instance" {
     }
   }
 
-  deletion_protection = false  # Set to true in production
+  deletion_protection = true
 
   depends_on = [google_project_service.required_apis]
 }

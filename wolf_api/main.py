@@ -11,16 +11,29 @@ import hashlib
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException, Security, Query, status
+from fastapi import APIRouter, FastAPI, HTTPException, Security, Query, status
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
-from .pdf_cotizacion import router as pdf_router
-from .sheet_mover import router as mover_router
-from .pdf_drive_integration import router as pdf_drive_router
 
 logger = logging.getLogger(__name__)
+
+
+def _safe_load_optional_router(module_path: str, router_name: str = "router") -> APIRouter:
+    """Load optional routers without preventing API startup on import errors."""
+    try:
+        module = __import__(module_path, fromlist=[router_name])
+        router = getattr(module, router_name)
+        return router
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Optional router '%s' disabled: %s", module_path, exc)
+        return APIRouter()
+
+
+pdf_router = _safe_load_optional_router("wolf_api.pdf_cotizacion")
+mover_router = _safe_load_optional_router("wolf_api.sheet_mover")
+pdf_drive_router = _safe_load_optional_router("wolf_api.pdf_drive_integration")
 app = FastAPI(
     title="Panelin Wolf API",
     description="Complete API for BMC Uruguay — quotations, KB persistence, Google Sheets",
@@ -30,10 +43,22 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+
+def _load_cors_origins() -> list[str]:
+    raw_origins = os.environ.get("CORS_ALLOW_ORIGINS", "")
+    if not raw_origins.strip():
+        return []
+    if raw_origins.strip() == "*":
+        return ["*"]
+    return [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+
+
+_cors_origins = _load_cors_origins()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=_cors_origins,
+    allow_credentials="*" not in _cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
