@@ -1,0 +1,29 @@
+# Panelin Agno — dependencias de la nueva arquitectura agentic
+# Instalar con: pip install -r requirements-agno.txt
+
+# ── Agno Framework ────────────────────────────────────────────────────────────
+agno[openai,postgres]>=2.5.6
+
+# ── Database (PostgreSQL) ─────────────────────────────────────────────────────
+sqlalchemy>=2.0.0
+psycopg[binary,pool]>=3.1.0
+
+# ── MCP Protocol ─────────────────────────────────────────────────────────────
+mcp>=1.0.0
+
+# ── Configuration ─────────────────────────────────────────────────────────────
+pydantic-settings>=2.0.0
+
+# ── HTTP ──────────────────────────────────────────────────────────────────────
+httpx[http2]>=0.27.0
+
+# ── Existing (ya en requirements.txt — listados para claridad) ────────────────
+# fastapi>=0.100.0
+# uvicorn>=0.23.0
+# openai>=1.0.0
+# python-dotenv>=1.0.0
+# reportlab>=4.0.0
+# pillow>=9.0.0
+# google-cloud-storage>=2.10.0
+# gspread>=6.0.0
+# google-auth>=2.0.0
