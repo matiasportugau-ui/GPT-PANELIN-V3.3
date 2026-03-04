@@ -207,12 +207,17 @@ def calculate_bom(
 
     ancho_util_m = system.get("ancho_util_m", 1.12)
 
+    is_roof = uso.lower() in ("techo", "cubierta")
+
     # Calculate area
     area_m2 = length_m * width_m
 
     # Calculate panel count
     if panel_count is None:
-        panel_count = math.ceil(width_m / ancho_util_m)
+        if is_roof:
+            panel_count = math.ceil(width_m / ancho_util_m)
+        else:
+            panel_count = math.ceil(length_m / ancho_util_m)
 
     # Autoportancia for support calculation
     autoportancia_m = _get_autoportancia_m(familia, sub_familia, thickness_mm)
@@ -222,7 +227,6 @@ def calculate_bom(
         supports = max(2, math.ceil(length_m / 3.0) + 1)
 
     # Fixation points
-    is_roof = uso.lower() in ("techo", "cubierta")
     if is_roof:
         base_fix = panel_count * supports * 2
         edge_fix = math.ceil(length_m * 2 / 2.5)

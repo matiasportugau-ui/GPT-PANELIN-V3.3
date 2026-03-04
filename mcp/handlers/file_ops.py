@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 # KB write password — reuse the same env var as wolf_kb_write.py
-KB_WRITE_PASSWORD = os.getenv("WOLF_KB_WRITE_PASSWORD", "mywolfy")
+KB_WRITE_PASSWORD = os.getenv("WOLF_KB_WRITE_PASSWORD", "")
 
 # Maximum file size: 1 MB (prevents accidental large writes)
 MAX_FILE_SIZE_BYTES = 1_048_576

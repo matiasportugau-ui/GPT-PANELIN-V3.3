@@ -1,0 +1,64 @@
+# ==============================================================================
+# Panelin v5.0 — Agno Agent Dockerfile
+# ==============================================================================
+# Unified container running the Panelin Agno Agent with:
+#   - AgentOS (50+ auto-generated endpoints)
+#   - Panelin v4 Engine (deterministic pipeline)
+#   - Wolf API routes (backward compatibility)
+#   - PostgreSQL session storage (Cloud SQL)
+#   - MCP client (connects to existing MCP server)
+#
+# Build:  docker build -f Dockerfile.agno -t panelin-agno .
+# Run:    docker run -p 8080:8080 --env-file .env panelin-agno
+
+FROM python:3.12-slim
+
+LABEL maintainer="BMC Uruguay — Panelin Team"
+LABEL description="Panelin v5.0 — Agno-based quotation agent"
+
+WORKDIR /app
+
+# System dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python dependencies
+COPY requirements.agno.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
+
+# ── Application code ──
+COPY src/ /app/src/
+COPY panelin_v4/ /app/panelin_v4/
+COPY wolf_api/ /app/wolf_api/
+COPY panelin_reports/ /app/panelin_reports/
+COPY app.py /app/
+
+# ── KB data files ──
+COPY bromyros_pricing_master.json /app/
+COPY accessories_catalog.json /app/
+COPY bom_rules.json /app/
+COPY BMC_Base_Conocimiento_GPT-2.json /app/
+
+# ── Catalog for legacy endpoints ──
+COPY wolf_api/catalog.json /app/catalog.json 2>/dev/null || true
+
+# Create non-root user
+RUN useradd -m -u 1000 -s /bin/bash panelin && \
+    chown -R panelin:panelin /app
+
+USER panelin
+
+EXPOSE 8080
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PORT=8080 \
+    CATALOG_PATH=/app/catalog.json
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+CMD ["python", "-m", "src.app"]

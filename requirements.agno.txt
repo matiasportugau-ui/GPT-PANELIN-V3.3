@@ -1,0 +1,42 @@
+# Panelin v5.0 — Agno Migration Dependencies
+
+# ── Agno Framework ──
+agno>=2.5.0
+agno[openai]
+agno[postgres]
+
+# ── Database ──
+sqlalchemy>=2.0.25
+psycopg[binary]>=3.1.0
+
+# ── LLM Providers ──
+openai>=1.30.0
+
+# ── MCP Client ──
+mcp>=1.0.0
+
+# ── API Framework ──
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+
+# ── Configuration ──
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+python-dotenv>=1.0.0
+
+# ── Google Cloud ──
+google-cloud-storage>=2.10.0
+gspread>=6.0.0
+google-auth>=2.27.0
+google-api-python-client>=2.100.0
+
+# ── PDF Generation ──
+reportlab>=4.0.0
+pillow>=9.0.0
+
+# ── HTTP Client ──
+httpx>=0.25.0
+
+# ── Testing ──
+pytest>=7.0.0
+pytest-asyncio>=0.21.0

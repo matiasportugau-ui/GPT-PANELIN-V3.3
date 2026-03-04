@@ -18,7 +18,11 @@ from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 from .pdf_cotizacion import router as pdf_router
 from .sheet_mover import router as mover_router
-from .pdf_drive_integration import router as pdf_drive_router
+try:
+    from .pdf_drive_integration import router as pdf_drive_router
+except ImportError:
+    from fastapi import APIRouter as _AR
+    pdf_drive_router = _AR()
 
 logger = logging.getLogger(__name__)
 app = FastAPI(
@@ -30,9 +34,12 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+_cors_origins = os.environ.get("CORS_ALLOWED_ORIGINS", "").strip()
+_allowed_origins = [o.strip() for o in _cors_origins.split(",") if o.strip()] if _cors_origins else []
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
