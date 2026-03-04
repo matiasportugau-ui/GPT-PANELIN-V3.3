@@ -126,8 +126,23 @@ class PanelinAudit:
             return None
 
     def _audit_whatsapp(self) -> dict[str, Any]:
-        """Collect WhatsApp records (manual placeholder until API onboarding)."""
+        """Collect WhatsApp records from API with manual fallback."""
         logger.info("📱 Checking WhatsApp...")
+        try:
+            from fetch_whatsapp import fetch_whatsapp_messages
+        except ImportError as exc:
+            logger.error("❌ Could not import WhatsApp fetcher: %s", exc)
+            return {"platform": "WhatsApp", "status": "error", "message": str(exc), "records": []}
+
+        records = fetch_whatsapp_messages()
+        if records:
+            return {
+                "platform": "WhatsApp",
+                "status": "ok",
+                "message": f"WhatsApp records fetched: {len(records)}",
+                "records": records,
+            }
+
         sample_cliente = os.getenv("WA_FALLBACK_CLIENTE", "Audit WhatsApp")
         sample_consulta = os.getenv(
             "WA_FALLBACK_CONSULTA",

@@ -43,6 +43,10 @@ jobs:
         env:
           GOOGLE_SHEETS_ID: 1RHJ1eQlCWMcWY5NKkHCsH5F5XavC9yebh97bruJilbs
           GOOGLE_SHEETS_CREDENTIALS_PATH: ./scripts/credentials/service_account.json
+          WHATSAPP_AUDIT_ENDPOINT: ${{ vars.WHATSAPP_AUDIT_ENDPOINT }}
+          WHATSAPP_AUDIT_TOKEN: ${{ secrets.WHATSAPP_AUDIT_TOKEN }}
+          WA_FALLBACK_CLIENTE: ${{ vars.WA_FALLBACK_CLIENTE }}
+          WA_FALLBACK_CONSULTA: ${{ vars.WA_FALLBACK_CONSULTA }}
           ML_ACCESS_TOKEN: ${{ secrets.ML_ACCESS_TOKEN }}
           ML_USER_ID: ${{ vars.ML_USER_ID }}
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
