@@ -1,0 +1,72 @@
+# ==============================================================================
+# Panelin v5.0 — Agno Production Dockerfile
+# ==============================================================================
+# Multi-stage build for Cloud Run deployment with Agno agent
+
+# Stage 1: Builder
+FROM python:3.11-slim AS builder
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt /app/
+COPY requirements-agno.txt /app/
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir -r requirements-agno.txt
+
+# Stage 2: Production
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Application code
+COPY src/ /app/src/
+COPY panelin_v4/ /app/panelin_v4/
+COPY wolf_api/ /app/wolf_api/
+COPY mcp/ /app/mcp/
+COPY panelin_reports/ /app/panelin_reports/
+COPY app.py /app/
+
+# Knowledge base files
+COPY bromyros_pricing_master.json /app/
+COPY accessories_catalog.json /app/
+COPY bom_rules.json /app/
+COPY BMC_Base_Conocimiento_GPT-2.json /app/
+
+# Static assets
+COPY bmc_logo.png /app/ 2>/dev/null || true
+
+RUN mkdir -p /app/logs /app/panelin_reports/output && \
+    chmod -R 755 /app/logs /app/panelin_reports/output
+
+RUN useradd -m -u 1000 -s /bin/bash panelin && \
+    chown -R panelin:panelin /app
+
+USER panelin
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app \
+    PORT=8080
+
+CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8080"]

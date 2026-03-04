@@ -30,9 +30,12 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+_cors_origins_raw = os.environ.get("CORS_ALLOWED_ORIGINS", "")
+_cors_origins = [o.strip() for o in _cors_origins_raw.split(",") if o.strip()] if _cors_origins_raw else ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -850,16 +853,17 @@ async def set_cotizacion_url(data: dict, api_key: str = Security(require_api_key
     url = data.get("url", "")
     if not rn:
         raise HTTPException(400, "row_number is required")
-        if not url:
-            raise HTTPException(400, "url is required")
-            tab = data.get("tab")
-            if tab:
-                ws = await run_in_threadpool(_get_worksheet, tab)
-            else:
-                ws = await run_in_threadpool(_get_admin_worksheet)
-                await run_in_threadpool(ws.update_acell, f"J{rn}", url)
-                return {"success": True, "row_number": rn, "column": "J", "url_written": url}
-                
+    if not url:
+        raise HTTPException(400, "url is required")
+    tab = data.get("tab")
+    if tab:
+        ws = await run_in_threadpool(_get_worksheet, tab)
+    else:
+        ws = await run_in_threadpool(_get_admin_worksheet)
+    await run_in_threadpool(ws.update_acell, f"J{rn}", url)
+    return {"success": True, "row_number": rn, "column": "J", "url_written": url}
+
+
 @app.get("/sheets/row/{row_number}")
 async def get_row(row_number: int, tab: Optional[str] = None, _=Security(require_api_key)):
     ws = await run_in_threadpool(_get_worksheet, tab)

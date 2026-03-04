@@ -83,3 +83,10 @@ coverage.xml
 docker-volumes/
 .coverage
 htmlcov/
+
+# Terraform state and secrets
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform/
+.terraform.lock.hcl

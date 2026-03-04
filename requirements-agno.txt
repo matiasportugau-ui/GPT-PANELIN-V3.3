@@ -1,0 +1,17 @@
+# Agno Framework
+agno>=1.4.0
+agno[openai]
+agno[anthropic]
+
+# Database (PostgreSQL for Agno session storage)
+sqlalchemy>=2.0.0
+psycopg[binary]>=3.1.0
+
+# Configuration
+pydantic-settings>=2.0.0
+
+# HTTP client (for integration tools)
+httpx>=0.25.0
+
+# Production server
+uvicorn[standard]>=0.23.0
