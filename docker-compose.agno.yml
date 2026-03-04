@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  panelin-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.agno
+    ports:
+      - "8080:8080"
+    environment:
+      - PANELIN_ENVIRONMENT=development
+      - PANELIN_DEBUG=true
+      - PANELIN_DEFAULT_MODEL_ID=gpt-4o
+      - PANELIN_MCP_SERVER_URL=http://mcp-server:8000/sse
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - WOLF_API_KEY=${WOLF_API_KEY}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=panelin
+      - DB_USER=panelin
+      - DB_PASSWORD=${DB_PASSWORD:-panelin_dev}
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,https://app.agno.com
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - WOLF_API_KEY=${WOLF_API_KEY}
+      - MCP_SERVER_HOST=0.0.0.0
+      - MCP_SERVER_PORT=8000
+    restart: unless-stopped
+
+  postgres:
+    image: agnohq/pgvector:16
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=panelin
+      - POSTGRES_USER=panelin
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-panelin_dev}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U panelin -d panelin"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
