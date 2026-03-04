@@ -1,8 +1,15 @@
 [project]
 name = "panelin"
 version = "4.0.0"
-description = "BMC Uruguay - Panelin Quotation Engine"
+description = "BMC Uruguay - Panelin Quotation Engine + Agno Agentic Architecture"
 requires-python = ">=3.10"
 
 [project.scripts]
 app = "app:app"
+agno = "src.app:app"
+
+[tool.pytest.ini_options]
+testpaths = ["panelin_v4/tests", "src/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

@@ -133,41 +133,61 @@ def _find_accessory_price(sku: Optional[str], tipo: str) -> Optional[float]:
 
 
 def _find_panel_price_m2(familia: str, sub_familia: str, thickness_mm: int) -> Optional[float]:
-    """Find panel price per m2 from pricing master."""
+    """Find panel price per m2 from pricing master.
+
+    Two-pass search: first tries exact familia+sub_familia+thickness match,
+    then falls back to familia+thickness only. Prevents sub_familia mismatch
+    returning wrong variant price.
+    """
     products = _load_pricing_master()
 
     norm_familia = familia.upper().replace("_", "").replace("-", "")
-    norm_sub = sub_familia.upper() if sub_familia else ""
+    norm_sub = sub_familia.upper().replace("_", "").replace("-", "") if sub_familia else ""
 
-    for product in products:
-        if not isinstance(product, dict):
-            continue
-
-        sku = str(product.get("sku", product.get("SKU", ""))).upper().replace("_", "").replace("-", "")
-        name = str(product.get("nombre", product.get("name", ""))).upper()
-        fam = str(product.get("familia", product.get("family", ""))).upper()
-
+    def _get_price(product: dict) -> Optional[float]:
         thickness = product.get("espesor_mm", product.get("thickness"))
         if thickness is None:
             specs = product.get("specifications", {})
             if isinstance(specs, dict):
                 thickness = specs.get("thickness_mm", specs.get("espesor_mm"))
-
-        if thickness is not None:
-            try:
-                if int(float(thickness)) != thickness_mm:
-                    continue
-            except (ValueError, TypeError):
-                continue
-        else:
-            continue
-
+        if thickness is None:
+            return None
+        try:
+            if int(float(thickness)) != thickness_mm:
+                return None
+        except (ValueError, TypeError):
+            return None
+        sku = str(product.get("sku", product.get("SKU", ""))).upper().replace("_", "").replace("-", "")
+        name = str(product.get("nombre", product.get("name", ""))).upper()
+        fam = str(product.get("familia", product.get("family", ""))).upper()
         if norm_familia in sku or norm_familia in name or norm_familia in fam:
             pricing = product.get("pricing", {})
             if isinstance(pricing, dict):
                 price = pricing.get("sale_iva_inc", pricing.get("web_iva_inc"))
                 if price:
                     return float(price)
+        return None
+
+    # Pass 1: familia + sub_familia + thickness (most specific)
+    if norm_sub:
+        for product in products:
+            if not isinstance(product, dict):
+                continue
+            name = str(product.get("nombre", product.get("name", ""))).upper()
+            sku = str(product.get("sku", product.get("SKU", ""))).upper()
+            if norm_sub not in name and norm_sub not in sku:
+                continue
+            price = _get_price(product)
+            if price is not None:
+                return price
+
+    # Pass 2: familia + thickness only (generic fallback)
+    for product in products:
+        if not isinstance(product, dict):
+            continue
+        price = _get_price(product)
+        if price is not None:
+            return price
 
     return None
 

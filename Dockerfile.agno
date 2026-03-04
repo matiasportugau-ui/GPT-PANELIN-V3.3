@@ -1,0 +1,104 @@
+# ==============================================================================
+# Panelin Agno — Dockerfile para Arquitectura Agentic
+# ==============================================================================
+# Imagen única para Cloud Run que ejecuta:
+#   - Wolf API completo (KB, Sheets, PDF) montado en /api/*
+#   - Agno Agent + Workflow (chat, cotización, workflow)
+#   - Motor determinístico panelin_v4 (sin LLM, $0.00)
+#
+# Entrypoint: src/app.py (FastAPI con Agno + Wolf API montado)
+# Port: 8080 (Cloud Run default)
+#
+# Build:  docker build -f Dockerfile.agno -t panelin-agno .
+# Run:    docker run -p 8080:8080 \
+#           -e OPENAI_API_KEY=... \
+#           -e WOLF_API_KEY=... \
+#           -e DATABASE_URL=postgresql+psycopg://... \
+#           panelin-agno
+#
+# Variables de entorno requeridas:
+#   OPENAI_API_KEY      — Para el agente LLM
+#   WOLF_API_KEY        — Autenticación Wolf API
+#   DATABASE_URL        — Cloud SQL PostgreSQL (Agno sessions)
+#   KB_GCS_BUCKET       — GCS bucket para KB
+#   CORS_ORIGINS        — Orígenes permitidos (comma-separated)
+#   KB_WRITE_PASSWORD   — Password para escritura en KB (requerido)
+#   WOLF_KB_WRITE_PASSWORD — Password MCP para file operations
+
+FROM python:3.11-slim AS builder
+
+WORKDIR /build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Dependencias del Wolf API existente
+COPY wolf_api/requirements.txt /tmp/requirements-wolf.txt
+
+# Dependencias Agno (nuevo)
+COPY requirements-agno.txt /tmp/requirements-agno.txt
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements-wolf.txt && \
+    pip install --no-cache-dir -r /tmp/requirements-agno.txt
+
+# ==============================================================================
+FROM python:3.11-slim AS production
+
+LABEL maintainer="BMC Uruguay — Panelin Agno v4.0"
+LABEL description="Panelin Agno — Backend agentic con Agno Framework + Wolf API"
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar dependencias Python instaladas desde builder
+COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+
+# ── Código fuente ──────────────────────────────────────────────────────────────
+# Motor existente (sin modificar)
+COPY panelin_v4/ /app/panelin_v4/
+COPY panelin_reports/ /app/panelin_reports/
+COPY wolf_api/ /app/wolf_api/
+
+# Nueva capa Agno
+COPY src/ /app/src/
+COPY app.py /app/
+
+# ── KB: archivos de datos ─────────────────────────────────────────────────────
+COPY bom_rules.json /app/
+COPY accessories_catalog.json /app/
+COPY bromyros_pricing_master.json /app/
+COPY bromyros_pricing_gpt_optimized.json /app/
+COPY BMC_Base_Conocimiento_GPT-2.json /app/
+COPY wolf_api/catalog.json /app/catalog.json
+COPY bmc_logo.png /app/
+
+# ── Seguridad: usuario no-root ────────────────────────────────────────────────
+RUN useradd -m -u 1000 -s /bin/bash panelin && \
+    chown -R panelin:panelin /app
+
+USER panelin
+
+EXPOSE 8080
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PORT=8080 \
+    CATALOG_PATH=/app/catalog.json \
+    BOM_RULES_PATH=/app/bom_rules.json \
+    BMC_KB_PATH=/app/BMC_Base_Conocimiento_GPT-2.json \
+    PYTHONPATH=/app
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Usa el nuevo entry point Agno (src/app.py)
+CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8080", \
+     "--workers", "1", "--log-level", "info"]

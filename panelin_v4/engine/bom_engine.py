@@ -210,9 +210,17 @@ def calculate_bom(
     # Calculate area
     area_m2 = length_m * width_m
 
+    # Determine installation type early (needed for panel count logic)
+    is_roof = uso.lower() in ("techo", "cubierta")
+
     # Calculate panel count
+    # Roofs: panels span across width_m (ridge direction) → count along width
+    # Walls: panels span along length_m (horizontal wall length) → count along length
     if panel_count is None:
-        panel_count = math.ceil(width_m / ancho_util_m)
+        if is_roof:
+            panel_count = math.ceil(width_m / ancho_util_m)
+        else:
+            panel_count = math.ceil(length_m / ancho_util_m)
 
     # Autoportancia for support calculation
     autoportancia_m = _get_autoportancia_m(familia, sub_familia, thickness_mm)
@@ -222,7 +230,6 @@ def calculate_bom(
         supports = max(2, math.ceil(length_m / 3.0) + 1)
 
     # Fixation points
-    is_roof = uso.lower() in ("techo", "cubierta")
     if is_roof:
         base_fix = panel_count * supports * 2
         edge_fix = math.ceil(length_m * 2 / 2.5)
@@ -243,7 +250,12 @@ def calculate_bom(
     ))
 
     # Build accessory items based on system
-    perimeter_ml = 2 * (panel_count * ancho_util_m) + 2 * length_m
+    # Roofs: panels cover width_m, roof depth = length_m
+    # Walls: panels cover length_m (horizontal), wall height = width_m
+    if is_roof:
+        perimeter_ml = 2 * (panel_count * ancho_util_m) + 2 * length_m
+    else:
+        perimeter_ml = 2 * (panel_count * ancho_util_m) + 2 * width_m
 
     if is_roof:
         _add_roof_accessories(

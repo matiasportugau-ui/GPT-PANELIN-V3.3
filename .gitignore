@@ -73,6 +73,16 @@ logs/
 scripts/credentials/*.json
 !scripts/credentials/.gitkeep
 
+# Terraform sensitive files (never commit state or variable files with secrets)
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+*.tfvars
+*.tfvars.json
+!terraform/example.tfvars
+
 # Coverage reports
 .coverage
 .coverage.*
