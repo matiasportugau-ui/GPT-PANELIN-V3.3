@@ -22,7 +22,7 @@ from reportlab.platypus import (
 SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 )
 
-from drive_uploader import (
+from .drive_uploader import (
 ensure_folder_structure, upload_pdf, get_drive_path,
 generate_doc_number, sanitize_filename
 )
