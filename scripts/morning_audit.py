@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-"""
-PANELIN Morning Audit - Phase 1
-Monitors customer touchpoints and generates a daily summary.
-"""
+"""PANELIN Morning Audit automation for Atead worksheet."""
 
 from __future__ import annotations
 
 import logging
 import os
 import sys
+import unicodedata
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -19,7 +17,8 @@ LOG_DIR = Path(__file__).parent / "logs"
 LOG_DIR.mkdir(exist_ok=True)
 LOG_FILE = LOG_DIR / f"audit_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 DEFAULT_SHEETS_ID = "1RHJ1eQlCWMcWY5NKkHCsH5F5XavC9yebh97bruJilbs"
-TARGET_WORKSHEET = "Daily Audit"
+TARGET_WORKSHEET = "Atead"
+VALID_ORIGINS = {"WA", "ML", "CL", "IG", "EM"}
 
 logging.basicConfig(
     level=logging.INFO,
@@ -30,6 +29,51 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger(__name__)
+
+
+def normalize_text(value: str) -> str:
+    """Normalize text for duplicate checks."""
+    normalized = unicodedata.normalize("NFKD", value or "")
+    ascii_value = normalized.encode("ascii", "ignore").decode("ascii")
+    return " ".join(ascii_value.casefold().split())
+
+
+def normalize_date_ddmm(value: str | None) -> str:
+    """Normalize date to DD-MM or fallback to today's date."""
+    if not value:
+        return datetime.now().strftime("%d-%m")
+    for fmt in ("%d-%m", "%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"):
+        try:
+            return datetime.strptime(value.strip(), fmt).strftime("%d-%m")
+        except ValueError:
+            continue
+    return datetime.now().strftime("%d-%m")
+
+
+def build_duplicate_key(cliente: str, fecha: str, origen: str) -> tuple[str, str, str]:
+    """Build normalized duplicate key using Cliente + Fecha + Orig."""
+    return (
+        normalize_text(cliente),
+        normalize_date_ddmm(fecha),
+        (origen or "CL").strip().upper(),
+    )
+
+
+def build_sheet_row(record: dict[str, str]) -> list[str]:
+    """Map normalized record to Atead worksheet columns A-H."""
+    origen = (record.get("origen", "CL").strip().upper() or "CL")
+    if origen not in VALID_ORIGINS:
+        origen = "CL"
+    return [
+        "",  # A Asig.
+        "Pendiente",  # B Estado
+        normalize_date_ddmm(record.get("fecha")),
+        record.get("cliente", "").strip() or "Cliente",
+        origen,
+        record.get("telefono", "").strip(),
+        record.get("direccion", "").strip(),
+        record.get("consulta", "").strip() or "Consulta pendiente",
+    ]
 
 
 class PanelinAudit:
@@ -46,14 +90,7 @@ class PanelinAudit:
     def _connect_sheets(self) -> Any | None:
         """Connect to Google Sheets if configuration is present."""
         creds_path = os.getenv("GOOGLE_SHEETS_CREDENTIALS_PATH", "").strip()
-        sheet_id = os.getenv("GOOGLE_SHEETS_ID", "").strip()
-
-        if not sheet_id:
-            logger.warning(
-                "⚠️ Google Sheets ID missing. "
-                "Set GOOGLE_SHEETS_ID to enable audit writes to Sheets."
-            )
-            return None
+        sheet_id = os.getenv("GOOGLE_SHEETS_ID", DEFAULT_SHEETS_ID).strip()
         if not creds_path:
             logger.warning(
                 "⚠️ Google Sheets credentials path missing. "
@@ -89,55 +126,81 @@ class PanelinAudit:
             return None
 
     def _audit_whatsapp(self) -> dict[str, Any]:
-        """Phase 1 manual WhatsApp check placeholder."""
-        logger.info("📱 Checking WhatsApp Web...")
-        logger.warning(
-            "⚠️  Phase 1 manual step: open WhatsApp Web and count unread messages."
+        """Collect WhatsApp records (manual placeholder until API onboarding)."""
+        logger.info("📱 Checking WhatsApp...")
+        sample_cliente = os.getenv("WA_FALLBACK_CLIENTE", "Audit WhatsApp")
+        sample_consulta = os.getenv(
+            "WA_FALLBACK_CONSULTA",
+            "Revisar mensajes no leídos en WhatsApp Business.",
         )
         return {
             "platform": "WhatsApp",
-            "status": "manual_check_required",
-            "message": "Count unread messages in WhatsApp Web.",
-            "count": 0,
+            "status": "manual_fallback",
+            "message": "WhatsApp API no configurada; usando registro manual de respaldo.",
+            "records": [
+                {
+                    "cliente": sample_cliente,
+                    "origen": "WA",
+                    "telefono": "",
+                    "direccion": "",
+                    "consulta": sample_consulta,
+                    "fecha": datetime.now().strftime("%d-%m"),
+                }
+            ],
         }
 
     def _audit_facebook(self) -> dict[str, Any]:
-        """Phase 1 manual Facebook check placeholder."""
-        logger.info("📘 Checking Facebook Page...")
-        logger.warning(
-            "⚠️  Phase 1 manual step: check Facebook Page inbox and unread messages."
-        )
+        """Collect Meta (FB/IG) records via API with graceful fallback."""
+        logger.info("📘 Checking Meta conversations...")
+        try:
+            from fetch_meta import fetch_meta_messages
+        except ImportError as exc:
+            logger.error("❌ Could not import Meta fetcher: %s", exc)
+            return {"platform": "Meta", "status": "error", "message": str(exc), "records": []}
+
+        records = fetch_meta_messages()
+        status = "ok" if records else "no_records"
         return {
-            "platform": "Facebook",
-            "status": "manual_check_required",
-            "message": "Check Facebook Page inbox and unread messages.",
-            "count": 0,
+            "platform": "Meta",
+            "status": status,
+            "message": f"Meta records fetched: {len(records)}",
+            "records": records,
         }
 
     def _audit_mercadolibre(self) -> dict[str, Any]:
-        """Phase 1 manual MercadoLibre check placeholder."""
+        """Collect MercadoLibre unread records via API."""
         logger.info("🛍️ Checking MercadoLibre...")
-        logger.warning(
-            "⚠️  Phase 1 manual step: review MercadoLibre questions, messages, and orders."
-        )
+        try:
+            from fetch_mercadolibre import fetch_mercadolibre_messages
+        except ImportError as exc:
+            logger.error("❌ Could not import MercadoLibre fetcher: %s", exc)
+            return {"platform": "MercadoLibre", "status": "error", "message": str(exc), "records": []}
+
+        records = fetch_mercadolibre_messages()
+        status = "ok" if records else "no_records"
         return {
             "platform": "MercadoLibre",
-            "status": "manual_check_required",
-            "message": "Check MercadoLibre questions, messages, and new orders.",
-            "count": 0,
+            "status": status,
+            "message": f"MercadoLibre records fetched: {len(records)}",
+            "records": records,
         }
 
     def _audit_email(self) -> dict[str, Any]:
-        """Phase 1 manual email check placeholder."""
-        logger.info("📧 Checking Email...")
-        logger.warning(
-            "⚠️  Phase 1 manual step: review Gmail inbox and spam for customer inquiries."
-        )
+        """Collect Gmail records using IMAP and query filter."""
+        logger.info("📧 Checking Gmail...")
+        try:
+            from fetch_gmail import fetch_gmail_messages
+        except ImportError as exc:
+            logger.error("❌ Could not import Gmail fetcher: %s", exc)
+            return {"platform": "Email", "status": "error", "message": str(exc), "records": []}
+
+        records = fetch_gmail_messages()
+        status = "ok" if records else "no_records"
         return {
             "platform": "Email",
-            "status": "manual_check_required",
-            "message": "Check Gmail inbox and spam for customer inquiries.",
-            "count": 0,
+            "status": status,
+            "message": f"Gmail records fetched: {len(records)}",
+            "records": records,
         }
 
     def run_audit(self) -> dict[str, Any] | None:
@@ -148,6 +211,12 @@ class PanelinAudit:
             self.results["channels"]["facebook"] = self._audit_facebook()
             self.results["channels"]["mercadolibre"] = self._audit_mercadolibre()
             self.results["channels"]["email"] = self._audit_email()
+            total_records = sum(
+                len(channel_data.get("records", []))
+                for channel_data in self.results["channels"].values()
+            )
+            self.results["summary"]["total_records"] = total_records
+            logger.info("📊 Total records collected: %s", total_records)
             logger.info("✅ All channel audits completed")
             return self.results
         except Exception as exc:  # pragma: no cover
@@ -155,7 +224,7 @@ class PanelinAudit:
             return None
 
     def write_to_sheets(self) -> None:
-        """Write rows to 'Daily Audit' worksheet (columns A-H) if configured."""
+        """Write rows to Atead worksheet (columns A-H) with dedupe guard."""
         if not self.sheet:
             logger.warning("⚠️ Skipping Google Sheets write (no sheet connection).")
             return
@@ -179,46 +248,30 @@ class PanelinAudit:
                 cliente = normalized_row[3].strip()
                 origen = normalized_row[4].strip().upper()
                 if fecha and cliente and origen:
-                    existing_keys.add((cliente.casefold(), fecha, origen))
+                    existing_keys.add(build_duplicate_key(cliente, fecha, origen))
 
-            origin_by_channel = {
-                "whatsapp": "WA",
-                "facebook": "FB",
-                "mercadolibre": "ML",
-                "email": "EM",
-            }
-            fecha_hoy = datetime.now().strftime("%d-%m")
             rows_to_insert: list[list[str]] = []
             pending_keys: set[tuple[str, str, str]] = set()
 
-            for channel_key, data in self.results["channels"].items():
-                origen = origin_by_channel.get(channel_key, "CL")
-                cliente = f"Audit {data['platform']}"
-                consulta = data.get("message", "")
-                duplicate_key = (cliente.casefold(), fecha_hoy, origen)
-
-                if duplicate_key in existing_keys or duplicate_key in pending_keys:
-                    logger.info(
-                        "ℹ️ Skipping duplicate row for cliente=%s fecha=%s origen=%s",
-                        cliente,
-                        fecha_hoy,
-                        origen,
+            for channel_data in self.results["channels"].values():
+                for record in channel_data.get("records", []):
+                    duplicate_key = build_duplicate_key(
+                        record.get("cliente", ""),
+                        record.get("fecha", ""),
+                        record.get("origen", "CL"),
                     )
-                    continue
 
-                rows_to_insert.append(
-                    [
-                        "",  # A: Asig.
-                        "Pendiente",  # B: Estado
-                        fecha_hoy,  # C: Fecha
-                        cliente,  # D: Cliente
-                        origen,  # E: Orig.
-                        "",  # F: Telefono-Contacto
-                        "",  # G: Direccion/Zona
-                        consulta,  # H: Consulta
-                    ]
-                )
-                pending_keys.add(duplicate_key)
+                    if duplicate_key in existing_keys or duplicate_key in pending_keys:
+                        logger.info(
+                            "ℹ️ Skipping duplicate row for cliente=%s fecha=%s origen=%s",
+                            record.get("cliente", ""),
+                            normalize_date_ddmm(record.get("fecha", "")),
+                            record.get("origen", "CL"),
+                        )
+                        continue
+
+                    rows_to_insert.append(build_sheet_row(record))
+                    pending_keys.add(duplicate_key)
 
             if not rows_to_insert:
                 logger.info("ℹ️ No new rows to insert (all duplicates already exist).")
@@ -238,8 +291,11 @@ class PanelinAudit:
             logger.error("❌ Failed to write to Google Sheets: %s", exc)
 
     def send_summary_email(self) -> None:
-        """Phase 2 placeholder for daily summary email delivery."""
-        logger.info("📬 Email summary placeholder (Phase 2)")
+        """Summary log hook for optional notification integrations."""
+        logger.info(
+            "📬 Summary: %s record(s) prepared",
+            self.results.get("summary", {}).get("total_records", 0),
+        )
 
 
 def main() -> int:

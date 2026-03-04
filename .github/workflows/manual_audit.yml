@@ -2,6 +2,8 @@ name: 🌅 Manual Morning Audit
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 10 * * *"
 
 permissions:
   contents: read
@@ -39,8 +41,16 @@ jobs:
 
       - name: 🌅 Run morning audit
         env:
-          GOOGLE_SHEETS_ID: ${{ vars.GOOGLE_SHEETS_ID }}
+          GOOGLE_SHEETS_ID: 1RHJ1eQlCWMcWY5NKkHCsH5F5XavC9yebh97bruJilbs
           GOOGLE_SHEETS_CREDENTIALS_PATH: ./scripts/credentials/service_account.json
+          ML_ACCESS_TOKEN: ${{ secrets.ML_ACCESS_TOKEN }}
+          ML_USER_ID: ${{ vars.ML_USER_ID }}
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_PAGE_ID: ${{ vars.META_PAGE_ID }}
+          META_PAGE_NAME: ${{ vars.META_PAGE_NAME }}
+          GMAIL_QUERY_FILTER: ${{ vars.GMAIL_QUERY_FILTER }}
+          SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         run: |
           python scripts/morning_audit.py
 
