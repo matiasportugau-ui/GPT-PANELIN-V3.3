@@ -1,0 +1,27 @@
+{
+  "name": "update_correction_status",
+  "description": "Update the status of a correction in the corrections log. Used to mark corrections as 'applied', 'rejected', or revert to 'pending'. Requires password for authorization. This enables tracking which corrections from verbal interactions have been resolved.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "correction_id": {
+        "type": "string",
+        "description": "The correction ID (e.g., 'COR-001') to update"
+      },
+      "new_status": {
+        "type": "string",
+        "enum": ["pending", "applied", "rejected"],
+        "description": "The new status to set"
+      },
+      "notes": {
+        "type": "string",
+        "description": "Optional notes explaining the status change"
+      },
+      "password": {
+        "type": "string",
+        "description": "KB write password for authorization"
+      }
+    },
+    "required": ["correction_id", "new_status", "password"]
+  }
+}

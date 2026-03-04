@@ -1,0 +1,35 @@
+{
+  "name": "validate_correction",
+  "description": "Validate a proposed KB correction before committing. Checks the correction against the actual KB data (pricing index, catalog, etc.), simulates impact on the last 50 quotations, and generates a change report with severity assessment. Returns a change_id for use with commit_correction.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "kb_file": {
+        "type": "string",
+        "description": "Name of the KB file to validate against (e.g., 'bromyros_pricing_master.json')"
+      },
+      "field": {
+        "type": "string",
+        "description": "JSON path or field reference (e.g., 'data.products[0].pricing.web_iva_inc')"
+      },
+      "current_value": {
+        "type": "string",
+        "description": "The expected current value (for mismatch detection). If omitted, the actual value is used."
+      },
+      "proposed_value": {
+        "type": "string",
+        "description": "The new corrected value to apply"
+      },
+      "source": {
+        "type": "string",
+        "enum": ["user_correction", "validation_check", "audit", "web_verification"],
+        "description": "How the correction was discovered"
+      },
+      "notes": {
+        "type": "string",
+        "description": "Additional context about the correction"
+      }
+    },
+    "required": ["kb_file", "field", "proposed_value"]
+  }
+}

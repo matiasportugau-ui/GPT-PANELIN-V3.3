@@ -133,11 +133,20 @@ def _find_accessory_price(sku: Optional[str], tipo: str) -> Optional[float]:
 
 
 def _find_panel_price_m2(familia: str, sub_familia: str, thickness_mm: int) -> Optional[float]:
-    """Find panel price per m2 from pricing master."""
+    """Find panel price per m2 from pricing master.
+
+    Matching priority:
+      1. Exact familia + sub_familia + thickness match
+      2. Familia + thickness match (sub_familia ignored as fallback)
+    Prices come exclusively from the KB — never invented.
+    """
     products = _load_pricing_master()
 
     norm_familia = familia.upper().replace("_", "").replace("-", "")
-    norm_sub = sub_familia.upper() if sub_familia else ""
+    norm_sub = sub_familia.upper().replace("_", "").replace("-", "") if sub_familia else ""
+
+    best_price: Optional[float] = None
+    best_score = -1
 
     for product in products:
         if not isinstance(product, dict):
@@ -146,6 +155,7 @@ def _find_panel_price_m2(familia: str, sub_familia: str, thickness_mm: int) -> O
         sku = str(product.get("sku", product.get("SKU", ""))).upper().replace("_", "").replace("-", "")
         name = str(product.get("nombre", product.get("name", ""))).upper()
         fam = str(product.get("familia", product.get("family", ""))).upper()
+        sub = str(product.get("sub_familia", product.get("sub_family", ""))).upper().replace("_", "").replace("-", "")
 
         thickness = product.get("espesor_mm", product.get("thickness"))
         if thickness is None:
@@ -162,14 +172,29 @@ def _find_panel_price_m2(familia: str, sub_familia: str, thickness_mm: int) -> O
         else:
             continue
 
-        if norm_familia in sku or norm_familia in name or norm_familia in fam:
-            pricing = product.get("pricing", {})
-            if isinstance(pricing, dict):
-                price = pricing.get("sale_iva_inc", pricing.get("web_iva_inc"))
-                if price:
-                    return float(price)
+        familia_match = norm_familia in sku or norm_familia in name or norm_familia in fam
+        if not familia_match:
+            continue
 
-    return None
+        pricing = product.get("pricing", {})
+        if not isinstance(pricing, dict):
+            continue
+        price = pricing.get("sale_iva_inc", pricing.get("web_iva_inc"))
+        if not price:
+            continue
+
+        # Score: prefer sub_familia match to avoid wrong product variant
+        score = 0
+        if norm_sub and (norm_sub in sub or norm_sub in sku or norm_sub in name):
+            score = 2
+        else:
+            score = 1
+
+        if score > best_score:
+            best_score = score
+            best_price = float(price)
+
+    return best_price
 
 
 def calculate_pricing(

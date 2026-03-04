@@ -1,0 +1,24 @@
+{
+  "name": "price_check",
+  "description": "Look up current BMC/BROMYROS product pricing by SKU, product family, or product type. Returns price in USD (IVA 22% included). Source: bromyros_pricing_master.json (Level 1 authoritative).",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Product SKU (e.g., 'ISODEC-100-1000'), family (e.g., 'ISODEC'), or free-text search"
+      },
+      "filter_type": {
+        "type": "string",
+        "enum": ["sku", "family", "type", "search"],
+        "description": "Type of lookup to perform. Default: 'search'",
+        "default": "search"
+      },
+      "thickness_mm": {
+        "type": "number",
+        "description": "Optional: filter by panel thickness in mm"
+      }
+    },
+    "required": ["query"]
+  }
+}

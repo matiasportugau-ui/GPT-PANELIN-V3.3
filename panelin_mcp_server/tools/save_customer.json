@@ -1,0 +1,38 @@
+{
+  "name": "save_customer",
+  "description": "Store or update customer data for future quotations via Wolf API. Validates Uruguayan phone format. Requires KB write password.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Customer full name"
+      },
+      "phone": {
+        "type": "string",
+        "description": "Uruguayan phone number (09XXXXXXX or +598XXXXXXXX)"
+      },
+      "address": {
+        "type": "string",
+        "description": "Work site address"
+      },
+      "city": {
+        "type": "string",
+        "description": "City"
+      },
+      "department": {
+        "type": "string",
+        "description": "Department (Uruguay)"
+      },
+      "notes": {
+        "type": "string",
+        "description": "Additional notes about the customer or project"
+      },
+      "password": {
+        "type": "string",
+        "description": "KB write password for authorization"
+      }
+    },
+    "required": ["name", "phone", "password"]
+  }
+}
