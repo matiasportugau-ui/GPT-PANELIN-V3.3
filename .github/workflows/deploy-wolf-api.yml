@@ -5,7 +5,7 @@
 #
 # Triggered on push to main when relevant files change, or manually.
 
-name: Deploy Panelin API to Cloud Run
+ name:Deploy Panelin API to Cloud Run
 
 on:
   push:
