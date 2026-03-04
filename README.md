@@ -2733,7 +2733,7 @@ pytest panelin_v4/tests/ -v
 python -c "from panelin_v4.evaluator.regression_suite import run_regression_suite; run_regression_suite()"
 
 # Run stress test (30 mixed requests)
-python panelin_v4/evaluator/stress_test_runner.py
+python -c "from panelin_v4.evaluator.stress_test_runner import run_stress_test; run_stress_test()"
 ```
 
 **Test Coverage:**
