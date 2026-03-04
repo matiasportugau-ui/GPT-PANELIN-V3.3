@@ -9,12 +9,20 @@ Tests new handlers:
 
 import pytest
 
+import mcp.handlers.wolf_kb_write as wolf_kb_write_module
 from mcp.handlers.governance import (
     handle_list_corrections,
     handle_update_correction_status,
     handle_batch_validate_corrections,
 )
 from mcp.handlers.errors import handle_report_error
+
+TEST_KB_WRITE_PASSWORD = "test-governance-password"
+
+
+@pytest.fixture(autouse=True)
+def configure_write_password(monkeypatch):
+    monkeypatch.setattr(wolf_kb_write_module, "KB_WRITE_PASSWORD", TEST_KB_WRITE_PASSWORD)
 
 
 class TestListCorrections:
@@ -93,7 +101,7 @@ class TestUpdateCorrectionStatus:
         result = await handle_update_correction_status({
             "correction_id": "COR-001",
             "new_status": "invalid",
-            "password": "mywolfy",
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "INVALID_STATUS"
@@ -104,7 +112,7 @@ class TestUpdateCorrectionStatus:
         result = await handle_update_correction_status({
             "correction_id": "COR-999999",
             "new_status": "applied",
-            "password": "mywolfy",
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "CORRECTION_NOT_FOUND"

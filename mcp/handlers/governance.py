@@ -21,6 +21,7 @@ Flow:
 
 from __future__ import annotations
 
+import hmac
 import hashlib
 import json
 import logging
@@ -645,7 +646,17 @@ async def handle_update_correction_status(
             },
         }
 
-    if password != KB_WRITE_PASSWORD:
+    if not KB_WRITE_PASSWORD:
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": "Server misconfigured: WOLF_KB_WRITE_PASSWORD is not set",
+            },
+        }
+
+    if not hmac.compare_digest(str(password), str(KB_WRITE_PASSWORD)):
         return {
             "ok": False,
             "contract_version": CONTRACT_VERSION,

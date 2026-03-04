@@ -12,18 +12,20 @@ These tests run in CI via .github/workflows/mcp-tests.yml
 import pytest
 from unittest.mock import MagicMock
 
+import mcp.handlers.wolf_kb_write as wolf_kb_write_module
 from mcp.handlers.wolf_kb_write import (
     handle_persist_conversation,
     handle_register_correction,
     handle_save_customer,
     handle_lookup_customer,
     configure_wolf_kb_client,
-    KB_WRITE_PASSWORD,
 )
 from mcp_tools.contracts import (
     WOLF_KB_WRITE_ERROR_CODES,
     LOOKUP_CUSTOMER_ERROR_CODES,
 )
+
+TEST_KB_WRITE_PASSWORD = "test-wolf-password"
 
 
 def _make_mock_client(**overrides):
@@ -49,8 +51,9 @@ def _make_mock_client(**overrides):
 
 
 @pytest.fixture(autouse=True)
-def setup_mock_client():
+def setup_mock_client(monkeypatch):
     """Configure a mock Wolf client for all tests."""
+    monkeypatch.setattr(wolf_kb_write_module, "KB_WRITE_PASSWORD", TEST_KB_WRITE_PASSWORD)
     client = _make_mock_client()
     configure_wolf_kb_client(client)
     yield client
@@ -84,7 +87,7 @@ class TestPersistConversation:
     @pytest.mark.asyncio
     async def test_missing_required_fields(self):
         result = await handle_persist_conversation({
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "INTERNAL_ERROR"
@@ -96,7 +99,7 @@ class TestPersistConversation:
             "summary": "Cotización ISODEC 100mm",
             "quotation_ref": "QT-001",
             "products_discussed": ["ISODEC_EPS_100"],
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is True
         assert result["contract_version"] == "v1"
@@ -111,7 +114,7 @@ class TestPersistConversation:
         result = await handle_persist_conversation({
             "client_id": "test-client",
             "summary": "Test",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "WOLF_API_ERROR"
@@ -154,7 +157,7 @@ class TestRegisterCorrection:
             "new_value": "105.50",
             "reason": "Price correction per BMC update Feb 2026",
             "reported_by": "Mauro",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is True
         assert result["contract_version"] == "v1"
@@ -179,7 +182,7 @@ class TestSaveCustomer:
         result = await handle_save_customer({
             "name": "Juan Perez",
             "phone": "12345",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "INVALID_PHONE"
@@ -189,7 +192,7 @@ class TestSaveCustomer:
         result = await handle_save_customer({
             "name": "Juan Perez",
             "phone": "091234567",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is True
         assert result["contract_version"] == "v1"
@@ -200,7 +203,7 @@ class TestSaveCustomer:
         result = await handle_save_customer({
             "name": "Maria Garcia",
             "phone": "+59891234567",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is True
         assert result["contract_version"] == "v1"
@@ -210,7 +213,7 @@ class TestSaveCustomer:
         result = await handle_save_customer({
             "name": "Pedro Lopez",
             "phone": "091 234 567",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is True
 
@@ -223,7 +226,7 @@ class TestSaveCustomer:
             "city": "Montevideo",
             "department": "Montevideo",
             "notes": "Proyecto galpón industrial",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is True
         assert "stored_at" in result

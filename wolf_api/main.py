@@ -16,9 +16,6 @@ from fastapi.security.api_key import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
-from .pdf_cotizacion import router as pdf_router
-from .sheet_mover import router as mover_router
-from .pdf_drive_integration import router as pdf_drive_router
 
 logger = logging.getLogger(__name__)
 app = FastAPI(
@@ -30,17 +27,35 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+def _load_cors_origins() -> list[str]:
+    """Load CORS origins from env (comma-separated)."""
+    raw_origins = os.environ.get("CORS_ALLOW_ORIGINS", "")
+    origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+    return origins
+
+_cors_origins = _load_cors_origins()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(pdf_router)
-app.include_router(mover_router)
-app.include_router(pdf_drive_router)
+def _include_optional_router(import_path: str, router_name: str = "router") -> None:
+    """Include router only if module is importable (legacy modules may be malformed)."""
+    try:
+        module = __import__(import_path, fromlist=[router_name])
+        router = getattr(module, router_name)
+        app.include_router(router)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Skipping optional router %s due to import error: %s", import_path, exc)
+
+
+_include_optional_router("wolf_api.pdf_cotizacion")
+_include_optional_router("wolf_api.sheet_mover")
+_include_optional_router("wolf_api.apdf_drive_integration")
 
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
 WOLF_API_KEY = os.environ.get("WOLF_API_KEY", "")

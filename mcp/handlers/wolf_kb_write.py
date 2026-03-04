@@ -12,6 +12,7 @@ Read operations (GET) do not require a password.
 
 from __future__ import annotations
 
+import hmac
 import logging
 import os
 import re
@@ -29,8 +30,8 @@ logger = logging.getLogger(__name__)
 # Wolf API client — injected via configure_wolf_kb_client()
 _wolf_client: Any | None = None
 
-# KB write password — loaded from environment or default
-KB_WRITE_PASSWORD = os.getenv("WOLF_KB_WRITE_PASSWORD", "mywolfy")
+# KB write password — must be explicitly configured in environment
+KB_WRITE_PASSWORD = os.getenv("WOLF_KB_WRITE_PASSWORD", "")
 
 # Uruguayan phone regex: 09XXXXXXX (9 digits) or +598XXXXXXXX (12 chars)
 _PHONE_PATTERN = re.compile(r"^(09\d{7}|\+598\d{8})$")
@@ -49,6 +50,16 @@ def configure_wolf_kb_client(client: Any) -> None:
 
 def _validate_password(arguments: dict[str, Any]) -> dict[str, Any] | None:
     """Validate the KB write password. Returns error envelope or None if valid."""
+    if not KB_WRITE_PASSWORD:
+        return {
+            "ok": False,
+            "contract_version": CONTRACT_VERSION,
+            "error": {
+                "code": WOLF_KB_WRITE_ERROR_CODES["INTERNAL_ERROR"],
+                "message": "Server misconfigured: WOLF_KB_WRITE_PASSWORD is not set.",
+            },
+        }
+
     password = arguments.get("password")
     if not password:
         return {
@@ -59,7 +70,7 @@ def _validate_password(arguments: dict[str, Any]) -> dict[str, Any] | None:
                 "message": "KB write password is required for this operation.",
             },
         }
-    if password != KB_WRITE_PASSWORD:
+    if not hmac.compare_digest(str(password), str(KB_WRITE_PASSWORD)):
         return {
             "ok": False,
             "contract_version": CONTRACT_VERSION,

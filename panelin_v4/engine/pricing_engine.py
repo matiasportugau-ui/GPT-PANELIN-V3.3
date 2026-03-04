@@ -15,6 +15,7 @@ Rules:
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
@@ -136,16 +137,41 @@ def _find_panel_price_m2(familia: str, sub_familia: str, thickness_mm: int) -> O
     """Find panel price per m2 from pricing master."""
     products = _load_pricing_master()
 
-    norm_familia = familia.upper().replace("_", "").replace("-", "")
-    norm_sub = sub_familia.upper() if sub_familia else ""
+    norm_familia = re.sub(r"[^A-Z0-9]", "", familia.upper())
+    norm_sub = (sub_familia or "").strip().upper()
+
+    def _tokens(value: str) -> set[str]:
+        raw = value.upper().strip()
+        if not raw:
+            return set()
+        split_tokens = {
+            re.sub(r"[^A-Z0-9]", "", part)
+            for part in re.split(r"[\\/\s,\-|]+", raw)
+            if part
+        }
+        split_tokens.add(re.sub(r"[^A-Z0-9]", "", raw))
+        return {t for t in split_tokens if t}
+
+    requested_sub_tokens = _tokens(norm_sub)
+    # ISOROOF 3G commercial core maps to PIR in master pricing.
+    if "3G" in requested_sub_tokens:
+        requested_sub_tokens.add("PIR")
+
+    best_price: Optional[float] = None
+    best_score = -1
 
     for product in products:
         if not isinstance(product, dict):
             continue
 
-        sku = str(product.get("sku", product.get("SKU", ""))).upper().replace("_", "").replace("-", "")
+        tipo = str(product.get("tipo", "")).upper()
+        if "PANEL" not in tipo:
+            continue
+
+        sku = re.sub(r"[^A-Z0-9]", "", str(product.get("sku", product.get("SKU", ""))).upper())
         name = str(product.get("nombre", product.get("name", ""))).upper()
         fam = str(product.get("familia", product.get("family", ""))).upper()
+        fam_norm = re.sub(r"[^A-Z0-9]", "", fam)
 
         thickness = product.get("espesor_mm", product.get("thickness"))
         if thickness is None:
@@ -162,14 +188,37 @@ def _find_panel_price_m2(familia: str, sub_familia: str, thickness_mm: int) -> O
         else:
             continue
 
-        if norm_familia in sku or norm_familia in name or norm_familia in fam:
-            pricing = product.get("pricing", {})
-            if isinstance(pricing, dict):
-                price = pricing.get("sale_iva_inc", pricing.get("web_iva_inc"))
-                if price:
-                    return float(price)
+        family_score = 0
+        if fam_norm == norm_familia:
+            family_score = 3
+        elif norm_familia in fam_norm:
+            family_score = 2
+        elif norm_familia in sku or norm_familia in re.sub(r"[^A-Z0-9]", "", name):
+            family_score = 1
+        if family_score == 0:
+            continue
 
-    return None
+        product_sub = str(
+            product.get("sub_familia", product.get("subfamily", product.get("core", "")))
+        ).upper()
+        product_sub_tokens = _tokens(product_sub)
+        sub_score = 0
+        if requested_sub_tokens:
+            if requested_sub_tokens & product_sub_tokens:
+                sub_score = 2
+            else:
+                continue
+
+        pricing = product.get("pricing", {})
+        if isinstance(pricing, dict):
+            price = pricing.get("sale_iva_inc", pricing.get("web_iva_inc"))
+            if price:
+                score = family_score + sub_score
+                if score > best_score:
+                    best_score = score
+                    best_price = float(price)
+
+    return best_price
 
 
 def calculate_pricing(

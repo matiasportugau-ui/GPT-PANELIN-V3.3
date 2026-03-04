@@ -14,10 +14,10 @@ These tests run in CI via .github/workflows/mcp-tests.yml
 
 import pytest
 
+import mcp.handlers.file_ops as file_ops_module
 from mcp.handlers.file_ops import (
     handle_write_file,
     handle_read_file,
-    KB_WRITE_PASSWORD,
     MAX_FILE_SIZE_BYTES,
 )
 from mcp_tools.contracts import (
@@ -25,11 +25,14 @@ from mcp_tools.contracts import (
     READ_FILE_ERROR_CODES,
 )
 
+TEST_KB_WRITE_PASSWORD = "test-fileops-password"
+
 
 @pytest.fixture
 def project_root(tmp_path, monkeypatch):
     """Override PROJECT_ROOT to tmp_path for safe testing."""
     monkeypatch.setattr("mcp.handlers.file_ops.PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(file_ops_module, "KB_WRITE_PASSWORD", TEST_KB_WRITE_PASSWORD)
     return tmp_path
 
 
@@ -60,7 +63,7 @@ class TestWriteFilePassword:
     async def test_missing_content_returns_error(self, project_root):
         result = await handle_write_file({
             "file_path": "test_output.txt",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "INTERNAL_ERROR"
@@ -74,7 +77,7 @@ class TestWriteFilePathSafety:
         result = await handle_write_file({
             "file_path": "../../etc/passwd",
             "content": "hacked",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "PATH_TRAVERSAL"
@@ -84,7 +87,7 @@ class TestWriteFilePathSafety:
         result = await handle_write_file({
             "file_path": ".env",
             "content": "SECRET=hack",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "BLOCKED_PATH"
@@ -94,7 +97,7 @@ class TestWriteFilePathSafety:
         result = await handle_write_file({
             "file_path": ".env.production",
             "content": "SECRET=hack",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "BLOCKED_PATH"
@@ -104,7 +107,7 @@ class TestWriteFilePathSafety:
         result = await handle_write_file({
             "file_path": ".git/config",
             "content": "hacked",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "BLOCKED_PATH"
@@ -114,7 +117,7 @@ class TestWriteFilePathSafety:
         result = await handle_write_file({
             "file_path": "credentials.json",
             "content": "{}",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "BLOCKED_PATH"
@@ -124,7 +127,7 @@ class TestWriteFilePathSafety:
         result = await handle_write_file({
             "file_path": "server.pem",
             "content": "cert",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "BLOCKED_PATH"
@@ -134,7 +137,7 @@ class TestWriteFilePathSafety:
         result = await handle_write_file({
             "file_path": "output.exe",
             "content": "binary",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "BINARY_NOT_ALLOWED"
@@ -144,7 +147,7 @@ class TestWriteFilePathSafety:
         result = await handle_write_file({
             "file_path": "large_file.txt",
             "content": "x" * (MAX_FILE_SIZE_BYTES + 1),
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "FILE_TOO_LARGE"
@@ -154,7 +157,7 @@ class TestWriteFilePathSafety:
         result = await handle_write_file({
             "file_path": "",
             "content": "hello",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "INVALID_PATH"
@@ -164,7 +167,7 @@ class TestWriteFilePathSafety:
         result = await handle_write_file({
             "file_path": "terraform/main.tf",
             "content": "resource {}",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "BLOCKED_PATH"
@@ -174,7 +177,7 @@ class TestWriteFilePathSafety:
         result = await handle_write_file({
             "file_path": "Dockerfile",
             "content": "FROM python:3.11",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is False
         assert result["error"]["code"] == "BLOCKED_PATH"
@@ -188,7 +191,7 @@ class TestWriteFileSuccess:
         result = await handle_write_file({
             "file_path": "test_subdir/hello.txt",
             "content": "Hello, World!",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is True
         assert result["contract_version"] == "v1"
@@ -202,7 +205,7 @@ class TestWriteFileSuccess:
         result = await handle_write_file({
             "file_path": "existing.txt",
             "content": "new content",
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is True
         assert result["created"] is False
@@ -214,7 +217,7 @@ class TestWriteFileSuccess:
         result = await handle_write_file({
             "file_path": "data/pricing_update.json",
             "content": content,
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is True
         assert result["created"] is True
@@ -226,7 +229,7 @@ class TestWriteFileSuccess:
         result = await handle_write_file({
             "file_path": "scripts/test_script.py",
             "content": content,
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert result["ok"] is True
         assert result["file_path"] == "scripts/test_script.py"
@@ -305,7 +308,7 @@ class TestWriteReadRoundTrip:
         write_result = await handle_write_file({
             "file_path": "roundtrip_test.txt",
             "content": content,
-            "password": KB_WRITE_PASSWORD,
+            "password": TEST_KB_WRITE_PASSWORD,
         })
         assert write_result["ok"] is True
 

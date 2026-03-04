@@ -253,9 +253,14 @@ def calculate_bom(
             perimeter_ml, system, roof_type,
         )
     else:
+        # In wall requests, parser geometry maps:
+        # - width_m  -> horizontal wall length
+        # - length_m -> panel length / wall height
+        wall_length_m = width_m
+        wall_height_m = length_m
         _add_wall_accessories(
             items, warnings, familia, thickness_mm,
-            panel_count, ancho_util_m, length_m, width_m,
+            panel_count, ancho_util_m, wall_length_m, wall_height_m,
             fix_points, structure_type, perimeter_ml, system,
         )
 
@@ -437,8 +442,8 @@ def _add_wall_accessories(
     thickness_mm: int,
     panel_count: int,
     ancho_util_m: float,
-    length_m: float,
-    height_m: float,
+    wall_length_m: float,
+    wall_height_m: float,
     fix_points: int,
     structure_type: str,
     perimeter_ml: float,
@@ -448,8 +453,8 @@ def _add_wall_accessories(
     largo_perfil_u = 3.0
 
     # Profile U (top + bottom)
-    u_inferior = math.ceil(length_m / largo_perfil_u)
-    u_superior = math.ceil(length_m / largo_perfil_u)
+    u_inferior = math.ceil(wall_length_m / largo_perfil_u)
+    u_superior = math.ceil(wall_length_m / largo_perfil_u)
 
     acc = _find_accessory("perfil_u", familia, thickness_mm)
     items.append(BOMItem(
@@ -457,7 +462,7 @@ def _add_wall_accessories(
         sku=acc["sku"] if acc else None,
         name=acc["name"] if acc else None,
         quantity=u_inferior + u_superior, unit="unid",
-        formula_used=f"ceil({length_m} / {largo_perfil_u}) × 2",
+        formula_used=f"ceil({wall_length_m} / {largo_perfil_u}) × 2",
     ))
 
     # Fixation: varilla + tuercas + arandelas + tortugas
@@ -506,7 +511,7 @@ def _add_wall_accessories(
         ))
 
     # Sealants
-    juntas_ml = (panel_count - 1) * height_m * 2
+    juntas_ml = (panel_count - 1) * wall_height_m * 2
     silicona_qty = max(1, math.ceil(juntas_ml / 8))
     acc = _find_accessory("silicona", familia, thickness_mm)
     items.append(BOMItem(
