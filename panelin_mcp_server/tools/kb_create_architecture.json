@@ -1,0 +1,35 @@
+{
+  "name": "kb_create_architecture",
+  "description": "Create a new KB architecture version with modules. Each version is immutable and creates a complete snapshot. The new version automatically becomes active. Requires KB write password.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "version_type": {
+        "type": "string",
+        "enum": ["full_snapshot", "partial_update", "architectural_update"],
+        "description": "Type of version being created",
+        "default": "full_snapshot"
+      },
+      "description": {
+        "type": "string",
+        "description": "Description of the changes in this version"
+      },
+      "author": {
+        "type": "string",
+        "description": "Author creating this version (e.g. 'Panelin')"
+      },
+      "modules": {
+        "type": "object",
+        "description": "Object where keys are module names and values are module data objects. Example: {\"core_engine\": {...}, \"consumibles_margin\": {...}}",
+        "additionalProperties": {
+          "type": "object"
+        }
+      },
+      "password": {
+        "type": "string",
+        "description": "KB write password for authorization"
+      }
+    },
+    "required": ["description", "author", "modules", "password"]
+  }
+}

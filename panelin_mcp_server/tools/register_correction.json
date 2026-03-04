@@ -1,0 +1,38 @@
+{
+  "name": "register_correction",
+  "description": "Register a KB correction detected during conversation via Wolf API. Requires KB write password for authorization.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "source_file": {
+        "type": "string",
+        "description": "KB file where the error was found"
+      },
+      "field_path": {
+        "type": "string",
+        "description": "JSON path to the incorrect field"
+      },
+      "old_value": {
+        "type": "string",
+        "description": "Current incorrect value"
+      },
+      "new_value": {
+        "type": "string",
+        "description": "Corrected value"
+      },
+      "reason": {
+        "type": "string",
+        "description": "Explanation of why the correction is needed"
+      },
+      "reported_by": {
+        "type": "string",
+        "description": "Who reported the correction"
+      },
+      "password": {
+        "type": "string",
+        "description": "KB write password for authorization"
+      }
+    },
+    "required": ["source_file", "field_path", "old_value", "new_value", "reason", "password"]
+  }
+}
