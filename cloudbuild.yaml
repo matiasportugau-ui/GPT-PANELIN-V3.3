@@ -1,92 +1,96 @@
-# Cloud Build configuration for automated CI/CD deployment
-# Triggered by GitHub repository changes
+# Cloud Build config for Panelin AgentOS (single service)
 
 steps:
-  # Step 1: Build and push backend service image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'build-backend'
+  # 1) Build AgentOS image from the repo root
+  - name: "gcr.io/cloud-builders/docker"
+    id: "build-agentos"
     args:
-      - 'build'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:$COMMIT_SHA'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:latest'
-      - './backend'
+      - "build"
+      - "-f"
+      - "Dockerfile.production"
+      - "-t"
+      - "${_IMAGE_URI}:$COMMIT_SHA"
+      - "-t"
+      - "${_IMAGE_URI}:latest"
+      - "."
 
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'push-backend'
+  # 2) Push both tags
+  - name: "gcr.io/cloud-builders/docker"
+    id: "push-agentos-sha"
     args:
-      - 'push'
-      - '--all-tags'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service'
+      - "push"
+      - "${_IMAGE_URI}:$COMMIT_SHA"
 
-  # Step 2: Build and push frontend service image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'build-frontend'
+  - name: "gcr.io/cloud-builders/docker"
+    id: "push-agentos-latest"
     args:
-      - 'build'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:$COMMIT_SHA'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:latest'
-      - './frontend'
+      - "push"
+      - "${_IMAGE_URI}:latest"
 
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'push-frontend'
+  # 3) Deploy to Cloud Run (AgentOS serves /health, /agents, /workflows, /api/*)
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    id: "deploy-agentos"
+    entrypoint: "gcloud"
     args:
-      - 'push'
-      - '--all-tags'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service'
+      - "run"
+      - "deploy"
+      - "${_SERVICE_NAME}"
+      - "--image=${_IMAGE_URI}:$COMMIT_SHA"
+      - "--platform=managed"
+      - "--region=${_REGION}"
+      - "--no-allow-unauthenticated"
+      - "--service-account=cloud-run-service-account@$PROJECT_ID.iam.gserviceaccount.com"
+      - "--ingress=${_INGRESS}"
+      - "--port=8080"
+      - "--add-cloudsql-instances=$PROJECT_ID:${_REGION}:${_DB_INSTANCE}"
+      - "--set-env-vars=APP_ENV=${_APP_ENV}"
+      - "--set-env-vars=PANELIN_MODEL_PROVIDER=${_MODEL_PROVIDER}"
+      - "--set-env-vars=OPENAI_MODEL_ID=${_OPENAI_MODEL_ID}"
+      - "--set-env-vars=ANTHROPIC_MODEL_ID=${_ANTHROPIC_MODEL_ID}"
+      - "--set-env-vars=ENABLE_LLM_RESPONSE=${_ENABLE_LLM_RESPONSE}"
+      - "--set-env-vars=ENABLE_MCP_TOOLS=${_ENABLE_MCP_TOOLS}"
+      - "--set-env-vars=MCP_TRANSPORT=${_MCP_TRANSPORT}"
+      - "--set-env-vars=MCP_SSE_URL=${_MCP_SSE_URL}"
+      - "--set-env-vars=MCP_STREAMABLE_HTTP_URL=${_MCP_STREAMABLE_HTTP_URL}"
+      - "--set-env-vars=DB_CONNECTION_NAME=$PROJECT_ID:${_REGION}:${_DB_INSTANCE}"
+      - "--set-env-vars=DB_USER=${_DB_USER}"
+      - "--set-env-vars=DB_NAME=${_DB_NAME}"
+      - "--set-env-vars=CATALOG_PATH=/app/wolf_api/catalog.json"
+      - "--set-env-vars=CORS_ALLOW_ORIGINS=${_CORS_ALLOW_ORIGINS}"
+      - "--set-env-vars=AGENTOS_TRACING=${_AGENTOS_TRACING}"
+      - "--set-env-vars=AGENTOS_AUTHORIZATION=${_AGENTOS_AUTHORIZATION}"
+      - "--set-env-vars=JWT_ALGORITHM=${_JWT_ALGORITHM}"
+      - "--set-secrets=OPENAI_API_KEY=${_OPENAI_API_KEY_SECRET}:latest,WOLF_API_KEY=${_WOLF_API_KEY_SECRET}:latest,DB_PASSWORD=${_DB_PASSWORD_SECRET}:latest"
 
-  # Step 3: Deploy backend service to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: 'deploy-backend'
-    entrypoint: 'gcloud'
-    args:
-      - 'run'
-      - 'deploy'
-      - 'backend-service'
-      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:$COMMIT_SHA'
-      - '--platform=managed'
-      - '--region=us-central1'
-      - '--no-allow-unauthenticated'
-      - '--service-account=cloud-run-service-account@$PROJECT_ID.iam.gserviceaccount.com'
-      - '--add-cloudsql-instances=$PROJECT_ID:us-central1:web-app-db'
-      - '--update-secrets=CLOUD_SQL_CREDENTIALS_SECRET=db-secret:latest'
-      - '--ingress=internal'
-      - '--set-env-vars=DB_CONNECTION_NAME=$PROJECT_ID:us-central1:web-app-db'
-      - '--set-env-vars=DB_USER=postgres'
-      - '--set-env-vars=DB_NAME=app_database'
-      - '--set-env-vars=PROJECT_ID=$PROJECT_ID'
-
-  # Step 4: Deploy frontend service to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: 'deploy-frontend'
-    entrypoint: 'gcloud'
-    args:
-      - 'run'
-      - 'deploy'
-      - 'frontend-service'
-      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:$COMMIT_SHA'
-      - '--platform=managed'
-      - '--region=us-central1'
-      - '--no-allow-unauthenticated'
-      - '--service-account=cloud-run-service-account@$PROJECT_ID.iam.gserviceaccount.com'
-      - '--ingress=internal-and-cloud-load-balancing'
-      - '--set-env-vars=BACKEND_SERVICE_URL=https://backend-service-<hash>-uc.a.run.app'
-
-# Output images to Artifact Registry
 images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:$COMMIT_SHA'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/backend-service:latest'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:$COMMIT_SHA'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/frontend-service:latest'
+  - "${_IMAGE_URI}:$COMMIT_SHA"
+  - "${_IMAGE_URI}:latest"
 
-# Substitutions for Cloud Build variables
 substitutions:
-  _REGION: 'us-central1'
-  _DB_INSTANCE: 'web-app-db'
+  _REGION: "us-central1"
+  _SERVICE_NAME: "panelin-agentos"
+  _IMAGE_URI: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-repo/panelin-agentos"
+  _INGRESS: "internal-and-cloud-load-balancing"
+  _DB_INSTANCE: "web-app-db"
+  _DB_USER: "postgres"
+  _DB_NAME: "app_database"
+  _APP_ENV: "prod"
+  _MODEL_PROVIDER: "openai"
+  _OPENAI_MODEL_ID: "gpt-4o-mini"
+  _ANTHROPIC_MODEL_ID: "claude-sonnet-4-5-20250929"
+  _ENABLE_LLM_RESPONSE: "true"
+  _ENABLE_MCP_TOOLS: "true"
+  _MCP_TRANSPORT: "sse"
+  _MCP_SSE_URL: "http://127.0.0.1:8000/sse"
+  _MCP_STREAMABLE_HTTP_URL: "http://127.0.0.1:8000/mcp"
+  _CORS_ALLOW_ORIGINS: ""
+  _AGENTOS_TRACING: "true"
+  _AGENTOS_AUTHORIZATION: "false"
+  _JWT_ALGORITHM: "RS256"
+  _OPENAI_API_KEY_SECRET: "OPENAI_API_KEY"
+  _WOLF_API_KEY_SECRET: "WOLF_API_KEY"
+  _DB_PASSWORD_SECRET: "DB_PASSWORD"
 
 options:
-  logging: CLOUD_LOGGING_ONLY
-  machineType: 'N1_HIGHCPU_8'
+  logging: "CLOUD_LOGGING_ONLY"
+  machineType: "E2_HIGHCPU_8"

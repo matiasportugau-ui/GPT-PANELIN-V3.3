@@ -20,3 +20,9 @@ google-cloud-storage>=2.10.0
 gspread>=6.0.0
 google-auth>=2.0.0
 python-dotenv>=1.0.0
+
+# Agno migration stack
+agno[postgres,openai,anthropic]>=2.5.6
+mcp>=1.26.0
+sqlalchemy>=2.0.48
+pgvector>=0.4.2

@@ -1,49 +1,40 @@
 # ==============================================================================
-# Panelin API — Unified Production Dockerfile
+# Panelin AgentOS Production Dockerfile
 # ==============================================================================
-# Single container running the complete Panelin API:
-#   - Wolf API (KB persistence, Google Sheets, quotation endpoints)
-#   - Panelin v4 Engine (NL→BOM→Pricing pipeline via /api/quote)
-#
-# Entrypoint: app.py (imports wolf_api.main.app + adds v4 engine routes)
-# Port: 8080 (Cloud Run default)
-#
-# Build:  docker build -f Dockerfile.production -t panelin-api .
-# Run:    docker run -p 8080:8080 panelin-api
 
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 LABEL maintainer="GPT-PANELIN Team"
-LABEL description="Panelin API — Unified quotation engine + KB + Sheets"
+LABEL description="Panelin AgentOS + deterministic v4 workflow"
 
 WORKDIR /app
 
-# Install runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies (wolf_api has the superset)
-COPY wolf_api/requirements.txt /tmp/requirements-wolf.txt
+COPY requirements-prod.txt /tmp/requirements-prod.txt
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r /tmp/requirements-wolf.txt && \
-    rm /tmp/requirements-wolf.txt
+    pip install --no-cache-dir -r /tmp/requirements-prod.txt && \
+    rm /tmp/requirements-prod.txt
 
-# ── Application code ──
-COPY app.py /app/
-COPY wolf_api/ /app/wolf_api/
+# Application code
+COPY src/ /app/src/
 COPY panelin_v4/ /app/panelin_v4/
+COPY panelin_reports/ /app/panelin_reports/
 
-# ── KB data files (API backing data, NOT GPT KB) ──
+# Legacy catalog path expected by compatibility routes
+RUN mkdir -p /app/wolf_api
+COPY wolf_api/catalog.json /app/wolf_api/catalog.json
+
+# Domain data
 COPY bom_rules.json /app/
 COPY accessories_catalog.json /app/
+COPY bromyros_pricing_master.json /app/
 COPY bromyros_pricing_gpt_optimized.json /app/
 COPY BMC_Base_Conocimiento_GPT-2.json /app/
+COPY bmc_logo.png /app/
 
-# ── Generated catalog for legacy quotation endpoints ──
-COPY wolf_api/catalog.json /app/catalog.json
-
-# Create non-root user
 RUN useradd -m -u 1000 -s /bin/bash panelin && \
     chown -R panelin:panelin /app
 
@@ -51,15 +42,13 @@ USER panelin
 
 EXPOSE 8080
 
-# Environment
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app \
     PORT=8080 \
-    CATALOG_PATH=/app/catalog.json
+    CATALOG_PATH=/app/wolf_api/catalog.json
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
-# Run the unified application
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8080"]
