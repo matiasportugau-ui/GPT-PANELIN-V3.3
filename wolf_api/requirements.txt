@@ -9,3 +9,11 @@ gspread>=6.0.0
 google-auth>=2.27.0
 reportlab>=4.0.0
 google-api-python-client>=2.100.0
+
+# Agno migration runtime
+agno[postgres,openai]>=2.5.6
+anthropic>=0.84.0
+pgvector>=0.4.2
+pydantic-settings>=2.13.1
+mcp>=1.26.0
+httpx>=0.28.0

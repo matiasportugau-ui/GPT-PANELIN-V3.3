@@ -23,14 +23,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies (wolf_api has the superset)
+# Install Python dependencies
+COPY requirements.txt /tmp/requirements-root.txt
 COPY wolf_api/requirements.txt /tmp/requirements-wolf.txt
 RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements-root.txt && \
     pip install --no-cache-dir -r /tmp/requirements-wolf.txt && \
+    rm /tmp/requirements-root.txt && \
     rm /tmp/requirements-wolf.txt
 
 # ── Application code ──
 COPY app.py /app/
+COPY src/ /app/src/
 COPY wolf_api/ /app/wolf_api/
 COPY panelin_v4/ /app/panelin_v4/
 
@@ -61,5 +65,5 @@ ENV PYTHONUNBUFFERED=1 \
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
-# Run the unified application
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+# Run the unified application with AgentOS + legacy routes
+CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8080"]
