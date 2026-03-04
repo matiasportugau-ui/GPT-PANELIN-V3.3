@@ -253,9 +253,13 @@ def calculate_bom(
             perimeter_ml, system, roof_type,
         )
     else:
+        # For walls: panel_count = ceil(width_m / ancho_util) already correct
+        # (width_m = horizontal wall length, length_m = wall height).
+        # _add_wall_accessories expects (length_m=horizontal, height_m=vertical),
+        # so we pass width_m as length_m and length_m as height_m.
         _add_wall_accessories(
             items, warnings, familia, thickness_mm,
-            panel_count, ancho_util_m, length_m, width_m,
+            panel_count, ancho_util_m, width_m, length_m,
             fix_points, structure_type, perimeter_ml, system,
         )
 

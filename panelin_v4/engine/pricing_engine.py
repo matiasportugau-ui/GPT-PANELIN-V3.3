@@ -163,6 +163,9 @@ def _find_panel_price_m2(familia: str, sub_familia: str, thickness_mm: int) -> O
             continue
 
         if norm_familia in sku or norm_familia in name or norm_familia in fam:
+            # Verify sub_familia matches when we have one (e.g. EPS vs PIR).
+            if norm_sub and not (norm_sub in sku or norm_sub in name):
+                continue
             pricing = product.get("pricing", {})
             if isinstance(pricing, dict):
                 price = pricing.get("sale_iva_inc", pricing.get("web_iva_inc"))
