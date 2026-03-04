@@ -30,9 +30,12 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+_cors_raw = os.environ.get("CORS_ORIGINS", "")
+_cors_origins: list[str] = [o.strip() for o in _cors_raw.split(",") if o.strip()] or ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -103,9 +106,14 @@ def _load_catalog():
             logger.warning("Catalog not found anywhere — /find_products will return empty")
 
 
-@app.on_event("startup")
-async def startup():
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def _wolf_lifespan(application):
     _load_catalog()
+    yield
+
+app.router.lifespan_context = _wolf_lifespan
 
 
 @app.get("/health")

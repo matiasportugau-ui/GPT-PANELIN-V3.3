@@ -81,5 +81,16 @@ coverage.xml
 
 # Docker volumes
 docker-volumes/
+
+# Terraform state files (SECURITY: never commit state or tfvars with secrets)
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+terraform.tfvars
+*.auto.tfvars
+.terraform/
+.terraform.lock.hcl
+
+# Coverage
 .coverage
 htmlcov/

@@ -253,9 +253,11 @@ def calculate_bom(
             perimeter_ml, system, roof_type,
         )
     else:
+        # wall: length_m = vertical span (height), width_m = horizontal extent
+        # _add_wall_accessories signature: (..., length_m=horizontal, height_m=vertical)
         _add_wall_accessories(
             items, warnings, familia, thickness_mm,
-            panel_count, ancho_util_m, length_m, width_m,
+            panel_count, ancho_util_m, width_m, length_m,
             fix_points, structure_type, perimeter_ml, system,
         )
 
