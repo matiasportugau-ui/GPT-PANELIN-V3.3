@@ -7,3 +7,5 @@ asyncpg>=0.29.0
 # Google Sheets integration
 gspread>=6.0.0
 google-auth>=2.0.0
+reportlab>=4.0
+google-api-python-client>=2.100.0
