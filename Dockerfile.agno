@@ -1,0 +1,38 @@
+FROM python:3.12-slim AS base
+
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc \
+        libpq-dev \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements-agno.txt .
+RUN pip install --no-cache-dir -r requirements-agno.txt
+
+COPY panelin_v4/ panelin_v4/
+COPY panelin_reports/ panelin_reports/
+COPY src/ src/
+COPY wolf_api/ wolf_api/
+COPY mcp/ mcp/
+
+COPY bromyros_pricing_master.json .
+COPY accessories_catalog.json .
+COPY bom_rules.json .
+COPY BMC_Base_Conocimiento_GPT-2.json .
+COPY BMC_Base_Unificada_v4.json .
+
+COPY config/ config/
+
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV PORT=8080
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:${PORT}/health || exit 1
+
+CMD ["python", "-m", "uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "2"]
