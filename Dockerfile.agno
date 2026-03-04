@@ -1,0 +1,101 @@
+# ==============================================================================
+# Panelin v4 — Agno Architecture — Production Dockerfile
+# Target: Google Cloud Run (amd64)
+# ==============================================================================
+
+# Stage 1: Builder
+FROM python:3.11-slim AS builder
+
+LABEL maintainer="BMC Uruguay / Panelin Team"
+LABEL description="Panelin v4 Agno Architecture — Deterministic Pipeline + LLM Agent"
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for layer caching
+COPY requirements-agno.txt /app/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements-agno.txt
+
+# Stage 2: Production
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Runtime dependencies only
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy installed packages from builder
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# ── Application code ──────────────────────────────────────────────────────────
+
+# Panelin v4 engine (domain logic — never modified)
+COPY panelin_v4/ /app/panelin_v4/
+
+# Agno architecture layer (new)
+COPY src/ /app/src/
+
+# Wolf API legacy (preserved for backwards compatibility)
+COPY wolf_api/ /app/wolf_api/
+
+# MCP Server (18 tools)
+COPY mcp/ /app/mcp/
+COPY mcp_tools/ /app/mcp_tools/
+
+# PDF generation
+COPY panelin_reports/ /app/panelin_reports/
+
+# ── Knowledge Base files ──────────────────────────────────────────────────────
+COPY bromyros_pricing_master.json /app/
+COPY bromyros_pricing_gpt_optimized.json /app/
+COPY BMC_Base_Conocimiento_GPT-2.json /app/
+COPY BMC_Base_Unificada_v4.json /app/
+COPY bom_rules.json /app/
+COPY accessories_catalog.json /app/
+COPY shopify_catalog_v1.json /app/
+COPY corrections_log.json /app/
+COPY bmc_logo.png /app/
+
+# ── Runtime directories ───────────────────────────────────────────────────────
+RUN mkdir -p /app/logs /app/panelin_reports/output && \
+    chmod -R 755 /app/logs /app/panelin_reports/output
+
+# ── Security: non-root user ───────────────────────────────────────────────────
+RUN useradd -m -u 1000 -s /bin/bash panelin && \
+    chown -R panelin:panelin /app
+
+USER panelin
+
+# ── Environment ───────────────────────────────────────────────────────────────
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app \
+    PORT=8080 \
+    HOST=0.0.0.0
+
+EXPOSE 8080
+
+# ── Health check ──────────────────────────────────────────────────────────────
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8080/v4/health || exit 1
+
+# ── Entry point ───────────────────────────────────────────────────────────────
+# Cloud Run expects the server to listen on $PORT
+CMD ["python", "-m", "uvicorn", "src.app:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8080", \
+     "--workers", "1", \
+     "--log-level", "info"]
