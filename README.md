@@ -2730,7 +2730,7 @@ python \
 pytest panelin_v4/tests/ -v
 
 # Run regression suite (19 expert test cases)
-python -m pytest panelin_v4/evaluator/regression_suite.py -v
+python -c "from panelin_v4.evaluator.regression_suite import run_regression_suite; run_regression_suite()"
 
 # Run stress test (30 mixed requests)
 python panelin_v4/evaluator/stress_test_runner.py
