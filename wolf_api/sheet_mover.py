@@ -4,6 +4,7 @@ POST /cotizaciones/mover_esperando  — Mueve filas incompletas a Esperando Resp
 POST /cotizaciones/scan_admin       — Scan completo: enviados + incompletos
 """
 
+import hmac
 import os
 import logging
 from typing import List
@@ -25,8 +26,8 @@ _spreadsheet = None
 
 
 async def verify_api_key(api_key: str = Security(api_key_header)):
-      expected = os.getenv("WOLF_API_KEY", "mywolfykey123XYZ")
-      if not api_key or api_key != expected:
+      expected = os.getenv("WOLF_API_KEY", "")
+      if not expected or not api_key or not hmac.compare_digest(api_key, expected):
                 raise HTTPException(status_code=401, detail="Invalid API Key")
             return api_key
 

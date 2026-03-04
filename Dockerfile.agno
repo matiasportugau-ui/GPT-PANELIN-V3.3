@@ -1,0 +1,70 @@
+# ==============================================================================
+# Panelin API v5.0 — Agno Architecture Dockerfile
+# ==============================================================================
+# Single container running the Panelin Agno Agent + legacy Wolf API:
+#   - Agno Agent (conversational, with tools + MCP)
+#   - Panelin v4 Engine (deterministic quotation pipeline)
+#   - Wolf API (KB persistence, Google Sheets, PDF generation)
+#   - AgentOS endpoints (50+ auto-generated)
+#
+# Build:  docker build -f Dockerfile.agno -t panelin-agno .
+# Run:    docker run -p 8080:8080 --env-file .env panelin-agno
+
+FROM python:3.11-slim
+
+LABEL maintainer="GPT-PANELIN Team"
+LABEL description="Panelin API v5.0 — Agno Agentic Architecture"
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements-agno.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
+
+# ── Application code ──
+COPY src/ /app/src/
+COPY panelin_v4/ /app/panelin_v4/
+COPY wolf_api/ /app/wolf_api/
+COPY panelin_reports/ /app/panelin_reports/
+COPY mcp/ /app/mcp/
+COPY panelin_mcp_integration/ /app/panelin_mcp_integration/
+
+# ── KB data files ──
+COPY bom_rules.json /app/
+COPY accessories_catalog.json /app/
+COPY bromyros_pricing_master.json /app/
+COPY bromyros_pricing_gpt_optimized.json /app/
+COPY BMC_Base_Conocimiento_GPT-2.json /app/
+
+# ── Configuration ──
+COPY config/ /app/config/
+
+# Create non-root user
+RUN useradd -m -u 1000 -s /bin/bash panelin && \
+    mkdir -p /app/panelin_reports/output && \
+    chown -R panelin:panelin /app
+
+USER panelin
+
+EXPOSE 8080
+
+# Environment
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PORT=8080 \
+    ENVIRONMENT=production \
+    LOG_LEVEL=INFO
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Run via uvicorn
+CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8080"]
