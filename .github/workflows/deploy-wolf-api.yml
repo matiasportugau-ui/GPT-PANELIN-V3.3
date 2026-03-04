@@ -74,20 +74,19 @@ jobs:
           region: ${{ env.REGION }}
           image: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/cloud-run-repo/wolf-api:${{ github.sha }}
           env_vars: |
-            WOLF_API_KEY=${{ secrets.WOLF_API_KEY }}
             KB_GCS_BUCKET=${{ secrets.KB_GCS_BUCKET }}
             KB_GCS_PREFIX=kb/conversations
             KB_GCS_MODE=daily_jsonl
             KB_GCS_MAX_RETRIES=5
             CATALOG_PATH=/app/catalog.json
           env_vars_update_strategy: merge
-          service_account: ${{ secrets.GCP_RUNTIME_SA_EMAIL }}
           flags: |
             --allow-unauthenticated
             --min-instances=0
             --max-instances=10
             --memory=512Mi
             --cpu=1
+            --service-account=${{ secrets.GCP_RUNTIME_SA_EMAIL }}
             --timeout=60
 
       - name: Show service URL
