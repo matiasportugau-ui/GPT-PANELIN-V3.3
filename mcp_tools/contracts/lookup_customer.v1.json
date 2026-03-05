@@ -1,5 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "lookup_customer",
+  "version": "v1",
   "tool_name": "lookup_customer",
   "contract_version": "v1",
   "description": "Retrieve existing customer data from KB via Wolf API. No password required.",
@@ -12,52 +14,101 @@
         "minLength": 2
       }
     },
-    "required": ["search_query"]
+    "required": [
+      "search_query"
+    ]
   },
   "output_schema": {
     "oneOf": [
       {
         "type": "object",
         "properties": {
-          "ok": { "const": true },
-          "contract_version": { "const": "v1" },
+          "ok": {
+            "const": true
+          },
+          "contract_version": {
+            "const": "v1"
+          },
           "customers": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "customer_id": { "type": "string" },
-                "name": { "type": "string" },
-                "phone": { "type": "string" },
-                "address": { "type": "string" },
-                "city": { "type": "string" },
-                "department": { "type": "string" },
-                "notes": { "type": "string" },
-                "last_interaction": { "type": "string", "format": "date-time" }
+                "customer_id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "department": {
+                  "type": "string"
+                },
+                "notes": {
+                  "type": "string"
+                },
+                "last_interaction": {
+                  "type": "string",
+                  "format": "date-time"
+                }
               }
             }
           },
-          "count": { "type": "integer" }
+          "count": {
+            "type": "integer"
+          }
         },
-        "required": ["ok", "contract_version", "customers", "count"]
+        "required": [
+          "ok",
+          "contract_version",
+          "customers",
+          "count"
+        ]
       },
       {
         "type": "object",
         "properties": {
-          "ok": { "const": false },
-          "contract_version": { "const": "v1" },
+          "ok": {
+            "const": false
+          },
+          "contract_version": {
+            "const": "v1"
+          },
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string" },
-              "message": { "type": "string" }
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
             },
-            "required": ["code", "message"]
+            "required": [
+              "code",
+              "message"
+            ]
           }
         },
-        "required": ["ok", "contract_version", "error"]
+        "required": [
+          "ok",
+          "contract_version",
+          "error"
+        ]
       }
     ]
   },
-  "error_codes": ["QUERY_TOO_SHORT", "WOLF_API_ERROR", "INTERNAL_ERROR"]
+  "error_codes": [
+    "QUERY_TOO_SHORT",
+    "WOLF_API_ERROR",
+    "INTERNAL_ERROR"
+  ]
 }
