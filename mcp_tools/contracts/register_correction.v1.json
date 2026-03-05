@@ -1,5 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "register_correction",
+  "version": "v1",
   "tool_name": "register_correction",
   "contract_version": "v1",
   "description": "Register a KB correction detected during conversation via Wolf API. Requires KB write password.",
@@ -38,37 +40,78 @@
         "description": "KB write password for authorization"
       }
     },
-    "required": ["source_file", "field_path", "old_value", "new_value", "reason", "password"]
+    "required": [
+      "source_file",
+      "field_path",
+      "old_value",
+      "new_value",
+      "reason",
+      "password"
+    ]
   },
   "output_schema": {
     "oneOf": [
       {
         "type": "object",
         "properties": {
-          "ok": { "const": true },
-          "contract_version": { "const": "v1" },
-          "correction_id": { "type": "string" },
-          "stored_at": { "type": "string", "format": "date-time" }
+          "ok": {
+            "const": true
+          },
+          "contract_version": {
+            "const": "v1"
+          },
+          "correction_id": {
+            "type": "string"
+          },
+          "stored_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         },
-        "required": ["ok", "contract_version", "correction_id", "stored_at"]
+        "required": [
+          "ok",
+          "contract_version",
+          "correction_id",
+          "stored_at"
+        ]
       },
       {
         "type": "object",
         "properties": {
-          "ok": { "const": false },
-          "contract_version": { "const": "v1" },
+          "ok": {
+            "const": false
+          },
+          "contract_version": {
+            "const": "v1"
+          },
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string" },
-              "message": { "type": "string" }
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
             },
-            "required": ["code", "message"]
+            "required": [
+              "code",
+              "message"
+            ]
           }
         },
-        "required": ["ok", "contract_version", "error"]
+        "required": [
+          "ok",
+          "contract_version",
+          "error"
+        ]
       }
     ]
   },
-  "error_codes": ["PASSWORD_REQUIRED", "INVALID_PASSWORD", "WOLF_API_ERROR", "INTERNAL_ERROR"]
+  "error_codes": [
+    "PASSWORD_REQUIRED",
+    "INVALID_PASSWORD",
+    "WOLF_API_ERROR",
+    "INTERNAL_ERROR"
+  ]
 }
