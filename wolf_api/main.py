@@ -945,3 +945,20 @@ async def inspect_sheet(
         return result
     except Exception as e:
         raise HTTPException(500, f"Cannot inspect sheet {sheet_id}: {e}")
+
+
+# Server startup - required for Cloud Run
+if __name__ == "__main__":
+        import uvicorn
+        import os
+
+    # Get PORT from environment variable (Cloud Run sets PORT=8080)
+        port = int(os.getenv("PORT", "8080"))
+
+    # Start the server
+        uvicorn.run(
+            "main:app",
+            host="0.0.0.0",
+            port=port,
+            log_level="info"
+        )
