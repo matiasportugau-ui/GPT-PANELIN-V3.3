@@ -25,10 +25,13 @@ _spreadsheet = None
 
 
 async def verify_api_key(api_key: str = Security(api_key_header)):
-      expected = os.getenv("WOLF_API_KEY", "mywolfykey123XYZ")
-      if not api_key or api_key != expected:
-                raise HTTPException(status_code=401, detail="Invalid API Key")
-            return api_key
+    import hmac
+    expected = os.getenv("WOLF_API_KEY", "")
+    if not expected:
+        raise HTTPException(status_code=503, detail="WOLF_API_KEY not configured")
+    if not api_key or not hmac.compare_digest(api_key, expected):
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    return api_key
 
 
 def get_spreadsheet():

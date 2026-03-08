@@ -3,6 +3,7 @@ pdf_cotizacion.py — Endpoint para generar presupuestos PDF (BMC Uruguay)
 POST /cotizaciones/generar_pdf
 """
 
+import hmac
 import io
 import os
 import logging
@@ -34,9 +35,11 @@ api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
 
 async def verify_api_key(api_key: str = Security(api_key_header)):
-  expected = os.getenv("WOLF_API_KEY", "mywolfykey123XYZ")
-  if not api_key or api_key != expected:
-    raise HTTPException(status_code=401, detail="Invalid API Key")
+    expected = os.getenv("WOLF_API_KEY", "")
+    if not expected:
+        raise HTTPException(status_code=503, detail="WOLF_API_KEY not configured")
+    if not api_key or not hmac.compare_digest(api_key, expected):
+        raise HTTPException(status_code=401, detail="Invalid API Key")
     return api_key
 
 

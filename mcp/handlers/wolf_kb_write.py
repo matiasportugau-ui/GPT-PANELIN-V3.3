@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 _wolf_client: Any | None = None
 
 # KB write password — loaded from environment or default
-KB_WRITE_PASSWORD = os.getenv("WOLF_KB_WRITE_PASSWORD", "mywolfy")
+KB_WRITE_PASSWORD = os.getenv("WOLF_KB_WRITE_PASSWORD", "")
 
 # Uruguayan phone regex: 09XXXXXXX (9 digits) or +598XXXXXXXX (12 chars)
 _PHONE_PATTERN = re.compile(r"^(09\d{7}|\+598\d{8})$")
