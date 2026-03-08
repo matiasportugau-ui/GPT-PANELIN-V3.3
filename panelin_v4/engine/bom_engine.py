@@ -211,8 +211,14 @@ def calculate_bom(
     area_m2 = length_m * width_m
 
     # Calculate panel count
+    # For walls, panels are placed side-by-side along the length (horizontal run)
+    # For roofs, panels are placed side-by-side across the width
+    is_wall = uso.lower() in ("pared", "camara", "muro", "fachada")
     if panel_count is None:
-        panel_count = math.ceil(width_m / ancho_util_m)
+        if is_wall:
+            panel_count = math.ceil(length_m / ancho_util_m)
+        else:
+            panel_count = math.ceil(width_m / ancho_util_m)
 
     # Autoportancia for support calculation
     autoportancia_m = _get_autoportancia_m(familia, sub_familia, thickness_mm)
@@ -253,9 +259,10 @@ def calculate_bom(
             perimeter_ml, system, roof_type,
         )
     else:
+        wall_height = width_m if is_wall else length_m
         _add_wall_accessories(
             items, warnings, familia, thickness_mm,
-            panel_count, ancho_util_m, length_m, width_m,
+            panel_count, ancho_util_m, length_m, wall_height,
             fix_points, structure_type, perimeter_ml, system,
         )
 

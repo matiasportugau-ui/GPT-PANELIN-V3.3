@@ -1,0 +1,57 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/cloud-run-repo/panelin-agno:${SHORT_SHA}'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/cloud-run-repo/panelin-agno:latest'
+      - '-f'
+      - 'Dockerfile.agno'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/cloud-run-repo/panelin-agno:${SHORT_SHA}'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/cloud-run-repo/panelin-agno:latest'
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'panelin-agno'
+      - '--image'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/cloud-run-repo/panelin-agno:${SHORT_SHA}'
+      - '--region'
+      - '${_REGION}'
+      - '--platform'
+      - 'managed'
+      - '--port'
+      - '8080'
+      - '--memory'
+      - '512Mi'
+      - '--cpu'
+      - '1'
+      - '--min-instances'
+      - '0'
+      - '--max-instances'
+      - '5'
+      - '--set-env-vars'
+      - 'ENVIRONMENT=production'
+      - '--set-secrets'
+      - 'OPENAI_API_KEY=openai-api-key:latest,WOLF_API_KEY=wolf-api-key:latest,DATABASE_URL=database-url:latest'
+      - '--service-account'
+      - 'cloud-run-service-account@${PROJECT_ID}.iam.gserviceaccount.com'
+      - '--allow-unauthenticated'
+
+substitutions:
+  _REGION: us-central1
+
+options:
+  logging: CLOUD_LOGGING_ONLY
