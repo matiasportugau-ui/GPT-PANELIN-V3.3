@@ -83,3 +83,9 @@ coverage.xml
 docker-volumes/
 .coverage
 htmlcov/
+
+# Terraform state and secret vars
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json

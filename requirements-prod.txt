@@ -47,6 +47,12 @@ asyncio>=3.4.3
 # Data validation
 jsonschema>=4.20.0
 
+# Agno AgentOS runtime
+agno[postgres,openai,anthropic]>=2.5.6
+mcp>=1.26.0
+sqlalchemy>=2.0.48
+pgvector>=0.4.2
+
 # Performance monitoring
 prometheus-client>=0.19.0
 

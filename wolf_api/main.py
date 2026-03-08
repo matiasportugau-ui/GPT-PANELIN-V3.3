@@ -22,6 +22,19 @@ from .pdf_drive_integration import router as pdf_drive_router
 from .email_sender import router as email_router
 
 logger = logging.getLogger(__name__)
+
+
+def _parse_cors_origins() -> list[str]:
+    """Read CORS origins from env var CORS_ALLOW_ORIGINS (comma-separated)."""
+    raw = os.environ.get("CORS_ALLOW_ORIGINS", "")
+    if not raw.strip():
+        return []
+    return [origin.strip() for origin in raw.split(",") if origin.strip()]
+
+
+_cors_origins = _parse_cors_origins()
+_cors_allow_credentials = os.environ.get("CORS_ALLOW_CREDENTIALS", "false").strip().lower() == "true"
+
 app = FastAPI(
     title="Panelin Wolf API",
     description="Complete API for BMC Uruguay — quotations, KB persistence, Google Sheets",
@@ -33,8 +46,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=_cors_origins,
+    allow_credentials=_cors_allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )

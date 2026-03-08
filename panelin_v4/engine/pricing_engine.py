@@ -77,6 +77,40 @@ _ACCESSORIES_CACHE: Optional[dict] = None
 _PRICING_CACHE: Optional[list] = None
 
 
+def _normalize_lookup_value(value: str) -> str:
+    return "".join(ch for ch in str(value).upper() if ch.isalnum())
+
+
+def _subfamily_matches(requested_sub: str, product: dict, searchable_text: str) -> bool:
+    """Validate sub-family with aliases (e.g. ISOROOF 3G ~= PIR core)."""
+    requested = _normalize_lookup_value(requested_sub)
+    if not requested:
+        return True
+
+    sub_candidates = [
+        product.get("sub_familia"),
+        product.get("subfamily"),
+        product.get("sub_family"),
+        product.get("core"),
+    ]
+    product_sub = _normalize_lookup_value(next((s for s in sub_candidates if s), ""))
+    searchable_norm = _normalize_lookup_value(searchable_text)
+
+    alias_map = {
+        "3G": {"3G", "PIR"},
+        "PIR": {"PIR", "3G"},
+        "EPS": {"EPS"},
+    }
+    requested_aliases = alias_map.get(requested, {requested})
+
+    # Prefer explicit sub-family fields when available.
+    if product_sub:
+        return any(alias in product_sub for alias in requested_aliases)
+
+    # Fallback for legacy rows without normalized sub-family fields.
+    return any(alias in searchable_norm for alias in requested_aliases)
+
+
 def _load_accessories() -> dict:
     global _ACCESSORIES_CACHE
     if _ACCESSORIES_CACHE is None:
@@ -136,16 +170,21 @@ def _find_panel_price_m2(familia: str, sub_familia: str, thickness_mm: int) -> O
     """Find panel price per m2 from pricing master."""
     products = _load_pricing_master()
 
-    norm_familia = familia.upper().replace("_", "").replace("-", "")
-    norm_sub = sub_familia.upper() if sub_familia else ""
+    norm_familia = _normalize_lookup_value(familia)
+    norm_sub = _normalize_lookup_value(sub_familia) if sub_familia else ""
 
     for product in products:
         if not isinstance(product, dict):
             continue
 
-        sku = str(product.get("sku", product.get("SKU", ""))).upper().replace("_", "").replace("-", "")
+        sku = _normalize_lookup_value(product.get("sku", product.get("SKU", "")))
         name = str(product.get("nombre", product.get("name", ""))).upper()
         fam = str(product.get("familia", product.get("family", ""))).upper()
+        searchable_text = f"{sku} {name} {fam}"
+
+        # Critical bugfix: enforce sub-family compatibility (with aliases).
+        if norm_sub and not _subfamily_matches(norm_sub, product, searchable_text):
+            continue
 
         thickness = product.get("espesor_mm", product.get("thickness"))
         if thickness is None:
@@ -162,7 +201,7 @@ def _find_panel_price_m2(familia: str, sub_familia: str, thickness_mm: int) -> O
         else:
             continue
 
-        if norm_familia in sku or norm_familia in name or norm_familia in fam:
+        if norm_familia in sku or norm_familia in _normalize_lookup_value(name) or norm_familia in _normalize_lookup_value(fam):
             pricing = product.get("pricing", {})
             if isinstance(pricing, dict):
                 price = pricing.get("sale_iva_inc", pricing.get("web_iva_inc"))
