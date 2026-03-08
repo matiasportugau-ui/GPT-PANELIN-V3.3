@@ -5,6 +5,10 @@
 Checks all four customer touchpoints (WhatsApp, Facebook, MercadoLibre, Email) and
 optionally writes a summary row to a Google Sheets "Daily Audit" worksheet.
 
+> 📖 **Full explanation** — including Phase 1 vs Phase 2, Google Sheets setup,
+> column mapping, log output interpretation, and troubleshooting — is in
+> [docs/MORNING_AUDIT_GUIDE.md](../docs/MORNING_AUDIT_GUIDE.md).
+
 ### How to run locally
 
 ```bash
