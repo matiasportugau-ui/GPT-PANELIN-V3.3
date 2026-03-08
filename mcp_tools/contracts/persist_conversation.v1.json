@@ -1,6 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "tool_name": "persist_conversation",
+  "name": "persist_conversation",
+  "version": "1.0.0",
   "contract_version": "v1",
   "description": "Save conversation summary and quotation history to KB via Wolf API. Requires KB write password.",
   "input_schema": {

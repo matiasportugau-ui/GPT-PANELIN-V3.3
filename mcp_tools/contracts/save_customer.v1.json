@@ -1,6 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "tool_name": "save_customer",
+  "name": "save_customer",
+  "version": "1.0.0",
   "contract_version": "v1",
   "description": "Store or update customer data for future quotations via Wolf API. Requires KB write password.",
   "input_schema": {

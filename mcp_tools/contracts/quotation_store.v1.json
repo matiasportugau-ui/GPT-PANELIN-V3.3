@@ -1,6 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "tool_name": "quotation_store",
+  "name": "quotation_store",
+  "version": "1.0.0",
   "contract_version": "v1",
   "description": "Persist quotation payloads and return storage metadata.",
   "input_schema": {
