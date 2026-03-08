@@ -17,7 +17,7 @@ from fastapi.security.api_key import APIKeyHeader
 
 # Reuse the same env var and header name as the main wolf_api auth
 WOLF_API_KEY = os.environ.get("WOLF_API_KEY", "")
-KB_WRITE_PASSWORD = os.environ.get("KB_WRITE_PASSWORD", "mywolfy")
+KB_WRITE_PASSWORD = os.environ.get("KB_WRITE_PASSWORD", "")
 
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
 
@@ -43,10 +43,16 @@ def require_api_key(
 
 
 def validate_write_password(password: str) -> None:
-    """Validate KB write password. Raises HTTPException 403 on mismatch.
+    """Validate KB write password. Raises HTTPException on mismatch.
 
     Uses hmac.compare_digest to prevent timing attacks.
+    Raises 503 if KB_WRITE_PASSWORD env var is not configured.
     """
+    if not KB_WRITE_PASSWORD:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Service not configured: KB_WRITE_PASSWORD is missing",
+        )
     if not password:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

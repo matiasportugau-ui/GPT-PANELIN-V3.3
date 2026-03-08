@@ -1,0 +1,70 @@
+# ==============================================================================
+# Panelin Agno — Dockerfile para Cloud Run
+# ==============================================================================
+# Multi-stage build optimizado para producción en Google Cloud Run
+
+# Stage 1: Builder — instala dependencias
+FROM python:3.12-slim AS builder
+
+LABEL maintainer="BMC Uruguay — Panelin Agno"
+LABEL description="Panelin Agno v4.0 — Sistema de cotizaciones con Agno Framework"
+
+WORKDIR /app
+
+# Dependencias de build
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements-agno.txt /app/
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements-agno.txt
+
+# Stage 2: Production
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Runtime deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python packages del builder
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Código fuente
+COPY src/ /app/src/
+COPY panelin_v4/ /app/panelin_v4/
+COPY wolf_api/ /app/wolf_api/
+COPY panelin_mcp_server/ /app/panelin_mcp_server/
+COPY panelin_reports/ /app/panelin_reports/
+
+# Knowledge Base (archivos JSON — datos de productos)
+COPY bromyros_pricing_master.json /app/
+COPY bromyros_pricing_gpt_optimized.json /app/
+COPY BMC_Base_Conocimiento_GPT-2.json /app/
+COPY bom_rules.json /app/
+COPY accessories_catalog.json /app/
+COPY bmc_logo.png /app/
+
+# Usuario no-root para seguridad
+RUN groupadd -r panelin && useradd -r -g panelin panelin
+RUN chown -R panelin:panelin /app
+USER panelin
+
+# Puerto Cloud Run
+ENV PORT=8080
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD curl -f http://localhost:${PORT}/health || exit 1
+
+# Arrancar con uvicorn (Cloud Run necesita bindear 0.0.0.0:$PORT)
+CMD ["sh", "-c", "uvicorn src.app:app --host 0.0.0.0 --port ${PORT} --workers 2 --log-level info"]

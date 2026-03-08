@@ -1,0 +1,36 @@
+{
+  "name": "bulk_price_check",
+  "description": "Submit a background task to look up pricing for multiple products at once. Returns a task_id for status polling and result retrieval. Useful for comparing prices across product families or building multi-product quotations.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "queries": {
+        "type": "array",
+        "description": "List of pricing queries to execute",
+        "items": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Product SKU, family, or free-text search term"
+            },
+            "filter_type": {
+              "type": "string",
+              "enum": ["sku", "family", "type", "search"],
+              "description": "Type of lookup to perform. Default: 'search'",
+              "default": "search"
+            },
+            "thickness_mm": {
+              "type": "number",
+              "description": "Optional: filter by panel thickness in mm"
+            }
+          },
+          "required": ["query"]
+        },
+        "minItems": 1,
+        "maxItems": 50
+      }
+    },
+    "required": ["queries"]
+  }
+}

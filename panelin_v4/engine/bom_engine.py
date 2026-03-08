@@ -210,7 +210,13 @@ def calculate_bom(
     # Calculate area
     area_m2 = length_m * width_m
 
-    # Calculate panel count
+    # Geometry convention (parser-derived):
+    #   Roof:  width_m = total span (panels side-by-side), length_m = panel length along slope
+    #   Wall:  width_m = horizontal wall extent (panels side-by-side), length_m = wall height
+    # Both roof and wall count panels using width_m / ancho_util_m.
+    is_roof = uso.lower() in ("techo", "cubierta")
+
+    # Calculate panel count — for both roof and wall, width_m is the side-by-side span
     if panel_count is None:
         panel_count = math.ceil(width_m / ancho_util_m)
 
@@ -222,7 +228,6 @@ def calculate_bom(
         supports = max(2, math.ceil(length_m / 3.0) + 1)
 
     # Fixation points
-    is_roof = uso.lower() in ("techo", "cubierta")
     if is_roof:
         base_fix = panel_count * supports * 2
         edge_fix = math.ceil(length_m * 2 / 2.5)
@@ -243,7 +248,13 @@ def calculate_bom(
     ))
 
     # Build accessory items based on system
-    perimeter_ml = 2 * (panel_count * ancho_util_m) + 2 * length_m
+    # For roofs: perimeter = 2 × panel_span + 2 × panel_length
+    # For walls: perimeter = 2 × wall_horizontal_length + 2 × wall_height
+    if is_roof:
+        perimeter_ml = 2 * (panel_count * ancho_util_m) + 2 * length_m
+    else:
+        # Wall: width_m = horizontal extent, length_m = height
+        perimeter_ml = 2 * width_m + 2 * length_m
 
     if is_roof:
         _add_roof_accessories(
@@ -253,9 +264,11 @@ def calculate_bom(
             perimeter_ml, system, roof_type,
         )
     else:
+        # _add_wall_accessories expects (length_m=horizontal, height_m=vertical).
+        # Parser convention: width_m=horizontal, length_m=height → swap them here.
         _add_wall_accessories(
             items, warnings, familia, thickness_mm,
-            panel_count, ancho_util_m, length_m, width_m,
+            panel_count, ancho_util_m, width_m, length_m,
             fix_points, structure_type, perimeter_ml, system,
         )
 
