@@ -1,4 +1,8 @@
-# Repository Cleanup: Execution Plan
+# Repository Cleanup: Execution Plan (Historical)
+
+> ⚠️ **This document is out of date.** The current authoritative merge plan is
+> **[CURRENT_MERGE_PLAN.md](CURRENT_MERGE_PLAN.md)** (updated 2026-03-11, PR #229).
+> The information below is retained for historical reference only.
 
 **Goal**: Clean up 14 open PRs and resolve merge conflicts in the GPT-PANELIN-V3.2 repository
 
