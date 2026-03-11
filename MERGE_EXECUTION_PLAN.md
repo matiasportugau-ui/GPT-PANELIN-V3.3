@@ -1,5 +1,9 @@
 # Repository Cleanup: Execution Plan
 
+> ⚠️ **DEPRECATED** — This plan was written for the V3.2 era with 14 open PRs.
+> The repository now has 50 open PRs and has migrated to v4.0 (Agno architecture).
+> See **[AUTOPILOT_UPDATE_PLAN.md](AUTOPILOT_UPDATE_PLAN.md)** for the current source of truth.
+
 **Goal**: Clean up 14 open PRs and resolve merge conflicts in the GPT-PANELIN-V3.2 repository
 
 ## Prerequisites
