@@ -1,5 +1,9 @@
 # Repository Cleanup - Quick Start Guide
 
+> ⚠️ **DEPRECATED** — This guide was written for the V3.2 era with 14 open PRs.
+> The repository now has 50 open PRs and has migrated to v4.0 (Agno architecture).
+> See **[AUTOPILOT_UPDATE_PLAN.md](AUTOPILOT_UPDATE_PLAN.md)** for the current source of truth.
+
 **For**: Repository maintainers and contributors  
 **Purpose**: Quick reference for the cleanup process  
 **Full Details**: See MERGE_EXECUTION_PLAN.md
