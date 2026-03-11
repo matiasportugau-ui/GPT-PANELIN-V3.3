@@ -48,7 +48,7 @@ on:
 jobs:
   validate:
     name: Validate KB Files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       validation_passed: ${{ steps.validate.outputs.passed }}
     steps:
@@ -80,7 +80,7 @@ jobs:
 
   deploy:
     name: Deploy Assistant via API
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: validate
     if: |
       needs.validate.outputs.validation_passed == 'true' ||
@@ -188,7 +188,7 @@ jobs:
 
   verify:
     name: Verify Deployment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: deploy
     if: success() && inputs.dry_run != 'true'
 
