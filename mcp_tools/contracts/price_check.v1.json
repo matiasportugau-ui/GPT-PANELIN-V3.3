@@ -3,6 +3,8 @@
   "name": "price_check",
   "version": "v1",
   "tool_name": "price_check",
+  "name": "price_check",
+  "version": "1.0.0",
   "contract_version": "v1",
   "description": "Lookup product pricing by SKU, family, or search query.",
   "input_schema": {

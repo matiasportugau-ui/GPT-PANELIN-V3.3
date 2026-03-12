@@ -3,6 +3,8 @@
   "name": "kb_search",
   "version": "v1",
   "tool_name": "kb_search",
+  "name": "kb_search",
+  "version": "1.0.0",
   "contract_version": "v1",
   "description": "Semantic/keyword search over Panelin knowledge base sources.",
   "input_schema": {

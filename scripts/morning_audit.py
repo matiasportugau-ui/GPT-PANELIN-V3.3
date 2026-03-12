@@ -2,6 +2,16 @@
 """
 PANELIN Morning Audit - Phase 1
 Monitors customer touchpoints and generates a daily summary.
+
+Phase 1 (current): prompts the operator to manually check each platform
+(WhatsApp, Facebook, MercadoLibre, Email) and writes one audit row per
+channel to a Google Sheets "Daily Audit" worksheet.
+
+Phase 2 (planned): replace manual prompts with real API integrations and
+send an automated daily summary email via send_summary_email().
+
+Full explanation, Google Sheets setup, column mapping, log interpretation,
+and troubleshooting: docs/MORNING_AUDIT_GUIDE.md
 """
 
 from __future__ import annotations

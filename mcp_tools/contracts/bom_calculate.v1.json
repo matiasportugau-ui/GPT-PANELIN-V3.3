@@ -3,6 +3,8 @@
   "name": "bom_calculate",
   "version": "v1",
   "tool_name": "bom_calculate",
+  "name": "bom_calculate",
+  "version": "1.0.0",
   "contract_version": "v1",
   "description": "Calculate a Bill of Materials for panel installation scenarios.",
   "input_schema": {

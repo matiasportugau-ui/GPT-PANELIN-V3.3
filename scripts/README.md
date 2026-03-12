@@ -1,3 +1,62 @@
+# Scripts
+
+## Morning Audit (`morning_audit.py`)
+
+Checks all four customer touchpoints (WhatsApp, Facebook, MercadoLibre, Email) and
+optionally writes a summary row to a Google Sheets "Daily Audit" worksheet.
+
+> 📖 **Full explanation** — including Phase 1 vs Phase 2, Google Sheets setup,
+> column mapping, log output interpretation, and troubleshooting — is in
+> [docs/MORNING_AUDIT_GUIDE.md](../docs/MORNING_AUDIT_GUIDE.md).
+
+### How to run locally
+
+```bash
+# 1. Install dependencies (only needed once)
+pip install -r requirements.txt
+
+# 2. (Optional) set Google Sheets credentials
+export GOOGLE_SHEETS_ID="<your-spreadsheet-id>"
+export GOOGLE_SHEETS_CREDENTIALS_PATH="./scripts/credentials/service_account.json"
+
+# 3. Run the audit
+python scripts/morning_audit.py
+```
+
+The script runs without Google Sheets credentials – it will log a warning and skip
+the Sheets write step.  Audit logs are saved to `scripts/logs/audit_YYYYMMDD_HHMMSS.log`.
+
+### How to run via GitHub Actions
+
+Trigger the **Manual Morning Audit** workflow from the Actions tab:
+
+```
+Actions → 🌅 Manual Morning Audit → Run workflow
+```
+
+Required repository configuration:
+| Type | Name | Value |
+|------|------|-------|
+| Secret | `GOOGLE_SHEETS_CREDS` | JSON content of the service-account file |
+| Variable | `GOOGLE_SHEETS_ID` | Spreadsheet ID |
+
+### How to run the tests
+
+```bash
+# From the repository root
+pytest scripts/tests/test_morning_audit.py -v
+```
+
+The test suite (16 tests) covers:
+- Initialisation with and without credentials
+- All four channel audit methods
+- `run_audit()` aggregation
+- `write_to_sheets()` – skips gracefully, writes rows, deduplicates
+- `send_summary_email()` Phase-2 placeholder
+- `main()` entry-point exit code
+
+---
+
 # PR Cleanup Scripts
 
 This directory contains scripts to facilitate the cleanup of stale, duplicate, and empty pull requests.

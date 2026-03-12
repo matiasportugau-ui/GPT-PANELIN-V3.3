@@ -3,6 +3,8 @@
   "name": "register_correction",
   "version": "v1",
   "tool_name": "register_correction",
+  "name": "register_correction",
+  "version": "1.0.0",
   "contract_version": "v1",
   "description": "Register a KB correction detected during conversation via Wolf API. Requires KB write password.",
   "input_schema": {

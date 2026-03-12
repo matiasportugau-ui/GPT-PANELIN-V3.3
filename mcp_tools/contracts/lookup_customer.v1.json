@@ -3,6 +3,8 @@
   "name": "lookup_customer",
   "version": "v1",
   "tool_name": "lookup_customer",
+  "name": "lookup_customer",
+  "version": "1.0.0",
   "contract_version": "v1",
   "description": "Retrieve existing customer data from KB via Wolf API. No password required.",
   "input_schema": {
