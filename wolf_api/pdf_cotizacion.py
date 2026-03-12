@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hmac
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any, Optional
@@ -116,7 +116,7 @@ def _build_report_payload(data: CotizacionRequest) -> dict[str, Any]:
         "client_name": data.cliente.nombre,
         "client_address": data.cliente.direccion,
         "client_phone": data.cliente.telefono,
-        "date": datetime.now().strftime("%Y-%m-%d"),
+        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         "quote_description": data.cliente.obra,
         "products": products,
         "accessories": accessories,
@@ -136,29 +136,33 @@ def _generate_pdf_file(data: CotizacionRequest, output_path: Path) -> Path:
 router = APIRouter(tags=["Cotizaciones PDF"])
 
 
-@router.post("/cotizaciones/generar_pdf", response_model=CotizacionResponse)
-async def generar_pdf(data: CotizacionRequest, _: str = Depends(verify_api_key)) -> CotizacionResponse:
+@router.post("/cotizaciones/generar_pdf")
+async def generar_pdf(data: CotizacionRequest, _: str = Depends(verify_api_key)) -> Response:
     try:
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         doc_num = f"BMC-{now.strftime('%Y%m%d-%H%M%S')}"
-        out_dir = Path("/tmp/panelin-pdf")
-        out_dir.mkdir(parents=True, exist_ok=True)
-        output_path = out_dir / f"{doc_num}.pdf"
-        _generate_pdf_file(data, output_path)
-
         fecha = now.strftime("%d/%m/%Y")
         validez = (now + timedelta(days=30)).strftime("%d/%m/%Y")
-        url = output_path.as_uri()
 
-        return CotizacionResponse(
-            success=True,
-            doc_num=doc_num,
-            pdf_url=url,
-            pdf_download=url,
-            drive_path=str(output_path),
-            total_usd=data.financials.total_general,
-            fecha=fecha,
-            validez=validez,
+        with NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+            tmp_path = Path(tmp.name)
+        try:
+            _generate_pdf_file(data, tmp_path)
+            pdf_bytes = tmp_path.read_bytes()
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink()
+
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="{doc_num}.pdf"',
+                "X-Doc-Num": doc_num,
+                "X-Fecha": fecha,
+                "X-Validez": validez,
+                "X-Total-USD": str(data.financials.total_general),
+            },
         )
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=f"Error generando PDF: {exc}") from exc

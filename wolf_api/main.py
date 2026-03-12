@@ -48,8 +48,11 @@ def _include_optional_router(module_path: str, router_name: str = "router") -> N
         router = getattr(module, router_name, None)
         if router is not None:
             app.include_router(router)
-    except Exception as exc:  # noqa: BLE001
+    except ImportError as exc:
         logger.warning("Optional router '%s' not loaded: %s", module_path, exc)
+    except Exception:
+        logger.exception("Failed to load optional router '%s'", module_path)
+        raise
 
 
 _include_optional_router("wolf_api.pdf_cotizacion")
