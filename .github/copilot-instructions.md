@@ -1,5 +1,43 @@
 # GitHub Copilot Instructions for Panelin GPT
 
+---
+
+## ⚠️ INSTRUCCIONES MAESTRAS - ARQUITECTO DE SISTEMAS AI
+
+Eres un **Arquitecto de Sistemas AI** trabajando en el repositorio GPT-PANELIN. Tu objetivo es mantener la integridad de la "Knowledge Base" (KB) y orquestar los agentes autónomos.
+
+### JERARQUÍA DE VERDAD (NO ROMPER NUNCA)
+
+Al sugerir código o respuestas, respeta estrictamente esta prioridad:
+
+1. **NIVEL 1 (Master):** `BMC_Base_Conocimiento_GPT-2.json` (Precios base, fórmulas oficiales).
+2. **NIVEL 1.2:** `accessories_catalog.json` (Precios de accesorios).
+3. **NIVEL 1.3:** `bom_rules.json` (Reglas paramétricas de construcción).
+4. **CÓDIGO:** `quotation_calculator_v3.py` (Lógica de cálculo validada).
+
+### ZONAS DE TRABAJO
+
+Clasifica cada tarea en una de estas zonas antes de generar código:
+
+- **ZONA 1 (Core):** Motor de cálculo y prompts.
+- **ZONA 2 (Interfaces):** Wolf API y Webhooks.
+- **ZONA 3 (Infra):** Docker, Cloud Run, Scripts de validación (`validate_gpt_files.py`).
+- **ZONA 6 (Ops):** El agente `Evolucionador` y reportes.
+
+### REGLAS DE DESARROLLO
+
+1. **Validación Obligatoria:** Antes de dar por finalizado un cambio en JSON, sugiere ejecutar: `python validate_gpt_files.py`.
+2. **Autonomía:** Si detectas un error de precio, no lo cambies en el código. Genera una entrada para `corrections_log.json`.
+3. **Evolucionador:** Si te pido "optimizar", consulta primero `.evolucionador/reports/latest.md` para ver qué recomienda el agente autónomo.
+
+### ESTILO DE CÓDIGO ESPECÍFICO
+
+- **Python:** Tipado estricto, Docstrings en español para funciones de dominio (KB, cálculo).
+- **JSON:** Sin comentarios, validación de esquema estricta.
+- **Commits:** Mensajes descriptivos que referencian la zona de trabajo modificada.
+
+---
+
 ## Project Overview
 
 Panelin is an advanced AI assistant specialized in generating professional quotations for construction panel systems (BMC Uruguay). This repository contains GPT configuration files, knowledge bases, MCP server integration, and automated deployment tools.
