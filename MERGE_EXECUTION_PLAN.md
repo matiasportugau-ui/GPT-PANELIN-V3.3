@@ -1,5 +1,7 @@
 # Repository Cleanup: Execution Plan
 
+> **Historical plan:** This document reflects the earlier 14-PR cleanup effort. For the current repository-wide recommendation based on the latest open PR set, see [`CURRENT_MERGE_PLAN.md`](./CURRENT_MERGE_PLAN.md).
+
 **Goal**: Clean up 14 open PRs and resolve merge conflicts in the GPT-PANELIN-V3.2 repository
 
 ## Prerequisites

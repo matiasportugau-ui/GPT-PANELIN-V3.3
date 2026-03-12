@@ -1,5 +1,7 @@
 # Repository Cleanup - Quick Start Guide
 
+> **Historical quick start:** This guide summarizes the earlier 14-PR cleanup effort. For the current merge recommendations, improvement summary, and risk analysis, see [`CURRENT_MERGE_PLAN.md`](./CURRENT_MERGE_PLAN.md).
+
 **For**: Repository maintainers and contributors  
 **Purpose**: Quick reference for the cleanup process  
 **Full Details**: See MERGE_EXECUTION_PLAN.md
