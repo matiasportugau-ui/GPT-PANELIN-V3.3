@@ -1,8 +1,12 @@
-# Repository Cleanup - Quick Start Guide
+# Repository Cleanup - Quick Start Guide (Historical)
+
+> ⚠️ **This document is out of date.** The current authoritative merge plan is
+> **[CURRENT_MERGE_PLAN.md](CURRENT_MERGE_PLAN.md)** (updated 2026-03-11, PR #229).
+> The information below is retained for historical reference only.
 
 **For**: Repository maintainers and contributors  
 **Purpose**: Quick reference for the cleanup process  
-**Full Details**: See MERGE_EXECUTION_PLAN.md
+**Full Details**: See [CURRENT_MERGE_PLAN.md](CURRENT_MERGE_PLAN.md)
 
 ## TL;DR - What's Happening?
 
